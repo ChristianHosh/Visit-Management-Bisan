@@ -21,31 +21,29 @@ public class UserService {
         this.repository = repository;
     }
 
-    public List<User> findAll() {
+    public List<User> findAllUsers() {
         return repository.findAll();
     }
 
-    public User findByUsername(String username) {
+    public User findUserByUsername(String username) {
         Optional<User> userOptional = repository.findById(username);
         return userOptional.orElse(null);
     }
 
 
-    public List<User> searchByFirstName(String firstName) {
+    public List<User> searchUsersByFirstName(String firstName) {
         return repository.searchUsersByFirstName(firstName);
     }
 
-    public List<User> searchByLastName(String firstName) {
+    public List<User> searchUsersByLastName(String firstName) {
         return repository.searchUsersByLastName(firstName);
     }
-    public List<User> searchUsersByUsername(String username) {
-        return repository.searchUsersByUsername(username);
 
-    }
     public List<User> searchUsersByAccessLevel(int accessLevel) {
         return repository.searchUsersByAccessLevel(accessLevel);
 
     }
+
     public User saveNewUser(User userToSave) {
         Optional<User> userOptional = repository.findById(userToSave.getUsername());
 

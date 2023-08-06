@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping("")
     public ResponseEntity<List<User>> getAllUsers() {
-        List<User> userList = userService.findAll();
+        List<User> userList = userService.findAllUsers();
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
@@ -30,7 +30,7 @@ public class UserController {
     @GetMapping(value = "/search", params = "firstName")
     public ResponseEntity<List<User>> searchByFirstName(@RequestParam("firstName") String firstName){
         System.out.println("first");
-        List<User> userList = userService.searchByFirstName(firstName);
+        List<User> userList = userService.searchUsersByFirstName(firstName);
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
@@ -38,14 +38,23 @@ public class UserController {
     @GetMapping(value = "/search", params = "lastName")
     public ResponseEntity<List<User>> searchByLastName(@RequestParam("lastName") String firstName){
         System.out.println("last");
-        List<User> userList = userService.searchByLastName(firstName);
+        List<User> userList = userService.searchUsersByLastName(firstName);
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/search", params = "accessLevel")
+    public ResponseEntity<List<User>> searchByAccessLevel(@RequestParam("accessLevel") int accessLevel){
+        System.out.println("first");
+        List<User> userList = userService.searchUsersByAccessLevel(accessLevel);
+
+        return new ResponseEntity<>(userList, HttpStatus.OK);
+    }
+
+
     @GetMapping("/{username}")
     public ResponseEntity<User> getByUsername(@PathVariable String username) {
-        User user = userService.findByUsername(username);
+        User user = userService.findUserByUsername(username);
 
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
