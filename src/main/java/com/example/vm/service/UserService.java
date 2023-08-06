@@ -38,7 +38,14 @@ public class UserService {
     public List<User> searchByLastName(String firstName) {
         return repository.searchUsersByLastName(firstName);
     }
+    public List<User> searchUsersByUsername(String username) {
+        return repository.searchUsersByUsername(username);
 
+    }
+    public List<User> searchUsersByAccessLevel(int accessLevel) {
+        return repository.searchUsersByAccessLevel(accessLevel);
+
+    }
     public User saveNewUser(User userToSave) {
         Optional<User> userOptional = repository.findById(userToSave.getUsername());
 
