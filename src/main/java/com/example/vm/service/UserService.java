@@ -36,10 +36,16 @@ public class UserService {
         if (userOptional.isPresent())
             return null;
 
-        if (isAccessLevelValid(userToSave.getAccessLevel()))
+        if (isAccessLevelNotValid(userToSave.getAccessLevel()))
             return null;
 
-        if (isEnabledValid(userToSave.getEnabled()))
+        if (isEnabledNotValid(userToSave.getEnabled()))
+            return null;
+
+        if (isNotAlpha(userToSave.getFirstName().trim()))
+            return null;
+
+        if (isNotAlpha(userToSave.getLastName().trim()))
             return null;
 
         userToSave.setCreatedTime(Timestamp.from(Instant.now()));
@@ -51,6 +57,7 @@ public class UserService {
         userToSave.setUsername(userToSave.getUsername().trim());
         userToSave.setPassword(userToSave.getPassword().trim());
 
+
         return repository.save(userToSave);
     }
 
@@ -61,10 +68,16 @@ public class UserService {
         if (userOptional.isEmpty())
             return null;
 
-        if (isAccessLevelValid(updatedUser.getAccessLevel()))
+        if (isAccessLevelNotValid(updatedUser.getAccessLevel()))
             return null;
 
-        if (isEnabledValid(updatedUser.getEnabled()))
+        if (isEnabledNotValid(updatedUser.getEnabled()))
+            return null;
+
+        if (isNotAlpha(updatedUser.getFirstName().trim()))
+            return null;
+
+        if (isNotAlpha(updatedUser.getLastName().trim()))
             return null;
 
 
@@ -82,11 +95,15 @@ public class UserService {
     }
 
 
-    private boolean isAccessLevelValid(int accessLevel) {
-        return (!(accessLevel == 1) && !(accessLevel == 0));
+    private boolean isAccessLevelNotValid(int accessLevel) {
+        return (accessLevel != 1) && (accessLevel != 0);
     }
 
-    private boolean isEnabledValid(int enabled) {
-        return (!(enabled == 1) && !(enabled == 0));
+    private boolean isEnabledNotValid(int enabled) {
+        return (enabled != 1) && (enabled != 0);
+    }
+
+    public boolean isNotAlpha(String name) {
+        return !name.matches("[a-zA-Z]+");
     }
 }
