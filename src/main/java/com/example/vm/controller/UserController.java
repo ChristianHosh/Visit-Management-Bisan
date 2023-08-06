@@ -27,6 +27,17 @@ public class UserController {
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
+    @GetMapping("/{username}")
+    public ResponseEntity<User> getByUsername(@PathVariable String username) {
+        User user = userService.findByUsername(username);
+
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
     @PostMapping("")
     public ResponseEntity<User> saveNewUser(@RequestBody User newUser) {
         newUser = userService.saveNewUser(newUser);
@@ -38,5 +49,15 @@ public class UserController {
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{username}")
+    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User userToUpdate) {
+        userToUpdate = userService.updateUser(username, userToUpdate);
+
+        if (userToUpdate == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+
+        return new ResponseEntity<>(userToUpdate, HttpStatus.OK);
+    }
 
 }

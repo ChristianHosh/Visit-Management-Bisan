@@ -11,20 +11,23 @@ import lombok.EqualsAndHashCode;
 public class User extends ModelAuditSuperclass {
 
     @Id
-    @Column(name = "username", nullable = false, unique = true)
+    @Column(name = "username", nullable = false, updatable = false, length = 30)
     private String username;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password", nullable = false, length = 30)
     private String password;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", length = 30)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", length = 30)
     private String lastName;
 
-    @Column(name = "access_level")
+    @Column(name = "access_level", length = 1, nullable = false)
     private int accessLevel;
+
+    @Column(name = "enabled", length = 1, nullable = false)
+    private int enabled;
 
 
 }
