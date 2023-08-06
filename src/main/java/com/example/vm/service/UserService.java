@@ -43,6 +43,7 @@ public class UserService {
         return repository.searchUsersByAccessLevel(accessLevel);
     }
 
+
     public User saveNewUser(User userToSave) {
 
         userToSave.setCreatedTime(Timestamp.from(Instant.now()));
@@ -70,5 +71,9 @@ public class UserService {
 
         return repository.save(userToUpdate);
     }
+    public User disableUser(User user ) {
+        user.setEnabled(0);
+        return repository.save(user);
 
+    }
 }

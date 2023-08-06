@@ -120,6 +120,18 @@ public class UserController {
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{username}")
+    public ResponseEntity<User> disableUser(@PathVariable String username) {
+        User userToDelete = userService.findUserByUsername(username);
+
+        if (userToDelete == null)
+            throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
+        userToDelete= userService.disableUser(userToDelete);
+        return new ResponseEntity<>(userToDelete, HttpStatus.OK);
+
+    }
+
+
     private void ValidateUser(User user) {
         if (isNotValidAccessLevel(user.getAccessLevel()))
             throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
