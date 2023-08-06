@@ -40,14 +40,11 @@ public class UserService {
     }
 
     public List<User> searchUsersByAccessLevel(int accessLevel) {
-//        if (isAccessLevelNotValid(accessLevel))
-//            return null;
-
         return repository.searchUsersByAccessLevel(accessLevel);
-
     }
 
     public User saveNewUser(User userToSave) {
+
         userToSave.setCreatedTime(Timestamp.from(Instant.now()));
         userToSave.setLastModifiedTime(Timestamp.from(Instant.now()));
         userToSave.setEnabled(1);
@@ -63,36 +60,15 @@ public class UserService {
     }
 
 
-//    public User updateUser(String username, User updatedUser) {
-//        Optional<User> userOptional = repository.findById(username);
-//
-//        if (userOptional.isEmpty())
-//            return null;
-//
-//        if (isAccessLevelNotValid(updatedUser.getAccessLevel()))
-//            return null;
-//
-//        if (isEnabledNotValid(updatedUser.getEnabled()))
-//            return null;
-//
-//        if (isNameNotValid(updatedUser.getFirstName().trim()))
-//            return null;
-//
-//        if (isNameNotValid(updatedUser.getLastName().trim()))
-//            return null;
-//
-//
-//        User userToUpdate = userOptional.get();
-//
-//        userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
-//
-//        userToUpdate.setFirstName(updatedUser.getFirstName().trim());
-//        userToUpdate.setLastName(updatedUser.getLastName().trim());
-//
-//        userToUpdate.setAccessLevel(updatedUser.getAccessLevel());
-//        userToUpdate.setEnabled(updatedUser.getEnabled());
-//
-//        return repository.save(userToUpdate);
-//    }
+    public User updateUser(User userToUpdate, User updatedUser) {
+        userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
+
+        userToUpdate.setFirstName(updatedUser.getFirstName().trim());
+        userToUpdate.setLastName(updatedUser.getLastName().trim());
+
+        userToUpdate.setAccessLevel(updatedUser.getAccessLevel());
+
+        return repository.save(userToUpdate);
+    }
 
 }

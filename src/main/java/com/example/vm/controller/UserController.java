@@ -33,7 +33,6 @@ public class UserController {
 
     @GetMapping(value = "/search", params = "firstName")
     public ResponseEntity<List<User>> searchByFirstName(@RequestParam("firstName") String firstName) {
-        System.out.println("first");
         List<User> userList = userService.searchUsersByFirstName(firstName);
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
@@ -41,7 +40,6 @@ public class UserController {
 
     @GetMapping(value = "/search", params = "lastName")
     public ResponseEntity<List<User>> searchByLastName(@RequestParam("lastName") String firstName) {
-        System.out.println("last");
         List<User> userList = userService.searchUsersByLastName(firstName);
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
@@ -49,10 +47,10 @@ public class UserController {
 
     @GetMapping(value = "/search", params = "accessLevel")
     public ResponseEntity<List<User>> searchByAccessLevel(@RequestParam("accessLevel") int accessLevel) {
-        List<User> userList = userService.searchUsersByAccessLevel(accessLevel);
+        if (isNotValidAccessLevel(accessLevel))
+            throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
 
-        if (userList == null)
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        List<User> userList = userService.searchUsersByAccessLevel(accessLevel);
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
@@ -77,59 +75,79 @@ public class UserController {
             throw new UserAlreadyExistsException("USERNAME ALREADY EXISTS!");
         }
 
-        if (isAccessLevelNotValid(userToSave.getAccessLevel()))
-            throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
-
-        if (isEnabledNotValid(userToSave.getEnabled()))
-            throw new InvalidUserArgumentException("IS ENABLED IS NOT VALID, SHOULD BE A 1 OR 0");
-
-        if (isNameNotValid(userToSave.getFirstName().trim()))
-            throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
-
-        if (isNameNotValid(userToSave.getLastName().trim()))
-            throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+        ValidateUser(userToSave);
+        // THROWS AN EXCEPTION IF VALIDATION FAILED
 
         for (String string : Arrays.asList(userToSave.getUsername(), userToSave.getPassword(), userToSave.getFirstName(), userToSave.getLastName()))
-            if (!isValidLength(string))
+            if (isNotValidLength(string))
                 throw new InvalidUserArgumentException("'" + string + "' IS TOO LONG, SHOULD BE LESS THAN 30 CHARACTERS");
 
 
-        userToSave = userService.saveNewUser(userToSave);
+        User savedUser = userService.saveNewUser(userToSave);
 
-        if (userToSave == null) {
+        if (savedUser == null) {
             System.out.println("COULD NOT SAVE NEW USER");
             throw new RuntimeException("SOMETHING WRONG");
         }
 
 
-        return new ResponseEntity<>(userToSave, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
-//    @PutMapping("/{username}")
-//    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User userToUpdate) {
-//        userToUpdate = userService.updateUser(username, userToUpdate);
-//
-//        if (userToUpdate == null) {
-//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-//        }
-//
-//        return new ResponseEntity<>(userToUpdate, HttpStatus.OK);
-//    }
+    @PutMapping("/{username}")
+    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User updatedUser) {
+        User userToUpdate = userService.findUserByUsername(username);
 
-    private boolean isAccessLevelNotValid(int accessLevel) {
+        if (userToUpdate == null)
+            throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
+
+        ValidateUser(updatedUser);
+        // THROWS AN EXCEPTION IF VALIDATION FAILED
+
+        for (String string : Arrays.asList(updatedUser.getFirstName(), updatedUser.getLastName()))
+            if (isNotValidLength(string))
+                throw new InvalidUserArgumentException("'" + string + "' IS TOO LONG, SHOULD BE LESS THAN 30 CHARACTERS");
+
+
+        updatedUser = userService.updateUser(userToUpdate, updatedUser);
+
+        if (updatedUser == null) {
+            System.out.println("COULD NOT SAVE NEW USER");
+            throw new RuntimeException("SOMETHING WRONG");
+        }
+
+
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+    private void ValidateUser(User user) {
+        if (isNotValidAccessLevel(user.getAccessLevel()))
+            throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
+
+        if (isNotValidEnabled(user.getEnabled()))
+            throw new InvalidUserArgumentException("IS ENABLED IS NOT VALID, SHOULD BE A 1 OR 0");
+
+        if (isNotValidName(user.getFirstName().trim()))
+            throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+
+        if (isNotValidName(user.getLastName().trim()))
+            throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+    }
+
+    private boolean isNotValidAccessLevel(int accessLevel) {
         return (accessLevel != 1) && (accessLevel != 0);
     }
 
-    private boolean isEnabledNotValid(int enabled) {
+    private boolean isNotValidEnabled(int enabled) {
         return (enabled != 1) && (enabled != 0);
     }
 
-    public boolean isNameNotValid(String name) {
+    public boolean isNotValidName(String name) {
         return !name.matches("[a-zA-Z ]+");
     }
 
-    public boolean isValidLength(String string) {
-        return string.length() <= 30;
+    public boolean isNotValidLength(String string) {
+        return string.length() > 30;
     }
 
 }
