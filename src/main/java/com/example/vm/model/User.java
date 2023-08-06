@@ -9,20 +9,22 @@ import lombok.EqualsAndHashCode;
 @Table(name = "user_model")
 @EqualsAndHashCode(callSuper = true)
 public class User extends ModelAuditSuperclass {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "User_name")
+    @Column(name = "username", nullable = false, unique = true)
     private String username;
 
-    @Column(name = "Passwsord")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name ="first_Name")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_Name")
-    private String lastname;
+    @Column(name = "last_name")
+    private String lastName;
 
+    @Column(name = "access_level")
+    private int accessLevel;
 
 
 }
