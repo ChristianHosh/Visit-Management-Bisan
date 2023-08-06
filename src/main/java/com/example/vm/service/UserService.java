@@ -42,4 +42,14 @@ public class UserService {
         return repository.save(userToSave);
     }
 
+    public boolean containsOnlyAlphabets(String input) {
+        for (char c : input.toCharArray()) {
+            if (!Character.isLetter(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
 }
