@@ -73,7 +73,7 @@ public class UserService {
     }
     public User disableUser(User user ) {
         user.setEnabled(0);
-        return repository.save(user);
 
+        return repository.save(user);
     }
 }
