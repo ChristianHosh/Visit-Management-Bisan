@@ -40,31 +40,14 @@ public class UserService {
     }
 
     public List<User> searchUsersByAccessLevel(int accessLevel) {
-        if (isAccessLevelNotValid(accessLevel))
-            return null;
+//        if (isAccessLevelNotValid(accessLevel))
+//            return null;
 
         return repository.searchUsersByAccessLevel(accessLevel);
 
     }
 
     public User saveNewUser(User userToSave) {
-        Optional<User> userOptional = repository.findById(userToSave.getUsername());
-
-        if (userOptional.isPresent())
-            return null;
-
-        if (isAccessLevelNotValid(userToSave.getAccessLevel()))
-            return null;
-
-        if (isEnabledNotValid(userToSave.getEnabled()))
-            return null;
-
-        if (isNameNotValid(userToSave.getFirstName().trim()))
-            return null;
-
-        if (isNameNotValid(userToSave.getLastName().trim()))
-            return null;
-
         userToSave.setCreatedTime(Timestamp.from(Instant.now()));
         userToSave.setLastModifiedTime(Timestamp.from(Instant.now()));
         userToSave.setEnabled(1);
@@ -80,49 +63,36 @@ public class UserService {
     }
 
 
-    public User updateUser(String username, User updatedUser) {
-        Optional<User> userOptional = repository.findById(username);
-
-        if (userOptional.isEmpty())
-            return null;
-
-        if (isAccessLevelNotValid(updatedUser.getAccessLevel()))
-            return null;
-
-        if (isEnabledNotValid(updatedUser.getEnabled()))
-            return null;
-
-        if (isNameNotValid(updatedUser.getFirstName().trim()))
-            return null;
-
-        if (isNameNotValid(updatedUser.getLastName().trim()))
-            return null;
-
-
-        User userToUpdate = userOptional.get();
-
-        userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
-
-        userToUpdate.setFirstName(updatedUser.getFirstName().trim());
-        userToUpdate.setLastName(updatedUser.getLastName().trim());
-
-        userToUpdate.setAccessLevel(updatedUser.getAccessLevel());
-        userToUpdate.setEnabled(updatedUser.getEnabled());
-
-        return repository.save(userToUpdate);
-    }
-
-
-    private boolean isAccessLevelNotValid(int accessLevel) {
-        return (accessLevel != 1) && (accessLevel != 0);
-    }
-
-    private boolean isEnabledNotValid(int enabled) {
-        return (enabled != 1) && (enabled != 0);
-    }
-
-    public boolean isNameNotValid(String name) {
-        return !name.matches("[a-zA-Z ]+");
-    }
+//    public User updateUser(String username, User updatedUser) {
+//        Optional<User> userOptional = repository.findById(username);
+//
+//        if (userOptional.isEmpty())
+//            return null;
+//
+//        if (isAccessLevelNotValid(updatedUser.getAccessLevel()))
+//            return null;
+//
+//        if (isEnabledNotValid(updatedUser.getEnabled()))
+//            return null;
+//
+//        if (isNameNotValid(updatedUser.getFirstName().trim()))
+//            return null;
+//
+//        if (isNameNotValid(updatedUser.getLastName().trim()))
+//            return null;
+//
+//
+//        User userToUpdate = userOptional.get();
+//
+//        userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
+//
+//        userToUpdate.setFirstName(updatedUser.getFirstName().trim());
+//        userToUpdate.setLastName(updatedUser.getLastName().trim());
+//
+//        userToUpdate.setAccessLevel(updatedUser.getAccessLevel());
+//        userToUpdate.setEnabled(updatedUser.getEnabled());
+//
+//        return repository.save(userToUpdate);
+//    }
 
 }

@@ -1,5 +1,8 @@
 package com.example.vm.controller;
 
+import com.example.vm.controller.error.exception.InvalidUserArgumentException;
+import com.example.vm.controller.error.exception.UserAlreadyExistsException;
+import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.model.User;
 import com.example.vm.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -58,33 +62,74 @@ public class UserController {
     public ResponseEntity<User> getByUsername(@PathVariable String username) {
         User user = userService.findUserByUsername(username);
 
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        if (user == null)
+            throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
+
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @PostMapping("")
-    public ResponseEntity<User> saveNewUser(@RequestBody User newUser) {
-        newUser = userService.saveNewUser(newUser);
+    public ResponseEntity<User> saveNewUser(@RequestBody User userToSave) {
+        User user = userService.findUserByUsername(userToSave.getUsername().trim());
 
-        if (newUser == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        if (user != null) {
+            throw new UserAlreadyExistsException("USERNAME ALREADY EXISTS!");
         }
 
-        return new ResponseEntity<>(newUser, HttpStatus.CREATED);
+        if (isAccessLevelNotValid(userToSave.getAccessLevel()))
+            throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
+
+        if (isEnabledNotValid(userToSave.getEnabled()))
+            throw new InvalidUserArgumentException("IS ENABLED IS NOT VALID, SHOULD BE A 1 OR 0");
+
+        if (isNameNotValid(userToSave.getFirstName().trim()))
+            throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+
+        if (isNameNotValid(userToSave.getLastName().trim()))
+            throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+
+        for (String string : Arrays.asList(userToSave.getUsername(), userToSave.getPassword(), userToSave.getFirstName(), userToSave.getLastName()))
+            if (!isValidLength(string))
+                throw new InvalidUserArgumentException("'" + string + "' IS TOO LONG, SHOULD BE LESS THAN 30 CHARACTERS");
+
+
+        userToSave = userService.saveNewUser(userToSave);
+
+        if (userToSave == null) {
+            System.out.println("COULD NOT SAVE NEW USER");
+            throw new RuntimeException("SOMETHING WRONG");
+        }
+
+
+        return new ResponseEntity<>(userToSave, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User userToUpdate) {
-        userToUpdate = userService.updateUser(username, userToUpdate);
+//    @PutMapping("/{username}")
+//    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User userToUpdate) {
+//        userToUpdate = userService.updateUser(username, userToUpdate);
+//
+//        if (userToUpdate == null) {
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//
+//        return new ResponseEntity<>(userToUpdate, HttpStatus.OK);
+//    }
 
-        if (userToUpdate == null) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    private boolean isAccessLevelNotValid(int accessLevel) {
+        return (accessLevel != 1) && (accessLevel != 0);
+    }
 
-        return new ResponseEntity<>(userToUpdate, HttpStatus.OK);
+    private boolean isEnabledNotValid(int enabled) {
+        return (enabled != 1) && (enabled != 0);
+    }
+
+    public boolean isNameNotValid(String name) {
+        return !name.matches("[a-zA-Z ]+");
+    }
+
+    public boolean isValidLength(String string) {
+        return string.length() <= 30;
     }
 
 }
