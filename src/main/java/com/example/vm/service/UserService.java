@@ -24,22 +24,21 @@ public class UserService {
     public List<User> findAll(){
         return repository.findAll();
     }
-
     public User findByUsername(String username){
         Optional<User> userOptional = repository.findById(username);
-
         return userOptional.orElse(null);
     }
 
     public User saveNewUser(User userToSave){
         Optional<User> userOptional = repository.findById(userToSave.getUsername());
 
-        if (userOptional.isPresent()) return null;
+        if (userOptional.isPresent())
+            return null;
 
-
-        userToSave.setCreatedTime(Timestamp.from(Instant.now()));
-        userToSave.setLastModifiedTime(Timestamp.from(Instant.now()));
-
+        if ("1".equals(userToSave.getAccessLevel()) || "0".equals(userToSave.getAccessLevel()) ) {
+                userToSave.setCreatedTime(Timestamp.from(Instant.now()));
+                userToSave.setLastModifiedTime(Timestamp.from(Instant.now()));
+            }
         return repository.save(userToSave);
     }
 
