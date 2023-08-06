@@ -24,4 +24,5 @@ public class User extends ModelAuditSuperclass {
     private String lastname;
 
 
+
 }
