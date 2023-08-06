@@ -27,6 +27,22 @@ public class UserController {
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/search", params = "firstName")
+    public ResponseEntity<List<User>> searchByFirstName(@RequestParam("firstName") String firstName){
+        System.out.println("first");
+        List<User> userList = userService.searchByFirstName(firstName);
+
+        return new ResponseEntity<>(userList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search", params = "lastName")
+    public ResponseEntity<List<User>> searchByLastName(@RequestParam("lastName") String firstName){
+        System.out.println("last");
+        List<User> userList = userService.searchByLastName(firstName);
+
+        return new ResponseEntity<>(userList, HttpStatus.OK);
+    }
+
     @GetMapping("/{username}")
     public ResponseEntity<User> getByUsername(@PathVariable String username) {
         User user = userService.findByUsername(username);
@@ -53,9 +69,9 @@ public class UserController {
     public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User userToUpdate) {
         userToUpdate = userService.updateUser(username, userToUpdate);
 
-        if (userToUpdate == null)
+        if (userToUpdate == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-
+        }
 
         return new ResponseEntity<>(userToUpdate, HttpStatus.OK);
     }

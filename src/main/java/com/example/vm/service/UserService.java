@@ -30,6 +30,15 @@ public class UserService {
         return userOptional.orElse(null);
     }
 
+
+    public List<User> searchByFirstName(String firstName) {
+        return repository.searchUsersByFirstName(firstName);
+    }
+
+    public List<User> searchByLastName(String firstName) {
+        return repository.searchUsersByLastName(firstName);
+    }
+
     public User saveNewUser(User userToSave) {
         Optional<User> userOptional = repository.findById(userToSave.getUsername());
 
@@ -42,10 +51,10 @@ public class UserService {
         if (isEnabledNotValid(userToSave.getEnabled()))
             return null;
 
-        if (isNotAlpha(userToSave.getFirstName().trim()))
+        if (isNameNotValid(userToSave.getFirstName().trim()))
             return null;
 
-        if (isNotAlpha(userToSave.getLastName().trim()))
+        if (isNameNotValid(userToSave.getLastName().trim()))
             return null;
 
         userToSave.setCreatedTime(Timestamp.from(Instant.now()));
@@ -54,7 +63,8 @@ public class UserService {
 
         userToSave.setFirstName(userToSave.getFirstName().trim());
         userToSave.setLastName(userToSave.getLastName().trim());
-        userToSave.setUsername(userToSave.getUsername().trim());
+
+        userToSave.setUsername(userToSave.getUsername().trim().toLowerCase());
         userToSave.setPassword(userToSave.getPassword().trim());
 
 
@@ -74,10 +84,10 @@ public class UserService {
         if (isEnabledNotValid(updatedUser.getEnabled()))
             return null;
 
-        if (isNotAlpha(updatedUser.getFirstName().trim()))
+        if (isNameNotValid(updatedUser.getFirstName().trim()))
             return null;
 
-        if (isNotAlpha(updatedUser.getLastName().trim()))
+        if (isNameNotValid(updatedUser.getLastName().trim()))
             return null;
 
 
@@ -103,7 +113,8 @@ public class UserService {
         return (enabled != 1) && (enabled != 0);
     }
 
-    public boolean isNotAlpha(String name) {
-        return !name.matches("[a-zA-Z]+");
+    public boolean isNameNotValid(String name) {
+        return !name.matches("[a-zA-Z ]+");
     }
+
 }
