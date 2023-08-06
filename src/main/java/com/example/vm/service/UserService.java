@@ -32,14 +32,17 @@ public class UserService {
 
 
     public List<User> searchUsersByFirstName(String firstName) {
-        return repository.searchUsersByFirstName(firstName);
+        return repository.searchUsersByFirstNameContaining(firstName);
     }
 
     public List<User> searchUsersByLastName(String firstName) {
-        return repository.searchUsersByLastName(firstName);
+        return repository.searchUsersByLastNameContaining(firstName);
     }
 
     public List<User> searchUsersByAccessLevel(int accessLevel) {
+        if (isAccessLevelNotValid(accessLevel))
+            return null;
+
         return repository.searchUsersByAccessLevel(accessLevel);
 
     }

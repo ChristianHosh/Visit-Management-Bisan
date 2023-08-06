@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/search", params = "firstName")
-    public ResponseEntity<List<User>> searchByFirstName(@RequestParam("firstName") String firstName){
+    public ResponseEntity<List<User>> searchByFirstName(@RequestParam("firstName") String firstName) {
         System.out.println("first");
         List<User> userList = userService.searchUsersByFirstName(firstName);
 
@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/search", params = "lastName")
-    public ResponseEntity<List<User>> searchByLastName(@RequestParam("lastName") String firstName){
+    public ResponseEntity<List<User>> searchByLastName(@RequestParam("lastName") String firstName) {
         System.out.println("last");
         List<User> userList = userService.searchUsersByLastName(firstName);
 
@@ -44,9 +44,11 @@ public class UserController {
     }
 
     @GetMapping(value = "/search", params = "accessLevel")
-    public ResponseEntity<List<User>> searchByAccessLevel(@RequestParam("accessLevel") int accessLevel){
-        System.out.println("first");
+    public ResponseEntity<List<User>> searchByAccessLevel(@RequestParam("accessLevel") int accessLevel) {
         List<User> userList = userService.searchUsersByAccessLevel(accessLevel);
+
+        if (userList == null)
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
