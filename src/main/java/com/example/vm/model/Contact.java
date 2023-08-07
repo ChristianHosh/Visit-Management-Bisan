@@ -18,7 +18,6 @@ public class Contact extends ModelAuditSuperclass {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID uuid;
 
-
     @Column(name = "first_name", length = 30)
     private String firstName;
 

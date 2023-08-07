@@ -128,7 +128,7 @@ public class UserController {
         if (userToDelete == null)
             throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
 
-        userToDelete= userService.disableUser(userToDelete);
+        userToDelete = userService.disableUser(userToDelete);
 
         return new ResponseEntity<>(userToDelete, HttpStatus.OK);
     }

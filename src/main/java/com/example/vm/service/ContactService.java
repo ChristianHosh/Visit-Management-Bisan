@@ -1,7 +1,6 @@
 package com.example.vm.service;
 
 import com.example.vm.model.Contact;
-import com.example.vm.model.User;
 import com.example.vm.repository.ContactRepository;
 import org.springframework.stereotype.Service;
 
@@ -18,16 +17,18 @@ public class ContactService {
     public ContactService(ContactRepository repository) {
         this.repository = repository;
     }
+
     public List<Contact> findAllContacts() {
         return repository.findAll();
     }
+
     public Contact findContactByUUID(UUID uuid) {
-        Optional<Contact>  optional = repository.findById(uuid);
+        Optional<Contact> optional = repository.findById(uuid);
         return optional.orElse(null);
     }
 
-    public Contact saveNewContact(Contact contact){
-        Timestamp timestamp=Timestamp.from(Instant.now());
+    public Contact saveNewContact(Contact contact) {
+        Timestamp timestamp = Timestamp.from(Instant.now());
         contact.setCreatedTime(timestamp);
         contact.setLastModifiedTime(timestamp);
         contact.setFirstName(contact.getFirstName().trim());
@@ -36,6 +37,7 @@ public class ContactService {
         contact.setPhoneNumber(contact.getPhoneNumber().trim());
         return repository.save(contact);
     }
+
     public List<Contact> searchContactByFirstName(String firstName) {
         return repository.searchContactByFirstNameContaining(firstName);
     }
@@ -44,13 +46,13 @@ public class ContactService {
         return repository.searchContactByLastNameContaining(lastName);
     }
 
-    public List<Contact> searchContactByPhoneNumber (String phoneNumber) {
+    public List<Contact> searchContactByPhoneNumber(String phoneNumber) {
         return repository.searchContactByPhoneNumberContaining(phoneNumber);
     }
-    public List<Contact> searchContactByEmail (String email) {
+
+    public List<Contact> searchContactByEmail(String email) {
         return repository.searchContactByEmailContaining(email);
     }
-
 
 
     public Contact updateContact(Contact contactToUpdate, Contact updatedContact) {
@@ -61,17 +63,6 @@ public class ContactService {
         contactToUpdate.setEmail(updatedContact.getEmail().trim());
         return repository.save(contactToUpdate);
     }
-
-
-
-
-
-
-
-
-
-
-
 
 
 }

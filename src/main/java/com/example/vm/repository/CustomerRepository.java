@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 
     List<Customer> searchCustomersByName(String name);
+
 }

@@ -21,20 +21,21 @@ public class CustomerService {
         this.repository = repository;
     }
 
-    public List<Customer> findAllCustomers(){
+    public List<Customer> findAllCustomers() {
         return repository.findAll();
     }
 
-    public Customer findCustomerByUUID(UUID uuid){
+    public Customer findCustomerByUUID(UUID uuid) {
         Optional<Customer> customerOptional = repository.findById(uuid);
+
         return customerOptional.orElse(null);
     }
 
-    public List<Customer> searchByName(String name){
+    public List<Customer> searchByName(String name) {
         return repository.searchCustomersByName(name);
     }
 
-    public Customer saveNewCustomer(Customer customerToSave){
+    public Customer saveNewCustomer(Customer customerToSave) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
         customerToSave.setCreatedTime(timestamp);
@@ -45,7 +46,7 @@ public class CustomerService {
         return repository.save(customerToSave);
     }
 
-    public Customer updateCustomer(Customer customerToUpdate, Customer updatedCustomer){
+    public Customer updateCustomer(Customer customerToUpdate, Customer updatedCustomer) {
         customerToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 
         customerToUpdate.setName(updatedCustomer.getName());

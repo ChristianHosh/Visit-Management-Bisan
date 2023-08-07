@@ -27,6 +27,7 @@ public class UserService {
 
     public User findUserByUsername(String username) {
         Optional<User> userOptional = repository.findById(username);
+
         return userOptional.orElse(null);
     }
 
@@ -45,7 +46,6 @@ public class UserService {
 
 
     public User saveNewUser(User userToSave) {
-
         Timestamp timestamp = Timestamp.from(Instant.now());
 
         userToSave.setCreatedTime(timestamp);
@@ -57,7 +57,6 @@ public class UserService {
 
         userToSave.setUsername(userToSave.getUsername().trim().toLowerCase());
         userToSave.setPassword(userToSave.getPassword().trim());
-
 
         return repository.save(userToSave);
     }
@@ -73,7 +72,8 @@ public class UserService {
 
         return repository.save(userToUpdate);
     }
-    public User disableUser(User user ) {
+
+    public User disableUser(User user) {
         user.setEnabled(0);
 
         return repository.save(user);

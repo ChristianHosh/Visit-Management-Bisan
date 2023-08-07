@@ -12,7 +12,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "customer_model")
 @EqualsAndHashCode(callSuper = true)
-public class Customer extends ModelAuditSuperclass{
+public class Customer extends ModelAuditSuperclass {
 
     @Id
     @Column(name = "id", nullable = false)
