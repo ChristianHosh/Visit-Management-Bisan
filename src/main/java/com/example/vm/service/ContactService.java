@@ -1,6 +1,7 @@
 package com.example.vm.service;
 
 import com.example.vm.dto.ContactRequestDTO;
+import com.example.vm.dto.ContactUpdateDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.repository.ContactRepository;
@@ -64,15 +65,14 @@ public class ContactService {
     }
 
 
-    public Contact updateContact(Contact contactToUpdate, Contact updatedContact) {
+    public Contact updateContact(Contact contactToUpdate, ContactUpdateDTO updatedDTO) {
 
         contactToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 
-        contactToUpdate.setFirstName(updatedContact.getFirstName().trim());
-        contactToUpdate.setLastName(updatedContact.getLastName().trim());
-
-        contactToUpdate.setPhoneNumber(updatedContact.getPhoneNumber().trim());
-        contactToUpdate.setEmail(updatedContact.getEmail().trim());
+        contactToUpdate.setFirstName(updatedDTO.getFirstName() == null ? contactToUpdate.getFirstName() : updatedDTO.getFirstName());
+        contactToUpdate.setLastName(updatedDTO.getLastName() == null ? contactToUpdate.getLastName() : updatedDTO.getLastName());
+        contactToUpdate.setPhoneNumber(updatedDTO.getPhoneNumber() == null ? contactToUpdate.getPhoneNumber() : updatedDTO.getPhoneNumber());
+        contactToUpdate.setEmail(updatedDTO.getEmail() == null ? contactToUpdate.getEmail() : updatedDTO.getEmail());
 
         return repository.save(contactToUpdate);
     }

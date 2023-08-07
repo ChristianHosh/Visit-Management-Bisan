@@ -4,6 +4,7 @@ import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.UserRequestDTO;
+import com.example.vm.dto.UserUpdateDTO;
 import com.example.vm.model.User;
 import com.example.vm.service.UserService;
 import jakarta.validation.Valid;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 @CrossOrigin
@@ -84,27 +84,13 @@ public class UserController {
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User updatedUser) {
+    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody @Valid UserUpdateDTO userUpdate) {
         User userToUpdate = userService.findUserByUsername(username);
 
         if (userToUpdate == null)
             throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
 
-        ValidateUser(updatedUser);
-        // THROWS AN EXCEPTION IF VALIDATION FAILED
-
-        for (String string : Arrays.asList(updatedUser.getFirstName(), updatedUser.getLastName()))
-            if (User.isNotValidLength(string))
-                throw new InvalidUserArgumentException("'" + string + "' IS TOO LONG, SHOULD BE LESS THAN 30 CHARACTERS");
-
-
-        updatedUser = userService.updateUser(userToUpdate, updatedUser);
-
-        if (updatedUser == null) {
-            System.out.println("COULD NOT SAVE NEW USER");
-            throw new RuntimeException("SOMETHING WRONG");
-        }
-
+        User updatedUser = userService.updateUser(userToUpdate, userUpdate);
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }

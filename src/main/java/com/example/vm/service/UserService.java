@@ -2,6 +2,7 @@ package com.example.vm.service;
 
 
 import com.example.vm.dto.UserRequestDTO;
+import com.example.vm.dto.UserUpdateDTO;
 import com.example.vm.model.User;
 import com.example.vm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +66,13 @@ public class UserService {
     }
 
 
-    public User updateUser(User userToUpdate, User updatedUser) {
+    public User updateUser(User userToUpdate, UserUpdateDTO updatedDTO) {
+
         userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 
-        userToUpdate.setFirstName(updatedUser.getFirstName().trim());
-        userToUpdate.setLastName(updatedUser.getLastName().trim());
-
-        userToUpdate.setAccessLevel(updatedUser.getAccessLevel());
+        userToUpdate.setFirstName(updatedDTO.getFirstName() == null ? userToUpdate.getFirstName() : updatedDTO.getFirstName());
+        userToUpdate.setLastName(updatedDTO.getLastName() == null ? userToUpdate.getLastName() : updatedDTO.getLastName());
+        userToUpdate.setAccessLevel(updatedDTO.getAccessLevel() == null ? userToUpdate.getAccessLevel() : updatedDTO.getAccessLevel());
 
         return repository.save(userToUpdate);
     }

@@ -1,10 +1,10 @@
 package com.example.vm.controller;
 
-import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.dto.ContactUpdateDTO;
 import com.example.vm.model.Contact;
-import com.example.vm.model.Customer;
 import com.example.vm.service.ContactService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,22 +22,14 @@ public class ContactController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
-                                                                 @RequestBody Contact updatedContact) {
+                                                                 @RequestBody @Valid ContactUpdateDTO contactUpdate) {
+
         Contact contactToUpdate = contactService.findContactByUUID(id);
 
         if (contactToUpdate == null)
-            throw new UserNotFoundException("UUID NOT FOUND: '" + id + "'");
+            throw new UserNotFoundException("CONTACT NOT FOUND: '" + id + "'");
 
-
-        validateContact(updatedContact);
-
-        updatedContact = contactService.updateContact(contactToUpdate, updatedContact);
-
-        if (updatedContact == null) {
-            System.out.println("COULD NOT SAVE NEW USER");
-            throw new RuntimeException("SOMETHING WRONG");
-        }
-
+        Contact updatedContact = contactService.updateContact(contactToUpdate, contactUpdate);
 
         return new ResponseEntity<>(updatedContact, HttpStatus.OK);
     }
@@ -49,33 +41,5 @@ public class ContactController {
         contactToEnable  = contactService.enableContact(contactToEnable);
         return new ResponseEntity<>(contactToEnable, HttpStatus.OK);
     }
-
-
-    private void validateContact(Contact contact) {
-        if (Contact.isNotValidName(contact.getFirstName().trim()))
-            throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
-
-        if (Contact.isNotValidName(contact.getLastName()))
-            throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
-
-        if (Contact.isNotValidLength(contact.getFirstName()) || Contact.isNotValidLength(contact.getLastName()))
-            throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
-
-        if (Contact.isNotValidEmail(contact.getEmail().trim()))
-            throw new InvalidUserArgumentException("EMAIL IS NOT VALID, CHECK AGAIN");
-
-        if (Contact.isNotValidNumber(contact.getPhoneNumber().trim()))
-            throw new InvalidUserArgumentException("PHONE NUMBER IS NOT VALID, CHECK AGAIN");
-
-
-    }
-
-
-
-
-
-
-
-
 
 }

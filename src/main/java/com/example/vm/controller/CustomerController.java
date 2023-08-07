@@ -96,33 +96,6 @@ public class CustomerController {
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
-
-    // MOVE TO CONTACT CONTROLLER
-    @PutMapping("/{id}/contacts/{contact_id}")
-    public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
-                                                                 @PathVariable(name = "contact_id") UUID contactID,
-                                                                 @RequestBody Contact updatedContact) {
-        Customer customer = customerService.findCustomerByUUID(id);
-
-        if (customer == null)
-            throw new UserNotFoundException("CUSTOMER NOT FOUND WITH ID: '" + id + "'");
-
-        Contact contactToUpdate = contactService.findContactByUUID(contactID);
-
-        if (contactToUpdate == null)
-            throw new UserNotFoundException("CONTACT NOT FOUND WITH ID: '" + id + "'");
-
-        updatedContact = contactService.updateContact(contactToUpdate, updatedContact);
-
-        if (updatedContact == null) {
-            System.out.println("COULD NOT SAVE NEW USER");
-            throw new RuntimeException("SOMETHING WRONG");
-        }
-
-
-        return new ResponseEntity<>(updatedContact, HttpStatus.OK);
-    }
-
     @PutMapping("/{id}/endis")
     public ResponseEntity<Customer> enableCustomer(@PathVariable UUID id) {
         Customer customerToEnable = customerService.findCustomerByUUID(id);
