@@ -3,6 +3,7 @@ package com.example.vm.controller;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.ContactRequestDTO;
 import com.example.vm.dto.CustomerRequestDTO;
+import com.example.vm.dto.CustomerUpdateDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.service.ContactService;
@@ -79,21 +80,13 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody Customer updatedCustomer) {
+    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody @Valid CustomerUpdateDTO customerupdated) {
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
         if (customerToUpdate == null)
             throw new UserNotFoundException("UUID NOT FOUND : '");
 
-
-        updatedCustomer = customerService.updateCustomer(customerToUpdate, updatedCustomer);
-
-        if (updatedCustomer == null) {
-            System.out.println("COULD NOT SAVE NEW USER");
-            throw new RuntimeException("SOMETHING WRONG");
-        }
-
-
-        return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+      Customer updatedCustomer = customerService.updateCustomer(customerToUpdate,customerupdated);
+      return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
     @PutMapping("/{id}/endis")

@@ -1,6 +1,9 @@
 package com.example.vm.service;
 
+import com.example.vm.dto.ContactUpdateDTO;
 import com.example.vm.dto.CustomerRequestDTO;
+import com.example.vm.dto.CustomerUpdateDTO;
+import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,13 +63,12 @@ public class CustomerService {
 
       return repository.save(customerToSave);
   }
-    public Customer updateCustomer(Customer customerToUpdate, Customer updatedCustomer) {
+    public Customer updateCustomer(Customer customerToUpdate, CustomerUpdateDTO updatedDTO) {
         customerToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
-
-        customerToUpdate.setName(updatedCustomer.getName());
-
+        customerToUpdate.setName(updatedDTO.getName()==null ? customerToUpdate.getName() : updatedDTO.getName());
         return repository.save(customerToUpdate);
     }
+
     public Customer enableCustomer(Customer customer){
         customer.setEnabled(customer.getEnabled() == 0 ? 1 : 0);
         return repository.save(customer);
