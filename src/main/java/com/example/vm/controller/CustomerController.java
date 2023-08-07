@@ -83,6 +83,29 @@ public class CustomerController {
 
         return new ResponseEntity<>(savedContact, HttpStatus.OK);
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody Customer updatedCustomer) {
+        Customer customerToUpdate = customerService.findCustomerByUUID(id);
+        if (customerToUpdate == null)
+            throw new UserNotFoundException("UUID NOT FOUND : '");
+
+        validateCustomer(updatedCustomer);
+        // THROWS AN EXCEPTION IF VALIDATION FAILED
+
+
+
+
+        updatedCustomer = customerService.updateCustomer(customerToUpdate, updatedCustomer);
+
+        if (updatedCustomer == null) {
+            System.out.println("COULD NOT SAVE NEW USER");
+            throw new RuntimeException("SOMETHING WRONG");
+        }
+
+
+        return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+    }
+
 
     @PutMapping("/{id}/contacts/{contact_id}")
     public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
