@@ -3,7 +3,6 @@ package com.example.vm.controller;
 import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
-import com.example.vm.model.User;
 import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,8 +46,9 @@ public class CustomerController {
     @PostMapping("")
     public ResponseEntity<Customer> saveNewCustomer(@RequestBody Customer customerToSave) {
 
-        // TODO ADD VALIDATION TO FIELDS
         ValidateCustomer(customerToSave);
+        // THROWS AN EXCEPTION IF VALIDATION FAILS
+
         Customer savedCustomer = customerService.saveNewCustomer(customerToSave);
 
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
@@ -73,10 +73,11 @@ public class CustomerController {
         if (customer == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        // TODO ADD CONTACT FIELD VERIFICATION
         ValidateContact(contactToSave);
+        // THROWS AN EXCEPTION IF VALIDATION FAILS
 
         contactToSave.setCustomer(customer);
+
         Contact savedContact = contactService.saveNewContact(contactToSave);
 
         return new ResponseEntity<>(savedContact, HttpStatus.OK);
@@ -91,11 +92,15 @@ public class CustomerController {
     private void ValidateContact(Contact contact) {
         if (Contact.isNotValidName(contact.getFirstName().trim()))
             throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+
         if (Contact.isNotValidName(contact.getLastName()))
             throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+
         if (Contact.isNotValidLength(contact.getFirstName()) || Contact.isNotValidLength(contact.getLastName()))
-        throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
-        if (Contact.isNotValidEmailLength(contact.getEmail().trim()))
+            throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
+
+        if (Contact.isNotValidEmail(contact.getEmail().trim()))
             throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 50");
+
     }
 }
