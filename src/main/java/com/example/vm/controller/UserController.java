@@ -47,7 +47,7 @@ public class UserController {
 
     @GetMapping(value = "/search", params = "accessLevel")
     public ResponseEntity<List<User>> searchByAccessLevel(@RequestParam("accessLevel") int accessLevel) {
-        if (isNotValidAccessLevel(accessLevel))
+        if (User.isNotValidAccessLevel(accessLevel))
             throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
 
         List<User> userList = userService.searchUsersByAccessLevel(accessLevel);
@@ -79,7 +79,7 @@ public class UserController {
         // THROWS AN EXCEPTION IF VALIDATION FAILED
 
         for (String string : Arrays.asList(userToSave.getUsername(), userToSave.getPassword(), userToSave.getFirstName(), userToSave.getLastName()))
-            if (isNotValidLength(string))
+            if (User.isNotValidLength(string))
                 throw new InvalidUserArgumentException("'" + string + "' IS TOO LONG, SHOULD BE LESS THAN 30 CHARACTERS");
 
 
@@ -99,7 +99,7 @@ public class UserController {
         // THROWS AN EXCEPTION IF VALIDATION FAILED
 
         for (String string : Arrays.asList(updatedUser.getFirstName(), updatedUser.getLastName()))
-            if (isNotValidLength(string))
+            if (User.isNotValidLength(string))
                 throw new InvalidUserArgumentException("'" + string + "' IS TOO LONG, SHOULD BE LESS THAN 30 CHARACTERS");
 
 
@@ -128,33 +128,17 @@ public class UserController {
 
 
     private void ValidateUser(User user) {
-        if (isNotValidAccessLevel(user.getAccessLevel()))
+        if (User.isNotValidAccessLevel(user.getAccessLevel()))
             throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
 
-        if (isNotValidEnabled(user.getEnabled()))
+        if (User.isNotValidEnabled(user.getEnabled()))
             throw new InvalidUserArgumentException("IS ENABLED IS NOT VALID, SHOULD BE A 1 OR 0");
 
-        if (isNotValidName(user.getFirstName().trim()))
+        if (User.isNotValidName(user.getFirstName().trim()))
             throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
 
-        if (isNotValidName(user.getLastName().trim()))
+        if (User.isNotValidName(user.getLastName().trim()))
             throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
-    }
-
-    private boolean isNotValidAccessLevel(int accessLevel) {
-        return (accessLevel != 1) && (accessLevel != 0);
-    }
-
-    private boolean isNotValidEnabled(int enabled) {
-        return (enabled != 1) && (enabled != 0);
-    }
-
-    public boolean isNotValidName(String name) {
-        return !name.matches("[a-zA-Z ]+");
-    }
-
-    public boolean isNotValidLength(String string) {
-        return string.length() > 30;
     }
 
 }

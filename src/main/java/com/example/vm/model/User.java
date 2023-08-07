@@ -30,4 +30,21 @@ public class User extends ModelAuditSuperclass {
     private int enabled;
 
 
+    public static boolean isNotValidAccessLevel(int accessLevel) {
+        return (accessLevel != 1) && (accessLevel != 0);
+    }
+
+    public static boolean isNotValidEnabled(int enabled) {
+        return (enabled != 1) && (enabled != 0);
+    }
+
+    public static boolean isNotValidName(String name) {
+        return !name.matches("[a-zA-Z ]+");
+    }
+
+    public static boolean isNotValidLength(String string) {
+        return string.length() > 30;
+    }
+
+
 }
