@@ -14,4 +14,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> searchUsersByLastNameContaining(String lastName);
 
     List<User> searchUsersByAccessLevel(int accessLevel);
+
 }
