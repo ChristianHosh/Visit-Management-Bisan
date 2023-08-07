@@ -71,5 +71,15 @@ public class ContactService {
         return repository.save(contactToUpdate);
     }
 
+    public Contact enableContact(Contact contact){
+        contact.setEnabled(1);
 
+        return repository.save(contact);
+    }
+
+    public Contact disableContact(Contact contact) {
+        contact.setEnabled(0);
+
+        return repository.save(contact);
+    }
 }
