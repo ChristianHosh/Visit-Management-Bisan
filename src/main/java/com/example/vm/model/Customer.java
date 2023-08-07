@@ -1,5 +1,6 @@
 package com.example.vm.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -25,5 +26,6 @@ public class Customer extends ModelAuditSuperclass {
     //ADD ADDRESS COLUMN OBJECT
 
     @OneToMany(mappedBy = "customer", cascade = {CascadeType.ALL})
+    @JsonManagedReference
     private List<Contact> contacts;
 }

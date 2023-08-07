@@ -85,13 +85,6 @@ public class UserController {
 
         User savedUser = userService.saveNewUser(userToSave);
 
-        if (savedUser == null) {
-            System.out.println("COULD NOT SAVE NEW USER");
-            //TODO ADD BETTER EXCEPTIONS
-            throw new RuntimeException("SOMETHING WRONG");
-        }
-
-
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
