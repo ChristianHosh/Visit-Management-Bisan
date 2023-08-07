@@ -59,11 +59,15 @@ public class ContactService {
 
 
     public Contact updateContact(Contact contactToUpdate, Contact updatedContact) {
+
         contactToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
+
         contactToUpdate.setFirstName(updatedContact.getFirstName().trim());
         contactToUpdate.setLastName(updatedContact.getLastName().trim());
+
         contactToUpdate.setPhoneNumber(updatedContact.getPhoneNumber().trim());
         contactToUpdate.setEmail(updatedContact.getEmail().trim());
+
         return repository.save(contactToUpdate);
     }
 

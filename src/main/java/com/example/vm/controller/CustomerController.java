@@ -1,6 +1,7 @@
 package com.example.vm.controller;
 
 import com.example.vm.controller.error.exception.InvalidUserArgumentException;
+import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.service.ContactService;
@@ -46,7 +47,7 @@ public class CustomerController {
     @PostMapping("")
     public ResponseEntity<Customer> saveNewCustomer(@RequestBody Customer customerToSave) {
 
-        ValidateCustomer(customerToSave);
+        validateCustomer(customerToSave);
         // THROWS AN EXCEPTION IF VALIDATION FAILS
 
         Customer savedCustomer = customerService.saveNewCustomer(customerToSave);
@@ -71,9 +72,9 @@ public class CustomerController {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new UserNotFoundException("CUSTOMER NOT FOUND WITH ID: '" + id + "'");
 
-        ValidateContact(contactToSave);
+        validateContact(contactToSave);
         // THROWS AN EXCEPTION IF VALIDATION FAILS
 
         contactToSave.setCustomer(customer);
@@ -83,13 +84,40 @@ public class CustomerController {
         return new ResponseEntity<>(savedContact, HttpStatus.OK);
     }
 
-    private void ValidateCustomer(Customer customer) {
+    @PutMapping("/{id}/contacts/{contact_id}")
+    public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
+                                                                 @PathVariable(name = "contact_id") UUID contactID,
+                                                                 @RequestBody Contact updatedContact) {
+        Customer customer = customerService.findCustomerByUUID(id);
+
+        if (customer == null)
+            throw new UserNotFoundException("CUSTOMER NOT FOUND WITH ID: '" + id + "'");
+
+        Contact contactToUpdate = contactService.findContactByUUID(contactID);
+
+        if (contactToUpdate == null)
+            throw new UserNotFoundException("CONTACT NOT FOUND WITH ID: '" + id + "'");
+
+        validateContact(updatedContact);
+
+        updatedContact = contactService.updateContact(contactToUpdate, updatedContact);
+
+        if (updatedContact == null) {
+            System.out.println("COULD NOT SAVE NEW USER");
+            throw new RuntimeException("SOMETHING WRONG");
+        }
+
+
+        return new ResponseEntity<>(updatedContact, HttpStatus.OK);
+    }
+
+    private void validateCustomer(Customer customer) {
         if (Customer.isNotValidLength(customer.getName().trim()))
             throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
 
     }
 
-    private void ValidateContact(Contact contact) {
+    private void validateContact(Contact contact) {
         if (Contact.isNotValidName(contact.getFirstName().trim()))
             throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
 

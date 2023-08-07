@@ -138,8 +138,6 @@ public class UserController {
         return new ResponseEntity<>(userToEnable, HttpStatus.OK);
     }
 
-
-
     private void ValidateUser(User user) {
         if (User.isNotValidAccessLevel(user.getAccessLevel()))
             throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
