@@ -34,6 +34,9 @@ public class Contact extends ModelAuditSuperclass {
     @Column(name = "phone_number", length = 30)
     private String phoneNumber;
 
+    @Column(name = "enabled", length = 1, nullable = false)
+    private int enabled;
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "customer_id")
     @JsonBackReference

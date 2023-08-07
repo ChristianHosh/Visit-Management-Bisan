@@ -53,4 +53,15 @@ public class CustomerService {
 
         return repository.save(customerToUpdate);
     }
+    public Customer enableCustomer(Customer customer){
+        customer.setEnabled(1);
+
+        return repository.save(customer);
+    }
+
+    public Customer disableCustomer(Customer customer) {
+        customer.setEnabled(0);
+
+        return repository.save(customer);
+    }
 }

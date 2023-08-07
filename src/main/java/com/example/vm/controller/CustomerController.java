@@ -92,9 +92,6 @@ public class CustomerController {
         validateCustomer(updatedCustomer);
         // THROWS AN EXCEPTION IF VALIDATION FAILED
 
-
-
-
         updatedCustomer = customerService.updateCustomer(customerToUpdate, updatedCustomer);
 
         if (updatedCustomer == null) {
@@ -107,6 +104,7 @@ public class CustomerController {
     }
 
 
+    // MOVE TO CONTACT CONTROLLER
     @PutMapping("/{id}/contacts/{contact_id}")
     public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
                                                                  @PathVariable(name = "contact_id") UUID contactID,
@@ -133,6 +131,33 @@ public class CustomerController {
 
         return new ResponseEntity<>(updatedContact, HttpStatus.OK);
     }
+    // DISABLE CONTACT IN CONTACT CONTROLLER
+    // ENABLE CONTACT IN CONTACT CONTROLLER
+
+    @PutMapping("/{id}/enable")
+    public ResponseEntity<Customer> enableCustomer(@PathVariable UUID id) {
+        Customer customerToEnable = customerService.findCustomerByUUID(id);
+
+        if (customerToEnable == null)
+            throw new UserNotFoundException("UUID NOT FOUND : '" );
+
+        customerToEnable  = customerService.enableCustomer(customerToEnable);
+
+        return new ResponseEntity<>(customerToEnable, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/disable")
+    public ResponseEntity<Customer> disableCustomer(@PathVariable UUID id) {
+        Customer customerToDisable = customerService.findCustomerByUUID(id);
+
+        if (customerToDisable == null)
+            throw new UserNotFoundException("UUID NOT FOUND : '" );
+
+        customerToDisable  = customerService.disableCustomer(customerToDisable);
+
+        return new ResponseEntity<>(customerToDisable, HttpStatus.OK);
+    }
+
 
     private void validateCustomer(Customer customer) {
         if (Customer.isNotValidLength(customer.getName().trim()))

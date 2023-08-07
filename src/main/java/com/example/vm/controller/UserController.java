@@ -114,7 +114,7 @@ public class UserController {
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{username}")
+    @PutMapping("/{username}/disable")
     public ResponseEntity<User> disableUser(@PathVariable String username) {
         User userToDisable = userService.findUserByUsername(username);
 

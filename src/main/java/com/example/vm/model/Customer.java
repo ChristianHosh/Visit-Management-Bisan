@@ -23,6 +23,9 @@ public class Customer extends ModelAuditSuperclass {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "enabled", length = 1, nullable = false)
+    private int enabled;
+
     //ADD ADDRESS COLUMN OBJECT
 
     @OneToMany(mappedBy = "customer", cascade = {CascadeType.ALL})
