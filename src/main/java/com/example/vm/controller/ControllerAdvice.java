@@ -39,4 +39,12 @@ public class ControllerAdvice {
         return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
     }
 
+    @ExceptionHandler
+    ResponseEntity<UserErrorResponse> handleOthers(Exception otherException) {
+        UserErrorResponse errorResponse = new UserErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                otherException.getMessage(), Timestamp.from(Instant.now()));
+
+        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+    }
+
 }

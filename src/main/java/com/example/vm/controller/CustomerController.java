@@ -100,7 +100,11 @@ public class CustomerController {
             throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
 
         if (Contact.isNotValidEmail(contact.getEmail().trim()))
-            throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 50");
+            throw new InvalidUserArgumentException("EMAIL IS NOT VALID, CHECK AGAIN");
+
+        if (Contact.isNotValidNumber(contact.getPhoneNumber().trim()))
+            throw new InvalidUserArgumentException("PHONE NUMBER IS NOT VALID, CHECK AGAIN");
+
 
     }
 }

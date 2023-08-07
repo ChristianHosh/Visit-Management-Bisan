@@ -14,7 +14,8 @@ import java.util.regex.Pattern;
 @EqualsAndHashCode(callSuper = true)
 public class Contact extends ModelAuditSuperclass {
 
-    private static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$\n";
+    private static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
+    private static final String PHONE_REGEX = "^(\\d{3}[- .]?){2}\\d{4}$";
 
     @Id
     @Column(name = "id", nullable = false)
@@ -50,5 +51,11 @@ public class Contact extends ModelAuditSuperclass {
         return !Pattern.compile(EMAIL_REGEX)
                 .matcher(email)
                 .matches() || email.length() > 50;
+    }
+
+    public static boolean isNotValidNumber(String phoneNumber){
+        return !Pattern.compile(PHONE_REGEX)
+                .matcher(phoneNumber)
+                .matches();
     }
 }

@@ -29,12 +29,15 @@ public class ContactService {
 
     public Contact saveNewContact(Contact contact) {
         Timestamp timestamp = Timestamp.from(Instant.now());
+
         contact.setCreatedTime(timestamp);
         contact.setLastModifiedTime(timestamp);
+
         contact.setFirstName(contact.getFirstName().trim());
         contact.setLastName(contact.getLastName().trim());
         contact.setEmail(contact.getEmail().trim());
         contact.setPhoneNumber(contact.getPhoneNumber().trim());
+
         return repository.save(contact);
     }
 
