@@ -76,15 +76,10 @@ public class UserService {
         return repository.save(userToUpdate);
     }
 
-    public User disableUser(User user) {
-        user.setEnabled(0);
 
-        return repository.save(user);
-    }
 
     public User enableUser(User user) {
-        user.setEnabled(1);
-
+        user.setEnabled(user.getEnabled() == 0 ? 1 : 0);
         return repository.save(user);
     }
 }

@@ -78,14 +78,9 @@ public class ContactService {
     }
 
     public Contact enableContact(Contact contact) {
-        contact.setEnabled(1);
-
+        contact.setEnabled(contact.getEnabled() == 0 ? 1 : 0);
         return repository.save(contact);
     }
 
-    public Contact disableContact(Contact contact) {
-        contact.setEnabled(0);
 
-        return repository.save(contact);
-    }
 }

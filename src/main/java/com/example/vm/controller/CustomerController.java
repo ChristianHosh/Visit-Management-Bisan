@@ -1,6 +1,5 @@
 package com.example.vm.controller;
 
-import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.ContactRequestDTO;
 import com.example.vm.dto.CustomerRequestDTO;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@CrossOrigin
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
@@ -48,10 +46,8 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
-
     @PostMapping("")
     public ResponseEntity<Customer> saveNewCustomer(@RequestBody @Valid CustomerRequestDTO customerRequest) {
-
         Customer savedCustomer = customerService.saveNewCustomer(customerRequest);
 
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
@@ -76,18 +72,18 @@ public class CustomerController {
         if (customer == null)
             throw new UserNotFoundException("CUSTOMER NOT FOUND WITH ID: '" + id + "'");
 
+
         Contact savedContact = contactService.saveNewContact(customer, contactRequest);
 
         return new ResponseEntity<>(savedContact, HttpStatus.OK);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody Customer updatedCustomer) {
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
         if (customerToUpdate == null)
             throw new UserNotFoundException("UUID NOT FOUND : '");
 
-        validateCustomer(updatedCustomer);
-        // THROWS AN EXCEPTION IF VALIDATION FAILED
 
         updatedCustomer = customerService.updateCustomer(customerToUpdate, updatedCustomer);
 
@@ -100,36 +96,43 @@ public class CustomerController {
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}/enable")
+
+    // MOVE TO CONTACT CONTROLLER
+    @PutMapping("/{id}/contacts/{contact_id}")
+    public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
+                                                                 @PathVariable(name = "contact_id") UUID contactID,
+                                                                 @RequestBody Contact updatedContact) {
+        Customer customer = customerService.findCustomerByUUID(id);
+
+        if (customer == null)
+            throw new UserNotFoundException("CUSTOMER NOT FOUND WITH ID: '" + id + "'");
+
+        Contact contactToUpdate = contactService.findContactByUUID(contactID);
+
+        if (contactToUpdate == null)
+            throw new UserNotFoundException("CONTACT NOT FOUND WITH ID: '" + id + "'");
+
+        updatedContact = contactService.updateContact(contactToUpdate, updatedContact);
+
+        if (updatedContact == null) {
+            System.out.println("COULD NOT SAVE NEW USER");
+            throw new RuntimeException("SOMETHING WRONG");
+        }
+
+
+        return new ResponseEntity<>(updatedContact, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/endis")
     public ResponseEntity<Customer> enableCustomer(@PathVariable UUID id) {
         Customer customerToEnable = customerService.findCustomerByUUID(id);
 
         if (customerToEnable == null)
-            throw new UserNotFoundException("UUID NOT FOUND : '" );
+            throw new UserNotFoundException("UUID NOT FOUND : '");
 
-        customerToEnable  = customerService.enableCustomer(customerToEnable);
+        customerToEnable = customerService.enableCustomer(customerToEnable);
 
         return new ResponseEntity<>(customerToEnable, HttpStatus.OK);
     }
-
-    @PutMapping("/{id}/disable")
-    public ResponseEntity<Customer> disableCustomer(@PathVariable UUID id) {
-        Customer customerToDisable = customerService.findCustomerByUUID(id);
-
-        if (customerToDisable == null)
-            throw new UserNotFoundException("UUID NOT FOUND : '" );
-
-        customerToDisable  = customerService.disableCustomer(customerToDisable);
-
-        return new ResponseEntity<>(customerToDisable, HttpStatus.OK);
-    }
-
-
-    private void validateCustomer(Customer customer) {
-        if (Customer.isNotValidLength(customer.getName().trim()))
-            throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
-
-    }
-
 
 }

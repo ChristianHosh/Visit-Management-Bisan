@@ -109,19 +109,8 @@ public class UserController {
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
-    @PutMapping("/{username}/disable")
-    public ResponseEntity<User> disableUser(@PathVariable String username) {
-        User userToDisable = userService.findUserByUsername(username);
 
-        if (userToDisable == null)
-            throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
-
-        userToDisable = userService.disableUser(userToDisable);
-
-        return new ResponseEntity<>(userToDisable, HttpStatus.OK);
-    }
-
-    @PutMapping("/{username}/enable")
+    @PutMapping("/{username}/endis")
     public ResponseEntity<User> enableUser(@PathVariable String username) {
         User userToEnable = userService.findUserByUsername(username);
 
