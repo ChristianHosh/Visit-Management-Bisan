@@ -28,4 +28,9 @@ public class Customer extends ModelAuditSuperclass {
     @OneToMany(mappedBy = "customer", cascade = {CascadeType.ALL})
     @JsonManagedReference
     private List<Contact> contacts;
+
+    public static boolean isNotValidLength(String string) {
+        return string.length() > 30;
+    }
+
 }

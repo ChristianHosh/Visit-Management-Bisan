@@ -1,7 +1,9 @@
 package com.example.vm.controller;
 
+import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
+import com.example.vm.model.User;
 import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,14 +48,14 @@ public class CustomerController {
     public ResponseEntity<Customer> saveNewCustomer(@RequestBody Customer customerToSave) {
 
         // TODO ADD VALIDATION TO FIELDS
-
+        ValidateCustomer(customerToSave);
         Customer savedCustomer = customerService.saveNewCustomer(customerToSave);
 
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
 
     @GetMapping("/{id}/contacts")
-    public ResponseEntity<List<Contact>> getContactsByCustomerUUID(@PathVariable UUID id){
+    public ResponseEntity<List<Contact>> getContactsByCustomerUUID(@PathVariable UUID id) {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
@@ -65,22 +67,35 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/contacts")
-    public ResponseEntity<Contact> SaveContactToCustomerByUUID(@PathVariable UUID id, @RequestBody Contact contactToSave){
+    public ResponseEntity<Contact> SaveContactToCustomerByUUID(@PathVariable UUID id, @RequestBody Contact contactToSave) {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
         // TODO ADD CONTACT FIELD VERIFICATION
-
-//        customer.getContacts().add(contactToSave);
+        ValidateContact(contactToSave);
 
         contactToSave.setCustomer(customer);
-
         Contact savedContact = contactService.saveNewContact(contactToSave);
 
         return new ResponseEntity<>(savedContact, HttpStatus.OK);
     }
 
+    private void ValidateCustomer(Customer customer) {
+        if (Customer.isNotValidLength(customer.getName().trim()))
+            throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
 
+    }
+
+    private void ValidateContact(Contact contact) {
+        if (Contact.isNotValidName(contact.getFirstName().trim()))
+            throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+        if (Contact.isNotValidName(contact.getLastName()))
+            throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
+        if (Contact.isNotValidLength(contact.getFirstName()) || Contact.isNotValidLength(contact.getLastName()))
+        throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
+        if (Contact.isNotValidEmailLength(contact.getEmail().trim()))
+            throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 50");
+    }
 }

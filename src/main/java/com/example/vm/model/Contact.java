@@ -35,5 +35,23 @@ public class Contact extends ModelAuditSuperclass {
     @JoinColumn(name = "customer_id")
     @JsonBackReference
     private Customer customer;
+    public static boolean isNotValidName(String name) {
+        return !name.matches("[a-zA-Z ]+");
+    }
+    public static boolean isNotValidLength(String string) {
+        return string.length() > 30;
+    }
+    public static boolean isNotValidEmailLength(String string) {
+        return string.length() > 50;
+    }
 
+   /* public static boolean isNotValidLength(String string) {
+        return string.length() > 30;
+    }
+    public static boolean isNotValidEmailLength(String string) {
+        return string.length() > 50;
+    }
+    public static boolean isNotValidLength(String string) {
+        return string.length() > 30;
+    }*/
 }
