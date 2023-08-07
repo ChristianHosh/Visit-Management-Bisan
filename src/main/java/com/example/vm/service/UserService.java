@@ -46,8 +46,10 @@ public class UserService {
 
     public User saveNewUser(User userToSave) {
 
-        userToSave.setCreatedTime(Timestamp.from(Instant.now()));
-        userToSave.setLastModifiedTime(Timestamp.from(Instant.now()));
+        Timestamp timestamp = Timestamp.from(Instant.now());
+
+        userToSave.setCreatedTime(timestamp);
+        userToSave.setLastModifiedTime(timestamp);
         userToSave.setEnabled(1);
 
         userToSave.setFirstName(userToSave.getFirstName().trim());

@@ -87,6 +87,7 @@ public class UserController {
 
         if (savedUser == null) {
             System.out.println("COULD NOT SAVE NEW USER");
+            //TODO ADD BETTER EXCEPTIONS
             throw new RuntimeException("SOMETHING WRONG");
         }
 
