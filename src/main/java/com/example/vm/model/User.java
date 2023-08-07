@@ -1,12 +1,14 @@
 package com.example.vm.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 @Data
 @Entity
+@Builder
 @Table(name = "user_model")
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class User extends ModelAuditSuperclass {
 

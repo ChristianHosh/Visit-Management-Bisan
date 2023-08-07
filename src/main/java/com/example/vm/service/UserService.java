@@ -1,6 +1,7 @@
 package com.example.vm.service;
 
 
+import com.example.vm.dto.UserRequestDTO;
 import com.example.vm.model.User;
 import com.example.vm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,18 +46,20 @@ public class UserService {
     }
 
 
-    public User saveNewUser(User userToSave) {
+    public User saveNewUser(UserRequestDTO userRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
+
+        User userToSave = User.builder()
+                .username(userRequest.getUsername())
+                .password(userRequest.getPassword())
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .accessLevel(userRequest.getAccessLevel())
+                .enabled(1)
+                .build();
 
         userToSave.setCreatedTime(timestamp);
         userToSave.setLastModifiedTime(timestamp);
-        userToSave.setEnabled(1);
-
-        userToSave.setFirstName(userToSave.getFirstName().trim());
-        userToSave.setLastName(userToSave.getLastName().trim());
-
-        userToSave.setUsername(userToSave.getUsername().trim().toLowerCase());
-        userToSave.setPassword(userToSave.getPassword().trim());
 
         return repository.save(userToSave);
     }
@@ -79,7 +82,7 @@ public class UserService {
         return repository.save(user);
     }
 
-    public User enableUser(User user){
+    public User enableUser(User user) {
         user.setEnabled(1);
 
         return repository.save(user);

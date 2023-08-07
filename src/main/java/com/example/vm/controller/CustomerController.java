@@ -2,10 +2,13 @@ package com.example.vm.controller;
 
 import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.dto.ContactRequestDTO;
+import com.example.vm.dto.CustomerRequestDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
@@ -44,13 +48,11 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
+
     @PostMapping("")
-    public ResponseEntity<Customer> saveNewCustomer(@RequestBody Customer customerToSave) {
+    public ResponseEntity<Customer> saveNewCustomer(@RequestBody @Valid CustomerRequestDTO customerRequest) {
 
-        validateCustomer(customerToSave);
-        // THROWS AN EXCEPTION IF VALIDATION FAILS
-
-        Customer savedCustomer = customerService.saveNewCustomer(customerToSave);
+        Customer savedCustomer = customerService.saveNewCustomer(customerRequest);
 
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
@@ -68,18 +70,13 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/contacts")
-    public ResponseEntity<Contact> SaveContactToCustomerByUUID(@PathVariable UUID id, @RequestBody Contact contactToSave) {
+    public ResponseEntity<Contact> SaveContactToCustomerByUUID(@PathVariable UUID id, @RequestBody @Valid ContactRequestDTO contactRequest) {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
             throw new UserNotFoundException("CUSTOMER NOT FOUND WITH ID: '" + id + "'");
 
-        validateContact(contactToSave);
-        // THROWS AN EXCEPTION IF VALIDATION FAILS
-
-        contactToSave.setCustomer(customer);
-
-        Contact savedContact = contactService.saveNewContact(contactToSave);
+        Contact savedContact = contactService.saveNewContact(customer, contactRequest);
 
         return new ResponseEntity<>(savedContact, HttpStatus.OK);
     }
@@ -102,37 +99,6 @@ public class CustomerController {
 
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
-
-
-    // MOVE TO CONTACT CONTROLLER
-    @PutMapping("/{id}/contacts/{contact_id}")
-    public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
-                                                                 @PathVariable(name = "contact_id") UUID contactID,
-                                                                 @RequestBody Contact updatedContact) {
-        Customer customer = customerService.findCustomerByUUID(id);
-
-        if (customer == null)
-            throw new UserNotFoundException("CUSTOMER NOT FOUND WITH ID: '" + id + "'");
-
-        Contact contactToUpdate = contactService.findContactByUUID(contactID);
-
-        if (contactToUpdate == null)
-            throw new UserNotFoundException("CONTACT NOT FOUND WITH ID: '" + id + "'");
-
-        validateContact(updatedContact);
-
-        updatedContact = contactService.updateContact(contactToUpdate, updatedContact);
-
-        if (updatedContact == null) {
-            System.out.println("COULD NOT SAVE NEW USER");
-            throw new RuntimeException("SOMETHING WRONG");
-        }
-
-
-        return new ResponseEntity<>(updatedContact, HttpStatus.OK);
-    }
-    // DISABLE CONTACT IN CONTACT CONTROLLER
-    // ENABLE CONTACT IN CONTACT CONTROLLER
 
     @PutMapping("/{id}/enable")
     public ResponseEntity<Customer> enableCustomer(@PathVariable UUID id) {
@@ -165,22 +131,5 @@ public class CustomerController {
 
     }
 
-    private void validateContact(Contact contact) {
-        if (Contact.isNotValidName(contact.getFirstName().trim()))
-            throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
 
-        if (Contact.isNotValidName(contact.getLastName()))
-            throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
-
-        if (Contact.isNotValidLength(contact.getFirstName()) || Contact.isNotValidLength(contact.getLastName()))
-            throw new InvalidUserArgumentException("LENGTH IS NOT VALID, SHOULD BE lESS THAN 30");
-
-        if (Contact.isNotValidEmail(contact.getEmail().trim()))
-            throw new InvalidUserArgumentException("EMAIL IS NOT VALID, CHECK AGAIN");
-
-        if (Contact.isNotValidNumber(contact.getPhoneNumber().trim()))
-            throw new InvalidUserArgumentException("PHONE NUMBER IS NOT VALID, CHECK AGAIN");
-
-
-    }
 }

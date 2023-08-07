@@ -1,5 +1,6 @@
 package com.example.vm.service;
 
+import com.example.vm.dto.CustomerRequestDTO;
 import com.example.vm.model.Customer;
 import com.example.vm.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class CustomerService {
         return repository.searchCustomersByName(name);
     }
 
-    public Customer saveNewCustomer(Customer customerToSave) {
+  /*  public Customer saveNewCustomer(Customer customerToSave) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
         customerToSave.setCreatedTime(timestamp);
@@ -45,7 +46,20 @@ public class CustomerService {
 
         return repository.save(customerToSave);
     }
+*/
+  public Customer saveNewCustomer(CustomerRequestDTO customerRequest) {
+      Timestamp timestamp = Timestamp.from(Instant.now());
 
+      Customer customerToSave = Customer.builder()
+              .name(customerRequest.getName())
+              .enabled(1)
+              .build();
+
+      customerToSave.setCreatedTime(timestamp);
+      customerToSave.setLastModifiedTime(timestamp);
+
+      return repository.save(customerToSave);
+  }
     public Customer updateCustomer(Customer customerToUpdate, Customer updatedCustomer) {
         customerToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 

@@ -1,6 +1,8 @@
 package com.example.vm.service;
 
+import com.example.vm.dto.ContactRequestDTO;
 import com.example.vm.model.Contact;
+import com.example.vm.model.Customer;
 import com.example.vm.repository.ContactRepository;
 import org.springframework.stereotype.Service;
 
@@ -27,18 +29,22 @@ public class ContactService {
         return optional.orElse(null);
     }
 
-    public Contact saveNewContact(Contact contact) {
+    public Contact saveNewContact(Customer customer,ContactRequestDTO contactRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
-        contact.setCreatedTime(timestamp);
-        contact.setLastModifiedTime(timestamp);
+        Contact contactToSave = Contact.builder()
+                .firstName(contactRequest.getFirstName())
+                .lastName(contactRequest.getLastName())
+                .phoneNumber(contactRequest.getPhoneNumber())
+                .email(contactRequest.getEmail())
+                .build();
 
-        contact.setFirstName(contact.getFirstName().trim());
-        contact.setLastName(contact.getLastName().trim());
-        contact.setEmail(contact.getEmail().trim());
-        contact.setPhoneNumber(contact.getPhoneNumber().trim());
+        contactToSave.setCreatedTime(timestamp);
+        contactToSave.setLastModifiedTime(timestamp);
 
-        return repository.save(contact);
+        contactToSave.setCustomer(customer);
+
+        return repository.save(contactToSave);
     }
 
     public List<Contact> searchContactByFirstName(String firstName) {
@@ -71,7 +77,7 @@ public class ContactService {
         return repository.save(contactToUpdate);
     }
 
-    public Contact enableContact(Contact contact){
+    public Contact enableContact(Contact contact) {
         contact.setEnabled(1);
 
         return repository.save(contact);

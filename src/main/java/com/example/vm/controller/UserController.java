@@ -3,8 +3,10 @@ package com.example.vm.controller;
 import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.dto.UserRequestDTO;
 import com.example.vm.model.User;
 import com.example.vm.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Arrays;
 import java.util.List;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/users")
 public class UserController {
@@ -68,22 +71,14 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<User> saveNewUser(@RequestBody User userToSave) {
-        User user = userService.findUserByUsername(userToSave.getUsername().trim());
+    public ResponseEntity<User> saveNewUser(@RequestBody @Valid UserRequestDTO userRequest) {
+        User user = userService.findUserByUsername(userRequest.getUsername().trim());
 
         if (user != null) {
             throw new UserAlreadyExistsException("USERNAME ALREADY EXISTS!");
         }
 
-        ValidateUser(userToSave);
-        // THROWS AN EXCEPTION IF VALIDATION FAILED
-
-        for (String string : Arrays.asList(userToSave.getUsername(), userToSave.getPassword(), userToSave.getFirstName(), userToSave.getLastName()))
-            if (User.isNotValidLength(string))
-                throw new InvalidUserArgumentException("'" + string + "' IS TOO LONG, SHOULD BE LESS THAN 30 CHARACTERS");
-
-
-        User savedUser = userService.saveNewUser(userToSave);
+        User savedUser = userService.saveNewUser(userRequest);
 
         return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }

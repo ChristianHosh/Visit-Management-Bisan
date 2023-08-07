@@ -2,20 +2,22 @@ package com.example.vm.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Data
 @Entity
+@Builder
 @Table(name = "contact_model")
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Contact extends ModelAuditSuperclass {
 
     private static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-    private static final String PHONE_REGEX = "^(\\d{3}[- .]?){2}\\d{4}$";
+    private static final String PHONE_REGEX = "";
 
     @Id
     @Column(name = "id", nullable = false)

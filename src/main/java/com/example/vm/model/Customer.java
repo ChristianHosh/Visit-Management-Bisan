@@ -2,8 +2,7 @@ package com.example.vm.model;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +10,10 @@ import java.util.UUID;
 
 @Data
 @Entity
+@Builder
 @Table(name = "customer_model")
+@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Customer extends ModelAuditSuperclass {
 
