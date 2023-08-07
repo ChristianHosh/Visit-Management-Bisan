@@ -78,4 +78,10 @@ public class UserService {
 
         return repository.save(user);
     }
+
+    public User enableUser(User user){
+        user.setEnabled(1);
+
+        return repository.save(user);
+    }
 }

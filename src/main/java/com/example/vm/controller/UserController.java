@@ -116,15 +116,28 @@ public class UserController {
 
     @DeleteMapping("/{username}")
     public ResponseEntity<User> disableUser(@PathVariable String username) {
-        User userToDelete = userService.findUserByUsername(username);
+        User userToDisable = userService.findUserByUsername(username);
 
-        if (userToDelete == null)
+        if (userToDisable == null)
             throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
 
-        userToDelete = userService.disableUser(userToDelete);
+        userToDisable = userService.disableUser(userToDisable);
 
-        return new ResponseEntity<>(userToDelete, HttpStatus.OK);
+        return new ResponseEntity<>(userToDisable, HttpStatus.OK);
     }
+
+    @PutMapping("/{username}/enable")
+    public ResponseEntity<User> enableUser(@PathVariable String username) {
+        User userToEnable = userService.findUserByUsername(username);
+
+        if (userToEnable == null)
+            throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
+
+        userToEnable = userService.enableUser(userToEnable);
+
+        return new ResponseEntity<>(userToEnable, HttpStatus.OK);
+    }
+
 
 
     private void ValidateUser(User user) {
