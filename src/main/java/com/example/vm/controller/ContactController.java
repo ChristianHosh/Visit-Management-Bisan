@@ -47,6 +47,8 @@ public class ContactController {
         List<Contact> ContactListbyfirstname = contactService.searchContactByFirstName(firstName);
         return new ResponseEntity<>(ContactListbyfirstname, HttpStatus.OK);
     }
+
+
     @GetMapping(value = "/search", params = "lastName")
     public ResponseEntity<List<Contact>> searchByLastName(@RequestParam("lastName") String lastName) {
         List<Contact> ContactListbylastname = contactService.searchContactByLastName(lastName);

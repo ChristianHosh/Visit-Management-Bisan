@@ -47,7 +47,6 @@ public class ControllerAdvice {
     ResponseEntity<Map<String,List<String>>> handleOthers(Exception otherException) {
         List<String> errors = new ArrayList<>();
         errors.add(otherException.getMessage());
-
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 

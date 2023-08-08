@@ -16,8 +16,8 @@ public class ContactPostDTO {
     @Null(message = "Invalid lastModifiedTime : Automatically generated")
     Timestamp lastModifiedTime;
 
-    @NotBlank(message = "Invalid firstName: Empty firstName")
-    @NotNull(message = "Invalid firstName: firstName is NULL")
+    @NotBlank(message = "Invalid FirstName: Empty FirstName")
+    @NotNull(message = "Invalid FirstName: FirstName is NULL")
     @Size(min = 3, max = 30, message = "Invalid firstName: Must be of 3 - 30 characters")
     @Pattern(regexp = "^[A-Za-z\\s]*$", message = "Invalid firstName : Must only contain characters")
     String firstName;

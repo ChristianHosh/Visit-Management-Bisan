@@ -8,10 +8,10 @@ import lombok.Data;
 @Data
 public class AddressPutDTO {
 
-    @Size(min = 3, max = 30, message = "Invalid Address Line 1: Must be of 3 - 30 characters")
+    @Size(min = 3, max = 30, message = "Invalid Address Line : Must be of 3 - 30 characters")
     String AddressLine1;
 
-    @Size(min = 3, max = 30, message = "Invalid Address Line 1: Must be of 3 - 30 characters")
+    @Size(min = 3, max = 30, message = "Invalid Address Line : Must be of 3 - 30 characters")
     String AddressLine2;
 
     @NotNull(message = "Invalid Longitude : Longitude is NULL")

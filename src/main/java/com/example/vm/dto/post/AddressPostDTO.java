@@ -15,14 +15,14 @@ public class AddressPostDTO {
     @Null(message = "Invalid lastModifiedTime : Automatically generated")
     Timestamp lastModifiedTime;
 
-    @NotBlank(message = "Invalid Street Address: Empty Street Address ")
-    @NotNull(message = "Invalid Street Address : Street Address  is NULL")
-    @Size(min = 3, max = 30, message = "Invalid Street Address: Must be of 3 - 30 characters")
+    @NotBlank(message = "Invalid Address Line: Empty Address Line ")
+    @NotNull(message = "Invalid Address Line : Address Line  is NULL")
+    @Size(min = 3, max = 30, message = "Invalid Address Line: Must be of 3 - 30 characters")
     String AddressLine1;
 
-    @NotBlank(message = "Invalid Building Address : Empty Building Address")
-    @NotNull(message = "Invalid Building Address : Building Address is NULL")
-    @Size(min = 3, max = 30, message = "Invalid firstName: Must be of 3 - 30 characters")
+    @NotBlank(message = "Invalid Address Line : Empty Address Line")
+    @NotNull(message = "Invalid Address Line : Address Line is NULL")
+    @Size(min = 3, max = 30, message = "Invalid Address Line: Must be of 3 - 30 characters")
     String AddressLine2;
 
     @NotNull(message = "Invalid Longitude : Longitude is NULL")
@@ -40,4 +40,5 @@ public class AddressPostDTO {
     @NotNull(message = "Invalid City : City is NULL")
     @Size(min = 3, max = 30, message = "Invalid City: Must be of 3 - 30 characters")
     String city;
+
 }
