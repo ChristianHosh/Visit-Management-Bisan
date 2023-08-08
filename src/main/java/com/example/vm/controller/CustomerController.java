@@ -124,6 +124,4 @@ public class CustomerController {
 
         return new ResponseEntity<>(customerToEnable, HttpStatus.OK);
     }
-
-
 }

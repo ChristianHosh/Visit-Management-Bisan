@@ -3,6 +3,7 @@ package com.example.vm.controller;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
+import com.example.vm.model.User;
 import com.example.vm.service.ContactService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -41,5 +43,31 @@ public class ContactController {
         contactToEnable  = contactService.enableContact(contactToEnable);
         return new ResponseEntity<>(contactToEnable, HttpStatus.OK);
     }
+    @GetMapping(value = "/search", params = "firstName")
+    public ResponseEntity<List<Contact>> searchByFirstName(@RequestParam("firstName") String firstName) {
+        List<Contact> ContactListbyfirstname = contactService.searchContactByFirstName(firstName);
+        return new ResponseEntity<>(ContactListbyfirstname, HttpStatus.OK);
+    }
+    @GetMapping(value = "/search", params = "lastName")
+    public ResponseEntity<List<Contact>> searchByLastName(@RequestParam("lastName") String lastName) {
+        List<Contact> ContactListbylastname = contactService.searchContactByLastName(lastName);
+        return new ResponseEntity<>(ContactListbylastname, HttpStatus.OK);
+    }
+    @GetMapping(value = "/search", params = "PhoneNumber")
+    public ResponseEntity<List<Contact>> searchByPhoneNumber(@RequestParam("PhoneNumber") String phoneNumber) {
+        List<Contact> ContactListbyphonenumber = contactService.searchContactByLastName(phoneNumber);
+        return new ResponseEntity<>(ContactListbyphonenumber, HttpStatus.OK);
+    }
+    @GetMapping(value = "/search", params = "email")
+    public ResponseEntity<List<Contact>> searchByEmail(@RequestParam("email") String email) {
+        List<Contact> ContactListbyemail = contactService.searchContactByLastName(email);
+        return new ResponseEntity<>(ContactListbyemail, HttpStatus.OK);
+    }
+
+
+
+
+
+
 
 }
