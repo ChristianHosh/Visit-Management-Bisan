@@ -1,5 +1,6 @@
 package com.example.vm.model;
 
+import com.example.vm.payload.CustomerPayload;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -36,5 +37,9 @@ public class Customer extends ModelAuditSuperclass {
     @OneToMany(mappedBy = "customer", cascade = {CascadeType.ALL})
     @JsonManagedReference
     private List<Contact> contacts;
+
+    public CustomerPayload toPayload(){
+        return new CustomerPayload(this.uuid, this.name, this.enabled);
+    }
 
 }

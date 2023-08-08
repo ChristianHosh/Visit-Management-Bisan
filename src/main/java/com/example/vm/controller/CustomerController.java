@@ -8,6 +8,7 @@ import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
+import com.example.vm.payload.CustomerPayload;
 import com.example.vm.service.AddressService;
 import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
@@ -26,7 +27,6 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final ContactService contactService;
-
     private final AddressService addressService;
 
     @Autowired
@@ -37,31 +37,31 @@ public class CustomerController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<Customer>> getAllCustomers() {
+    public ResponseEntity<List<CustomerPayload>> getAllCustomers() {
         List<Customer> customerList = customerService.findAllCustomers();
 
-        return new ResponseEntity<>(customerList, HttpStatus.OK);
+        return new ResponseEntity<>(toCustomerPayloadList(customerList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "name")
-    public ResponseEntity<List<Customer>> searchByCustomerName(@RequestParam("name") String name){
+    public ResponseEntity<List<CustomerPayload>> searchByCustomerName(@RequestParam("name") String name){
         List<Customer> customerList = customerService.searchByName(name);
 
-        return new ResponseEntity<>(customerList, HttpStatus.OK);
+        return new ResponseEntity<>(toCustomerPayloadList(customerList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "city")
-    public ResponseEntity<List<Customer>> searchByCustomerCity(@RequestParam("city") String city){
+    public ResponseEntity<List<CustomerPayload>> searchByCustomerCity(@RequestParam("city") String city){
         List<Customer> customerList = customerService.searchByAddressCity(city);
 
-        return new ResponseEntity<>(customerList, HttpStatus.OK);
+        return new ResponseEntity<>(toCustomerPayloadList(customerList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "address")
-    public ResponseEntity<List<Customer>> searchByCustomerAddress(@RequestParam("address") String address){
+    public ResponseEntity<List<CustomerPayload>> searchByCustomerAddress(@RequestParam("address") String address){
         List<Customer> customerList = customerService.searchByAddressLine(address);
 
-        return new ResponseEntity<>(customerList, HttpStatus.OK);
+        return new ResponseEntity<>(toCustomerPayloadList(customerList), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -128,12 +128,6 @@ public class CustomerController {
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
-
-
-
-
-
-
     @PutMapping("/{id}/endis")
     public ResponseEntity<Customer> enableCustomer(@PathVariable UUID id) {
         Customer customerToEnable = customerService.findCustomerByUUID(id);
@@ -144,5 +138,9 @@ public class CustomerController {
         customerToEnable = customerService.enableCustomer(customerToEnable);
 
         return new ResponseEntity<>(customerToEnable, HttpStatus.OK);
+    }
+
+    private static List<CustomerPayload> toCustomerPayloadList(List<Customer> customerList) {
+        return customerList.stream().map(Customer::toPayload).toList();
     }
 }
