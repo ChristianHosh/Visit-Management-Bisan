@@ -6,6 +6,9 @@ import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Address;
 import com.example.vm.model.Customer;
 import com.example.vm.repository.CustomerRepository;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.model.GeocodingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,8 @@ import java.util.UUID;
 
 @Service
 public class CustomerService {
+
+    private static final String GEOLOCATION_KEY = "AIzaSyC1rCFrBqu32lHImkYyDBSyfmaxp5YCPao";
 
     private final CustomerRepository repository;
 
@@ -40,13 +45,14 @@ public class CustomerService {
         return repository.searchCustomersByNameContaining(name);
     }
 
-    public List<Customer> searchByAddressCity(String city){
+    public List<Customer> searchByAddressCity(String city) {
         return repository.searchCustomersByAddress_CityContaining(city);
     }
 
-    public List<Customer> searchByAddressLine(String addressLine){
-        return repository.searchCustomersByAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(addressLine,addressLine);
+    public List<Customer> searchByAddressLine(String addressLine) {
+        return repository.searchCustomersByAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(addressLine, addressLine);
     }
+
     public Customer saveNewCustomer(CustomerPostDTO customerRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
@@ -59,19 +65,42 @@ public class CustomerService {
                         .addressLine2(addressRequest.getAddressLine2())
                         .zipcode(addressRequest.getZipcode())
                         .city(addressRequest.getCity())
-                        .latitude(addressRequest.getLatitude())
-                        .longitude(addressRequest.getLongitude())
                         .build())
                 .enabled(1)
                 .build();
 
-        customerToSave.getAddress().setCreatedTime(timestamp);
-        customerToSave.getAddress().setLastModifiedTime(timestamp);
+        try {
+            GeoApiContext context = new GeoApiContext.Builder()
+                    .apiKey(GEOLOCATION_KEY)
+                    .build();
 
-        customerToSave.setCreatedTime(timestamp);
-        customerToSave.setLastModifiedTime(timestamp);
+            System.out.println("SEARCHING FOR LOCATION: " + addressRequest.getAddressLine1() + " " + addressRequest.getAddressLine2() + ", " +
+                    addressRequest.getCity() + " " + addressRequest.getZipcode());
 
-        return repository.save(customerToSave);
+            GeocodingResult[] results = GeocodingApi.geocode(context,
+                    addressRequest.getAddressLine1() + " " + addressRequest.getAddressLine2() + ", " +
+                            addressRequest.getCity() + " " + addressRequest.getZipcode()).await();
+
+            System.out.println("FOUND LOCATIONS: " + results.length);
+
+            customerToSave.getAddress().setLatitude(results[0].geometry.location.lat);
+            customerToSave.getAddress().setLongitude(results[0].geometry.location.lng);
+
+            context.shutdown();
+
+            customerToSave.getAddress().setCreatedTime(timestamp);
+            customerToSave.getAddress().setLastModifiedTime(timestamp);
+
+            customerToSave.setCreatedTime(timestamp);
+            customerToSave.setLastModifiedTime(timestamp);
+
+            return repository.save(customerToSave);
+
+        } catch (Exception e) {
+            System.out.println("ERROR " + e.getMessage());
+        }
+
+        return null;
     }
 
     public Customer updateCustomer(Customer customerToUpdate, CustomerPutDTO updatedDTO) {
