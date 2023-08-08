@@ -54,7 +54,6 @@ public class UserController {
         return new ResponseEntity<>(userList, HttpStatus.OK);
     }
 
-
     @GetMapping("/{username}")
     public ResponseEntity<User> getByUsername(@PathVariable String username) {
         User user = userService.findUserByUsername(username);
@@ -90,7 +89,6 @@ public class UserController {
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
-
 
     @PutMapping("/{username}/endis")
     public ResponseEntity<User> enableUser(@PathVariable String username) {

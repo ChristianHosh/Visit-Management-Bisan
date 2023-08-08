@@ -23,9 +23,46 @@ public class ContactController {
         this.contactService = contactService;
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Contact> getContactId(@PathVariable UUID id){
+        Contact contact = contactService.findContactByUUID(id);
+
+        if (contact == null)
+            throw new UserNotFoundException();
+
+        return new ResponseEntity<>(contact, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search", params = "firstName")
+    public ResponseEntity<List<Contact>> searchByFirstName(@RequestParam("firstName") String firstName) {
+        List<Contact> contactList = contactService.searchContactByFirstName(firstName);
+        return new ResponseEntity<>(contactList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search", params = "lastName")
+    public ResponseEntity<List<Contact>> searchByLastName(@RequestParam("lastName") String lastName) {
+        List<Contact> contactList = contactService.searchContactByLastName(lastName);
+
+        return new ResponseEntity<>(contactList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search", params = "phoneNumber")
+    public ResponseEntity<List<Contact>> searchByPhoneNumber(@RequestParam("phoneNumber") String phoneNumber) {
+        List<Contact> contactList = contactService.searchContactByLastName(phoneNumber);
+
+        return new ResponseEntity<>(contactList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search", params = "email")
+    public ResponseEntity<List<Contact>> searchByEmail(@RequestParam("email") String email) {
+        List<Contact> contactList = contactService.searchContactByLastName(email);
+
+        return new ResponseEntity<>(contactList, HttpStatus.OK);
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
-                                                                 @RequestBody @Valid ContactPutDTO contactUpdate) {
+    public ResponseEntity<Contact> updateContact(@PathVariable UUID id,
+                                                 @RequestBody @Valid ContactPutDTO contactUpdate) {
 
         Contact contactToUpdate = contactService.findContactByUUID(id);
 
@@ -44,33 +81,6 @@ public class ContactController {
             throw new UserNotFoundException();
         contactToEnable = contactService.enableContact(contactToEnable);
         return new ResponseEntity<>(contactToEnable, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/search", params = "firstName")
-    public ResponseEntity<List<Contact>> searchByFirstName(@RequestParam("firstName") String firstName) {
-        List<Contact> contactList = contactService.searchContactByFirstName(firstName);
-        return new ResponseEntity<>(contactList, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/search", params = "lastName")
-    public ResponseEntity<List<Contact>> searchByLastName(@RequestParam("lastName") String lastName) {
-        List<Contact> contactList = contactService.searchContactByLastName(lastName);
-
-        return new ResponseEntity<>(contactList, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/search", params = "PhoneNumber")
-    public ResponseEntity<List<Contact>> searchByPhoneNumber(@RequestParam("PhoneNumber") String phoneNumber) {
-        List<Contact> contactList = contactService.searchContactByLastName(phoneNumber);
-
-        return new ResponseEntity<>(contactList, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/search", params = "email")
-    public ResponseEntity<List<Contact>> searchByEmail(@RequestParam("email") String email) {
-        List<Contact> contactList = contactService.searchContactByLastName(email);
-
-        return new ResponseEntity<>(contactList, HttpStatus.OK);
     }
 
 

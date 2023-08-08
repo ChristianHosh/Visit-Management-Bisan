@@ -75,13 +75,6 @@ public class CustomerController {
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
 
-    @PostMapping("")
-    public ResponseEntity<Customer> saveNewCustomer(@RequestBody @Valid CustomerPostDTO customerRequest) {
-        Customer savedCustomer = customerService.saveNewCustomer(customerRequest);
-
-        return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
-    }
-
     @GetMapping("/{id}/contacts")
     public ResponseEntity<List<Contact>> getContactsByCustomerUUID(@PathVariable UUID id) {
         Customer customer = customerService.findCustomerByUUID(id);
@@ -92,6 +85,13 @@ public class CustomerController {
         List<Contact> contactList = customer.getContacts();
 
         return new ResponseEntity<>(contactList, HttpStatus.OK);
+    }
+
+    @PostMapping("")
+    public ResponseEntity<Customer> saveNewCustomer(@RequestBody @Valid CustomerPostDTO customerRequest) {
+        Customer savedCustomer = customerService.saveNewCustomer(customerRequest);
+
+        return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/contacts")
