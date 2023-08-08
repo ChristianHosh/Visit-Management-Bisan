@@ -1,6 +1,10 @@
 package com.example.vm.model;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 
 @Data
@@ -16,6 +20,7 @@ public class User extends ModelAuditSuperclass {
     @Column(name = "username", nullable = false, updatable = false, length = 30)
     private String username;
 
+    @JsonIgnore
     @Column(name = "password", nullable = false, length = 30)
     private String password;
 
@@ -35,18 +40,5 @@ public class User extends ModelAuditSuperclass {
     public static boolean isNotValidAccessLevel(int accessLevel) {
         return (accessLevel != 1) && (accessLevel != 0);
     }
-
-    public static boolean isNotValidEnabled(int enabled) {
-        return (enabled != 1) && (enabled != 0);
-    }
-
-    public static boolean isNotValidName(String name) {
-        return !name.matches("[a-zA-Z ]+");
-    }
-
-    public static boolean isNotValidLength(String string) {
-        return string.length() > 30;
-    }
-
 
 }

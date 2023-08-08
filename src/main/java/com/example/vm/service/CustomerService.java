@@ -37,9 +37,16 @@ public class CustomerService {
     }
 
     public List<Customer> searchByName(String name) {
-        return repository.searchCustomersByName(name);
+        return repository.searchCustomersByNameContaining(name);
     }
 
+    public List<Customer> searchByAddressCity(String city){
+        return repository.searchCustomersByAddress_CityContaining(city);
+    }
+
+    public List<Customer> searchByAddressLine(String addressLine){
+        return repository.searchCustomersByAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(addressLine,addressLine);
+    }
     public Customer saveNewCustomer(CustomerPostDTO customerRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 

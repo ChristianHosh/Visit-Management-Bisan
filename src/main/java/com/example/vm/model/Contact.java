@@ -15,9 +15,6 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 public class Contact extends ModelAuditSuperclass {
 
-    private static final String EMAIL_REGEX = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+(\\.[A-Za-z0-9-]+)*(\\.[A-Za-z]{2,})$";
-    private static final String PHONE_REGEX = "";
-
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)

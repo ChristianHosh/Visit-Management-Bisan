@@ -43,6 +43,27 @@ public class CustomerController {
         return new ResponseEntity<>(customerList, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/search", params = "name")
+    public ResponseEntity<List<Customer>> searchByCustomerName(@RequestParam("name") String name){
+        List<Customer> customerList = customerService.searchByName(name);
+
+        return new ResponseEntity<>(customerList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search", params = "city")
+    public ResponseEntity<List<Customer>> searchByCustomerCity(@RequestParam("city") String city){
+        List<Customer> customerList = customerService.searchByAddressCity(city);
+
+        return new ResponseEntity<>(customerList, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/search", params = "address")
+    public ResponseEntity<List<Customer>> searchByCustomerAddress(@RequestParam("address") String address){
+        List<Customer> customerList = customerService.searchByAddressLine(address);
+
+        return new ResponseEntity<>(customerList, HttpStatus.OK);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Customer> getCustomerById(@PathVariable UUID id) {
         Customer customer = customerService.findCustomerByUUID(id);
