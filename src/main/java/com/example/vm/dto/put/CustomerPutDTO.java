@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class CustomerUpdateDTO {
+public class CustomerPutDTO {
 
     @Size(min = 3, max = 30, message = "Invalid Name: Must be of 3 - 30 characters")
     String name;

@@ -1,9 +1,9 @@
 package com.example.vm.controller;
 
 import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.dto.post.ContactRequestDTO;
-import com.example.vm.dto.post.CustomerRequestDTO;
-import com.example.vm.dto.put.CustomerUpdateDTO;
+import com.example.vm.dto.post.ContactPostDTO;
+import com.example.vm.dto.post.CustomerPostDTO;
+import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.service.ContactService;
@@ -48,7 +48,7 @@ public class CustomerController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Customer> saveNewCustomer(@RequestBody @Valid CustomerRequestDTO customerRequest) {
+    public ResponseEntity<Customer> saveNewCustomer(@RequestBody @Valid CustomerPostDTO customerRequest) {
         Customer savedCustomer = customerService.saveNewCustomer(customerRequest);
 
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
@@ -67,7 +67,7 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/contacts")
-    public ResponseEntity<Contact> SaveContactToCustomerByUUID(@PathVariable UUID id, @RequestBody @Valid ContactRequestDTO contactRequest) {
+    public ResponseEntity<Contact> SaveContactToCustomerByUUID(@PathVariable UUID id, @RequestBody @Valid ContactPostDTO contactRequest) {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
@@ -80,7 +80,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody @Valid CustomerUpdateDTO customerupdated) {
+    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody @Valid CustomerPutDTO customerupdated) {
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
         if (customerToUpdate == null)
             throw new UserNotFoundException("UUID NOT FOUND : '");

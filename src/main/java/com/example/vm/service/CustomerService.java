@@ -1,7 +1,9 @@
 package com.example.vm.service;
 
-import com.example.vm.dto.post.CustomerRequestDTO;
-import com.example.vm.dto.put.CustomerUpdateDTO;
+import com.example.vm.dto.post.AddressPostDTO;
+import com.example.vm.dto.post.CustomerPostDTO;
+import com.example.vm.dto.put.CustomerPutDTO;
+import com.example.vm.model.Address;
 import com.example.vm.model.Customer;
 import com.example.vm.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,37 +39,40 @@ public class CustomerService {
         return repository.searchCustomersByName(name);
     }
 
-  /*  public Customer saveNewCustomer(Customer customerToSave) {
+    public Customer saveNewCustomer(CustomerPostDTO customerRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
+
+        AddressPostDTO addressRequest = customerRequest.getAddress();
+
+        Customer customerToSave = Customer.builder()
+                .name(customerRequest.getName())
+                .address(Address.builder()
+                        .addressLine1(addressRequest.getAddressLine1())
+                        .addressLine2(addressRequest.getAddressLine2())
+                        .zipcode(addressRequest.getZipcode())
+                        .city(addressRequest.getCity())
+                        .latitude(addressRequest.getLatitude())
+                        .longitude(addressRequest.getLongitude())
+                        .build())
+                .enabled(1)
+                .build();
+
+        customerToSave.getAddress().setCreatedTime(timestamp);
+        customerToSave.getAddress().setLastModifiedTime(timestamp);
 
         customerToSave.setCreatedTime(timestamp);
         customerToSave.setLastModifiedTime(timestamp);
 
-        customerToSave.setName(customerToSave.getName().trim());
-
         return repository.save(customerToSave);
     }
-*/
-  public Customer saveNewCustomer(CustomerRequestDTO customerRequest) {
-      Timestamp timestamp = Timestamp.from(Instant.now());
 
-      Customer customerToSave = Customer.builder()
-              .name(customerRequest.getName())
-              .enabled(1)
-              .build();
-
-      customerToSave.setCreatedTime(timestamp);
-      customerToSave.setLastModifiedTime(timestamp);
-
-      return repository.save(customerToSave);
-  }
-    public Customer updateCustomer(Customer customerToUpdate, CustomerUpdateDTO updatedDTO) {
+    public Customer updateCustomer(Customer customerToUpdate, CustomerPutDTO updatedDTO) {
         customerToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
-        customerToUpdate.setName(updatedDTO.getName()==null ? customerToUpdate.getName() : updatedDTO.getName());
+        customerToUpdate.setName(updatedDTO.getName() == null ? customerToUpdate.getName() : updatedDTO.getName());
         return repository.save(customerToUpdate);
     }
 
-    public Customer enableCustomer(Customer customer){
+    public Customer enableCustomer(Customer customer) {
         customer.setEnabled(customer.getEnabled() == 0 ? 1 : 0);
         return repository.save(customer);
     }

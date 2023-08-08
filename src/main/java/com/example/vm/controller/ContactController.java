@@ -1,7 +1,7 @@
 package com.example.vm.controller;
 
 import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.dto.put.ContactUpdateDTO;
+import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.service.ContactService;
 import jakarta.validation.Valid;
@@ -22,7 +22,7 @@ public class ContactController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<Contact> UpdateContactToCustomerByUUID(@PathVariable UUID id,
-                                                                 @RequestBody @Valid ContactUpdateDTO contactUpdate) {
+                                                                 @RequestBody @Valid ContactPutDTO contactUpdate) {
 
         Contact contactToUpdate = contactService.findContactByUUID(id);
 

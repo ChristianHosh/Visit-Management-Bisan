@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 @Data
 @Entity
@@ -44,23 +43,4 @@ public class Contact extends ModelAuditSuperclass {
     @JsonBackReference
     private Customer customer;
 
-    public static boolean isNotValidName(String name) {
-        return !name.matches("[a-zA-Z ]+");
-    }
-
-    public static boolean isNotValidLength(String string) {
-        return string.length() > 30;
-    }
-
-    public static boolean isNotValidEmail(String email) {
-        return !Pattern.compile(EMAIL_REGEX)
-                .matcher(email)
-                .matches() || email.length() > 50;
-    }
-
-    public static boolean isNotValidNumber(String phoneNumber){
-        return !Pattern.compile(PHONE_REGEX)
-                .matcher(phoneNumber)
-                .matches();
-    }
 }

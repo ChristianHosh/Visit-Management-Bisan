@@ -1,8 +1,8 @@
 package com.example.vm.service;
 
 
-import com.example.vm.dto.post.UserRequestDTO;
-import com.example.vm.dto.put.UserUpdateDTO;
+import com.example.vm.dto.post.UserPostDTO;
+import com.example.vm.dto.put.UserPutDTO;
 import com.example.vm.model.User;
 import com.example.vm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class UserService {
     }
 
 
-    public User saveNewUser(UserRequestDTO userRequest) {
+    public User saveNewUser(UserPostDTO userRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
         User userToSave = User.builder()
@@ -66,7 +66,7 @@ public class UserService {
     }
 
 
-    public User updateUser(User userToUpdate, UserUpdateDTO updatedDTO) {
+    public User updateUser(User userToUpdate, UserPutDTO updatedDTO) {
 
         userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 

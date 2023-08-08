@@ -1,5 +1,6 @@
 package com.example.vm.dto.post;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -11,7 +12,7 @@ import java.sql.Timestamp;
 
 @Data
 @Builder
-public class CustomerRequestDTO {
+public class CustomerPostDTO {
 
     @Null(message = "Invalid createdTime : Automatically generated")
     Timestamp createdTime;
@@ -26,5 +27,9 @@ public class CustomerRequestDTO {
 
     @Null(message = "Invalid enabled : Must be null")
     Integer enabled;
+
+    @NotNull(message = "Invalid Address: Address is NULL")
+    @Valid
+    AddressPostDTO address;
 }
 

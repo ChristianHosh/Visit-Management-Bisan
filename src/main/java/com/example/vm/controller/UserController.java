@@ -3,8 +3,8 @@ package com.example.vm.controller;
 import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.dto.post.UserRequestDTO;
-import com.example.vm.dto.put.UserUpdateDTO;
+import com.example.vm.dto.post.UserPostDTO;
+import com.example.vm.dto.put.UserPutDTO;
 import com.example.vm.model.User;
 import com.example.vm.service.UserService;
 import jakarta.validation.Valid;
@@ -71,7 +71,7 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<User> saveNewUser(@RequestBody @Valid UserRequestDTO userRequest) {
+    public ResponseEntity<User> saveNewUser(@RequestBody @Valid UserPostDTO userRequest) {
         User user = userService.findUserByUsername(userRequest.getUsername().trim());
 
         if (user != null) {
@@ -84,7 +84,7 @@ public class UserController {
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody @Valid UserUpdateDTO userUpdate) {
+    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody @Valid UserPutDTO userUpdate) {
         User userToUpdate = userService.findUserByUsername(username);
 
         if (userToUpdate == null)
@@ -106,20 +106,6 @@ public class UserController {
         userToEnable = userService.enableUser(userToEnable);
 
         return new ResponseEntity<>(userToEnable, HttpStatus.OK);
-    }
-
-    private void ValidateUser(User user) {
-        if (User.isNotValidAccessLevel(user.getAccessLevel()))
-            throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
-
-        if (User.isNotValidEnabled(user.getEnabled()))
-            throw new InvalidUserArgumentException("IS ENABLED IS NOT VALID, SHOULD BE A 1 OR 0");
-
-        if (User.isNotValidName(user.getFirstName().trim()))
-            throw new InvalidUserArgumentException("FIRST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
-
-        if (User.isNotValidName(user.getLastName().trim()))
-            throw new InvalidUserArgumentException("LAST NAME IS NOT VALID, MUST CONTAIN CHARACTERS ONLY");
     }
 
 }

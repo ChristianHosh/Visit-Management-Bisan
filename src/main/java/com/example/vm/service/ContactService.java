@@ -1,7 +1,7 @@
 package com.example.vm.service;
 
-import com.example.vm.dto.post.ContactRequestDTO;
-import com.example.vm.dto.put.ContactUpdateDTO;
+import com.example.vm.dto.post.ContactPostDTO;
+import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.repository.ContactRepository;
@@ -30,7 +30,7 @@ public class ContactService {
         return optional.orElse(null);
     }
 
-    public Contact saveNewContact(Customer customer,ContactRequestDTO contactRequest) {
+    public Contact saveNewContact(Customer customer, ContactPostDTO contactRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
         Contact contactToSave = Contact.builder()
@@ -65,7 +65,7 @@ public class ContactService {
     }
 
 
-    public Contact updateContact(Contact contactToUpdate, ContactUpdateDTO updatedDTO) {
+    public Contact updateContact(Contact contactToUpdate, ContactPutDTO updatedDTO) {
 
         contactToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 

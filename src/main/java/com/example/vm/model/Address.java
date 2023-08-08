@@ -32,13 +32,14 @@ public class Address extends ModelAuditSuperclass {
     @Column(name = "latitude")
     private Double latitude;
 
+    @Column(name = "zipcode", length = 5)
+    private String zipcode;
+
+    @Column(name = "city")
+    private String city;
+
     @OneToOne(mappedBy = "address", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JsonBackReference
     private Customer customer;
-
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JsonBackReference
-    private Location location;
-
 
 }

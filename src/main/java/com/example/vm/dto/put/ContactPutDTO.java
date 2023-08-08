@@ -6,13 +6,7 @@ import lombok.Data;
 
 @Builder
 @Data
-public class UserUpdateDTO {
-
-    @Null
-    String username;
-
-    @Null
-    String password;
+public class ContactPutDTO {
 
     @Size(min = 3, max = 30, message = "Invalid firstName: Must be of 3 - 30 characters")
     @Pattern(regexp = "^[A-Za-z\\s]*$", message = "Invalid firstName : Must only contain characters")
@@ -22,9 +16,11 @@ public class UserUpdateDTO {
     @Pattern(regexp = "^[A-Za-z\\s]*$", message = "Invalid lastName : Must only contain characters")
     String lastName;
 
-    @Min(value = 0, message = "Invalid accessLevel: Equals to zero")
-    @Max(value = 1, message = "Invalid accessLevel: Exceeds one")
-    Integer accessLevel;
+    @Pattern(regexp = "^(\\d{3}[- .]?){2}\\d{4}$", message = "Invalid phone number")
+    String phoneNumber;
+
+    @Email(message = "Invalid email")
+    String email;
 
     @Null(message = "Invalid enabled : Must be null")
     Integer enabled;
