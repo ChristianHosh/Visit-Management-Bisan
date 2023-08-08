@@ -1,8 +1,8 @@
 package com.example.vm.service;
 
 
-import com.example.vm.dto.UserRequestDTO;
-import com.example.vm.dto.UserUpdateDTO;
+import com.example.vm.dto.post.UserRequestDTO;
+import com.example.vm.dto.put.UserUpdateDTO;
 import com.example.vm.model.User;
 import com.example.vm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

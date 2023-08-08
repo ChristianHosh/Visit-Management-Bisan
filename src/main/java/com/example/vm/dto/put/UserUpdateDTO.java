@@ -1,4 +1,4 @@
-package com.example.vm.dto;
+package com.example.vm.dto.put;
 
 import jakarta.validation.constraints.*;
 import lombok.Builder;

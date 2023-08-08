@@ -1,7 +1,7 @@
 package com.example.vm.controller;
 
 import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.dto.ContactUpdateDTO;
+import com.example.vm.dto.put.ContactUpdateDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.service.ContactService;
 import jakarta.validation.Valid;

@@ -1,7 +1,7 @@
 package com.example.vm.service;
 
-import com.example.vm.dto.ContactRequestDTO;
-import com.example.vm.dto.ContactUpdateDTO;
+import com.example.vm.dto.post.ContactRequestDTO;
+import com.example.vm.dto.put.ContactUpdateDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.repository.ContactRepository;

@@ -1,9 +1,7 @@
 package com.example.vm.service;
 
-import com.example.vm.dto.ContactUpdateDTO;
-import com.example.vm.dto.CustomerRequestDTO;
-import com.example.vm.dto.CustomerUpdateDTO;
-import com.example.vm.model.Contact;
+import com.example.vm.dto.post.CustomerRequestDTO;
+import com.example.vm.dto.put.CustomerUpdateDTO;
 import com.example.vm.model.Customer;
 import com.example.vm.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
