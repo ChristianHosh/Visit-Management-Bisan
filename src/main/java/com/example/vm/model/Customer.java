@@ -28,14 +28,13 @@ public class Customer extends ModelAuditSuperclass {
     @Column(name = "enabled", length = 1, nullable = false)
     private int enabled;
 
-    //ADD ADDRESS COLUMN OBJECT
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    @JsonManagedReference
+    private Address address;
 
     @OneToMany(mappedBy = "customer", cascade = {CascadeType.ALL})
     @JsonManagedReference
     private List<Contact> contacts;
-
-    public static boolean isNotValidLength(String string) {
-        return string.length() > 30;
-    }
 
 }
