@@ -3,7 +3,9 @@ package com.example.vm.controller;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
+import com.example.vm.dto.put.AddressPutDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
+import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.service.ContactService;
@@ -89,6 +91,22 @@ public class CustomerController {
       return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 
+    @PutMapping("/{id}/address")
+    public ResponseEntity<Address> updateCustomerAddress (@PathVariable UUID id, @RequestBody @Valid AddressPutDTO updatedAddress ) {
+
+        Customer customerToUpdate = customerService.findCustomerByUUID(id);
+        if (customerToUpdate == null)
+            throw new UserNotFoundException("UUID NOT FOUND : '");
+        Address updatedCustomer = customerService.updateCustomerAddress(customerToUpdate.getAddress(), updatedAddress);
+        return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
+    }
+
+
+
+
+
+
+
     @PutMapping("/{id}/endis")
     public ResponseEntity<Customer> enableCustomer(@PathVariable UUID id) {
         Customer customerToEnable = customerService.findCustomerByUUID(id);
@@ -100,5 +118,6 @@ public class CustomerController {
 
         return new ResponseEntity<>(customerToEnable, HttpStatus.OK);
     }
+
 
 }
