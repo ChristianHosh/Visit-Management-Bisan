@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin
 @RestController
 @RequestMapping("/customers")
 public class CustomerController {
@@ -98,7 +99,7 @@ public class CustomerController {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
-            throw new UserNotFoundException("CUSTOMER NOT FOUND WITH ID: '" + id + "'");
+            throw new UserNotFoundException();
 
 
         Contact savedContact = contactService.saveNewContact(customer, contactRequest);
@@ -110,7 +111,7 @@ public class CustomerController {
     public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody @Valid CustomerPutDTO customerupdated) {
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
         if (customerToUpdate == null)
-            throw new UserNotFoundException("UUID NOT FOUND : '");
+            throw new UserNotFoundException();
 
       Customer updatedCustomer = customerService.updateCustomer(customerToUpdate,customerupdated);
       return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
@@ -121,7 +122,7 @@ public class CustomerController {
 
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
         if (customerToUpdate == null)
-            throw new UserNotFoundException("UUID NOT FOUND : '");
+            throw new UserNotFoundException();
 
         Address updatedCustomer = addressService.updateCustomerAddress(customerToUpdate.getAddress(), updatedAddress);
 
@@ -133,7 +134,7 @@ public class CustomerController {
         Customer customerToEnable = customerService.findCustomerByUUID(id);
 
         if (customerToEnable == null)
-            throw new UserNotFoundException("UUID NOT FOUND : '");
+            throw new UserNotFoundException();
 
         customerToEnable = customerService.enableCustomer(customerToEnable);
 

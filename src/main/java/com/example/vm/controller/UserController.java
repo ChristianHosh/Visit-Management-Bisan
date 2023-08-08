@@ -1,6 +1,5 @@
 package com.example.vm.controller;
 
-import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.UserPostDTO;
@@ -50,9 +49,6 @@ public class UserController {
 
     @GetMapping(value = "/search", params = "accessLevel")
     public ResponseEntity<List<User>> searchByAccessLevel(@RequestParam("accessLevel") int accessLevel) {
-        if (User.isNotValidAccessLevel(accessLevel))
-            throw new InvalidUserArgumentException("ACCESS LEVEL IS NOT VALID, SHOULD BE A 1 OR 0");
-
         List<User> userList = userService.searchUsersByAccessLevel(accessLevel);
 
         return new ResponseEntity<>(userList, HttpStatus.OK);
@@ -64,7 +60,7 @@ public class UserController {
         User user = userService.findUserByUsername(username);
 
         if (user == null)
-            throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
+            throw new UserNotFoundException();
 
 
         return new ResponseEntity<>(user, HttpStatus.OK);
@@ -75,7 +71,7 @@ public class UserController {
         User user = userService.findUserByUsername(userRequest.getUsername().trim());
 
         if (user != null) {
-            throw new UserAlreadyExistsException("USERNAME ALREADY EXISTS!");
+            throw new UserAlreadyExistsException();
         }
 
         User savedUser = userService.saveNewUser(userRequest);
@@ -88,7 +84,7 @@ public class UserController {
         User userToUpdate = userService.findUserByUsername(username);
 
         if (userToUpdate == null)
-            throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
+            throw new UserNotFoundException();
 
         User updatedUser = userService.updateUser(userToUpdate, userUpdate);
 
@@ -101,7 +97,7 @@ public class UserController {
         User userToEnable = userService.findUserByUsername(username);
 
         if (userToEnable == null)
-            throw new UserNotFoundException("USERNAME NOT FOUND : '" + username + "'");
+            throw new UserNotFoundException();
 
         userToEnable = userService.enableUser(userToEnable);
 

@@ -1,6 +1,5 @@
 package com.example.vm.controller;
 
-import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import org.springframework.http.HttpHeaders;
@@ -28,26 +27,11 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(InvalidUserArgumentException exception) {
-        List<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage());
-
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
     public ResponseEntity<Map<String, List<String>>> handleException(UserAlreadyExistsException exception) {
         List<String> errors = new ArrayList<>();
         errors.add(exception.getMessage());
 
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler
-    ResponseEntity<Map<String,List<String>>> handleOthers(Exception otherException) {
-        List<String> errors = new ArrayList<>();
-        errors.add(otherException.getMessage());
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler
@@ -57,6 +41,15 @@ public class ControllerAdvice {
 
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler
+    ResponseEntity<Map<String,List<String>>> handleOthers(Exception otherException) {
+        List<String> errors = new ArrayList<>();
+        errors.add(otherException.getMessage());
+
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 
     private Map<String, List<String>> getErrorsMap(List<String> errors) {
         Map<String, List<String>> errorResponse = new HashMap<>();
