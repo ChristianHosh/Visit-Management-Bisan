@@ -8,6 +8,7 @@ import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
+import com.example.vm.service.AddressService;
 import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
 import jakarta.validation.Valid;
@@ -26,10 +27,13 @@ public class CustomerController {
     private final CustomerService customerService;
     private final ContactService contactService;
 
+    private final AddressService addressService;
+
     @Autowired
-    public CustomerController(CustomerService customerService, ContactService contactService) {
+    public CustomerController(CustomerService customerService, ContactService contactService, AddressService addressService) {
         this.customerService = customerService;
         this.contactService = contactService;
+        this.addressService = addressService;
     }
 
     @GetMapping("")
@@ -97,7 +101,9 @@ public class CustomerController {
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
         if (customerToUpdate == null)
             throw new UserNotFoundException("UUID NOT FOUND : '");
-        Address updatedCustomer = customerService.updateCustomerAddress(customerToUpdate.getAddress(), updatedAddress);
+
+        Address updatedCustomer = addressService.updateCustomerAddress(customerToUpdate.getAddress(), updatedAddress);
+
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
 

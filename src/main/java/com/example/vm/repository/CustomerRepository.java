@@ -12,4 +12,6 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
 
     List<Customer> searchCustomersByName(String name);
 
+    List<Customer> searchCustomersByAddress_City(String city);
+
 }

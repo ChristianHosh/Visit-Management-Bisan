@@ -2,11 +2,9 @@ package com.example.vm.service;
 
 import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
-import com.example.vm.dto.put.AddressPutDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Address;
 import com.example.vm.model.Customer;
-import com.example.vm.repository.AddressRepository;
 import com.example.vm.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,12 +19,10 @@ import java.util.UUID;
 public class CustomerService {
 
     private final CustomerRepository repository;
-    private final AddressRepository addressrepository;
 
     @Autowired
-    public CustomerService(CustomerRepository repository, AddressRepository addressrepository) {
+    public CustomerService(CustomerRepository repository) {
         this.repository = repository;
-        this.addressrepository = addressrepository;
     }
 
     public List<Customer> findAllCustomers() {
@@ -76,17 +72,7 @@ public class CustomerService {
         customerToUpdate.setName(updatedDTO.getName() == null ? customerToUpdate.getName() : updatedDTO.getName());
         return repository.save(customerToUpdate);
     }
-    public Address updateCustomerAddress(Address addressToUpdate, AddressPutDTO updatedDTOaddress) {
 
-        addressToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
-        addressToUpdate.setAddressLine1(updatedDTOaddress.getAddressLine1());
-        addressToUpdate.setAddressLine2(updatedDTOaddress.getAddressLine2());
-        addressToUpdate.setCity(updatedDTOaddress.getCity());
-        addressToUpdate.setLatitude(updatedDTOaddress.getLatitude());
-        addressToUpdate.setLongitude(updatedDTOaddress.getLongitude());
-        addressToUpdate.setZipcode(updatedDTOaddress.getZipcode());
-        return addressrepository.save(addressToUpdate);
-    }
 
     public Customer enableCustomer(Customer customer) {
         customer.setEnabled(customer.getEnabled() == 0 ? 1 : 0);
