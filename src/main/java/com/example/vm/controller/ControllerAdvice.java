@@ -1,6 +1,5 @@
 package com.example.vm.controller;
 
-import com.example.vm.controller.error.UserErrorResponse;
 import com.example.vm.controller.error.exception.InvalidUserArgumentException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
@@ -11,8 +10,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,37 +19,36 @@ import java.util.stream.Collectors;
 @org.springframework.web.bind.annotation.ControllerAdvice
 public class ControllerAdvice {
 
-
     @ExceptionHandler
-    public ResponseEntity<UserErrorResponse> handleException(UserNotFoundException exception) {
-        UserErrorResponse errorResponse = new UserErrorResponse(HttpStatus.NOT_FOUND,
-                exception.getMessage(), Timestamp.from(Instant.now()));
+    public ResponseEntity<Map<String, List<String>>> handleException(UserNotFoundException exception) {
+        List<String> errors = new ArrayList<>();
+        errors.add(exception.getMessage());
 
-        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
-    public ResponseEntity<UserErrorResponse> handleException(InvalidUserArgumentException exception) {
-        UserErrorResponse errorResponse = new UserErrorResponse(HttpStatus.BAD_REQUEST,
-                exception.getMessage(), Timestamp.from(Instant.now()));
+    public ResponseEntity<Map<String, List<String>>> handleException(InvalidUserArgumentException exception) {
+        List<String> errors = new ArrayList<>();
+        errors.add(exception.getMessage());
 
-        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler
-    public ResponseEntity<UserErrorResponse> handleException(UserAlreadyExistsException exception) {
-        UserErrorResponse errorResponse = new UserErrorResponse(HttpStatus.CONFLICT,
-                exception.getMessage(), Timestamp.from(Instant.now()));
+    public ResponseEntity<Map<String, List<String>>> handleException(UserAlreadyExistsException exception) {
+        List<String> errors = new ArrayList<>();
+        errors.add(exception.getMessage());
 
-        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler
-    ResponseEntity<UserErrorResponse> handleOthers(Exception otherException) {
-        UserErrorResponse errorResponse = new UserErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
-                otherException.getMessage(), Timestamp.from(Instant.now()));
+    ResponseEntity<Map<String,List<String>>> handleOthers(Exception otherException) {
+        List<String> errors = new ArrayList<>();
+        errors.add(otherException.getMessage());
 
-        return new ResponseEntity<>(errorResponse, errorResponse.getStatus());
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler
@@ -67,6 +64,7 @@ public class ControllerAdvice {
         errorResponse.put("errors", errors);
         return errorResponse;
     }
+
 
 }
 
