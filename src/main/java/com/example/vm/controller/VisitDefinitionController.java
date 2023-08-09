@@ -1,9 +1,15 @@
 package com.example.vm.controller;
 
 import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.dto.post.ContactPostDTO;
+import com.example.vm.dto.post.VisitAssignmentPostDTO;
 import com.example.vm.dto.post.VisitDefinitionPostDTO;
 import com.example.vm.dto.put.VisitDefinitionPutDTO;
+import com.example.vm.model.Contact;
+import com.example.vm.model.Customer;
+import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
+import com.example.vm.service.VisitAssignmentService;
 import com.example.vm.service.VisitDefinitionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -18,10 +24,11 @@ import java.util.UUID;
 @RequestMapping("/visit_definitions")
 public class VisitDefinitionController {
     private final VisitDefinitionService visitDefinitionService;
+    private final VisitAssignmentService visitAssignmentService;
 
-
-    public VisitDefinitionController(VisitDefinitionService visitDefinitionService) {
+    public VisitDefinitionController(VisitDefinitionService visitDefinitionService, VisitAssignmentService visitAssignmentService) {
         this.visitDefinitionService = visitDefinitionService;
+        this.visitAssignmentService = visitAssignmentService;
     }
 
     @GetMapping("")
@@ -30,6 +37,13 @@ public class VisitDefinitionController {
 
         return new ResponseEntity<>(visitDefinitionsList, HttpStatus.OK);
     }
+    @GetMapping("/{id}/assignments")
+    public ResponseEntity<List<VisitAssignment>> getAllVisitAssignment(@PathVariable UUID id ) {
+        VisitDefinition VisitDefinition = visitDefinitionService.findVisitDefinitionByUUID(id);
+        List<VisitAssignment> visitAssignmentList = VisitDefinition.getVisitAssignments();
+        return new ResponseEntity<>(visitAssignmentList, HttpStatus.OK);
+    }
+
 
 
     @GetMapping(value = "/search", params = "name")
@@ -75,7 +89,15 @@ public class VisitDefinitionController {
 
         return new ResponseEntity<>(savedVisitDefinition, HttpStatus.CREATED);
     }
+    @PostMapping("/{id}/assignments")
+    public ResponseEntity<VisitAssignment> SaveVisitAssignmentToVisitDefinitionByUUID(@PathVariable UUID id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {
+        VisitDefinition visitDefinition = visitDefinitionService.findVisitDefinitionByUUID(id);
 
+
+        VisitAssignment savedVisitAssignment = visitAssignmentService.saveNewVisitAssignment(visitDefinition,visitAssignmentRequest);
+
+        return new ResponseEntity<>(savedVisitAssignment, HttpStatus.OK);
+    }
     @PutMapping("{id}")
     public ResponseEntity<VisitDefinition> updateVisitDefinition(@PathVariable UUID id, @RequestBody @Valid VisitDefinitionPutDTO VisitDefinitionUpdate) {
         VisitDefinition visitDefinitionToUpdate = visitDefinitionService.findVisitDefinitionByUUID(id);
