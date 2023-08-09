@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 
 @Data
 @Builder
-
 public class VisitDefinitionPostDTO {
     @Null(message = "Invalid createdTime : Automatically generated")
     Timestamp createdTime;

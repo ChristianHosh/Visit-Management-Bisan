@@ -34,6 +34,7 @@ public class ContactService {
                 .lastName(contactRequest.getLastName())
                 .phoneNumber(contactRequest.getPhoneNumber())
                 .email(contactRequest.getEmail())
+                .enabled(1)
                 .build();
 
         contactToSave.setCreatedTime(timestamp);
