@@ -91,6 +91,10 @@ public class CustomerController {
     public ResponseEntity<Customer> saveNewCustomer(@RequestBody @Valid CustomerPostDTO customerRequest) {
         Customer savedCustomer = customerService.saveNewCustomer(customerRequest);
 
+        if (savedCustomer == null)
+            System.out.println("s");
+            //THROW LOCATION NOT FOUND EXCEPTION
+
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
 
