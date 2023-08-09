@@ -2,6 +2,7 @@ package com.example.vm.model.visit;
 
 
 import com.example.vm.model.ModelAuditSuperclass;
+import com.example.vm.payload.VisitDefinitionPayload;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -44,4 +45,8 @@ public class VisitDefinition extends ModelAuditSuperclass {
     @OneToMany(mappedBy = "visitDefinition" , cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<VisitAssignment> visitAssignments;
+
+    public VisitDefinitionPayload toPayload(){
+        return new VisitDefinitionPayload(uuid,name,description,type,frequency,allowRecurring,enabled);
+    }
 }
