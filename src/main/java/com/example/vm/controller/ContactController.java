@@ -29,7 +29,7 @@ public class ContactController {
         Contact contact = contactService.findContactByUUID(id);
 
         if (contact == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.CONTACT_NOT_FOUND);
 
         return new ResponseEntity<>(contact, HttpStatus.OK);
     }
@@ -68,7 +68,7 @@ public class ContactController {
         Contact contactToUpdate = contactService.findContactByUUID(id);
 
         if (contactToUpdate == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.CONTACT_NOT_FOUND);
 
         Contact updatedContact = contactService.updateContact(contactToUpdate, contactUpdate);
 
@@ -80,7 +80,7 @@ public class ContactController {
         Contact contactToEnable = contactService.findContactByUUID(id);
 
         if (contactToEnable == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.CONTACT_NOT_FOUND);
 
         contactToEnable = contactService.enableContact(contactToEnable);
 

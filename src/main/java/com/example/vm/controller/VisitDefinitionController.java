@@ -6,6 +6,7 @@ import com.example.vm.dto.post.VisitDefinitionPostDTO;
 import com.example.vm.dto.put.VisitDefinitionPutDTO;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
+import com.example.vm.payload.VisitAssignmentDetailedPayload;
 import com.example.vm.payload.VisitDefinitionPayload;
 import com.example.vm.service.VisitAssignmentService;
 import com.example.vm.service.VisitDefinitionService;
@@ -42,7 +43,7 @@ public class VisitDefinitionController {
         VisitDefinition user = visitDefinitionService.findVisitDefinitionByUUID(id);
 
         if (user == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
 
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
@@ -99,15 +100,15 @@ public class VisitDefinitionController {
     }
 
     @PostMapping("/{id}/assignments")
-    public ResponseEntity<VisitAssignment> saveNewVisitDefinition(@PathVariable UUID id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {
+    public ResponseEntity<VisitAssignmentDetailedPayload> saveNewVisitAssignmentToDefinition(@PathVariable UUID id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {
         VisitDefinition visitDefinition = visitDefinitionService.findVisitDefinitionByUUID(id);
 
         if (visitDefinition == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
 
         VisitAssignment savedVisitAssignment = visitAssignmentService.saveNewVisitAssignment(visitDefinition, visitAssignmentRequest);
 
-        return new ResponseEntity<>(savedVisitAssignment, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedVisitAssignment.toDetailedPayload(), HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")
@@ -115,7 +116,7 @@ public class VisitDefinitionController {
         VisitDefinition visitDefinitionToUpdate = visitDefinitionService.findVisitDefinitionByUUID(id);
 
         if (visitDefinitionToUpdate == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
 
         VisitDefinition updatedVisitDefinition = visitDefinitionService.updateVisitDefinition(visitDefinitionToUpdate, VisitDefinitionUpdate);
 
@@ -127,7 +128,7 @@ public class VisitDefinitionController {
         VisitDefinition VisitDefinitionToEnable = visitDefinitionService.findVisitDefinitionByUUID(id);
 
         if (VisitDefinitionToEnable == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
 
         VisitDefinitionToEnable = visitDefinitionService.enableVisitDefinition(VisitDefinitionToEnable);
 

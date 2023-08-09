@@ -69,7 +69,7 @@ public class CustomerController {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
 
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
@@ -79,7 +79,7 @@ public class CustomerController {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
 
         List<Contact> contactList = customer.getContacts();
 
@@ -101,7 +101,7 @@ public class CustomerController {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
 
 
         Contact savedContact = contactService.saveNewContact(customer, contactRequest);
@@ -113,7 +113,7 @@ public class CustomerController {
     public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody @Valid CustomerPutDTO customerRequest) {
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
         if (customerToUpdate == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
 
         Customer updatedCustomer = customerService.updateCustomer(customerToUpdate, customerRequest);
 
@@ -125,7 +125,7 @@ public class CustomerController {
         Customer customerToEnable = customerService.findCustomerByUUID(id);
 
         if (customerToEnable == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
 
         customerToEnable = customerService.enableCustomer(customerToEnable);
 

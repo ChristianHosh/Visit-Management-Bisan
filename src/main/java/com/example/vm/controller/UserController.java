@@ -59,7 +59,7 @@ public class UserController {
         User user = userService.findUserByUsername(username);
 
         if (user == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
 
 
         return new ResponseEntity<>(user, HttpStatus.OK);
@@ -83,7 +83,7 @@ public class UserController {
         User userToUpdate = userService.findUserByUsername(username);
 
         if (userToUpdate == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
 
         User updatedUser = userService.updateUser(userToUpdate, userUpdate);
 
@@ -95,7 +95,7 @@ public class UserController {
         User userToEnable = userService.findUserByUsername(username);
 
         if (userToEnable == null)
-            throw new UserNotFoundException();
+            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
 
         userToEnable = userService.enableUser(userToEnable);
 

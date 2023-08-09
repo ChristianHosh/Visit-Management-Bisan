@@ -2,6 +2,7 @@ package com.example.vm.service;
 
 import com.example.vm.dto.post.VisitAssignmentPostDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
+import com.example.vm.model.Customer;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.repository.VisitAssignmentRepository;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -57,6 +59,19 @@ public class VisitAssignmentService {
 
     public VisitAssignment enableVisitAssignment(VisitAssignment visitAssignment) {
         visitAssignment.setEnabled(visitAssignment.getEnabled() == 0 ? 1 : 0);
+
+        return repository.save(visitAssignment);
+    }
+
+    public VisitAssignment assignVisitToCustomer(VisitAssignment visitAssignment, Customer customer) {
+        List<Customer> assignmentCustomers = visitAssignment.getCustomers();
+
+        if (assignmentCustomers == null)
+            assignmentCustomers = new ArrayList<>();
+
+        assignmentCustomers.add(customer);
+
+        visitAssignment.setCustomers(assignmentCustomers);
 
         return repository.save(visitAssignment);
     }
