@@ -9,4 +9,5 @@ import java.util.UUID;
 @Repository
 public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition, UUID> {
 
+
 }

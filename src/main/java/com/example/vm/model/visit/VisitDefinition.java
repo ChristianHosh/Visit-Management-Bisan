@@ -36,4 +36,7 @@ public class VisitDefinition extends ModelAuditSuperclass {
     @Column(name = "allow_recurring")
     private Boolean allowRecurring;
 
+    @Column(name = "enabled", length = 1, nullable = false)
+    private int enabled;
+
 }
