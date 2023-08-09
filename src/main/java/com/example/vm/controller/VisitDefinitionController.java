@@ -48,7 +48,6 @@ public class VisitDefinitionController {
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-
     @GetMapping(value = "/search", params = "name")
     public ResponseEntity<List<VisitDefinitionPayload>> searchByName(@RequestParam("name") String name) {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByName(name);

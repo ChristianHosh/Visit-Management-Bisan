@@ -121,7 +121,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}/endis")
-    public ResponseEntity<Customer> enableCustomer(@PathVariable UUID id) {
+    public ResponseEntity<CustomerPayload> enableCustomer(@PathVariable UUID id) {
         Customer customerToEnable = customerService.findCustomerByUUID(id);
 
         if (customerToEnable == null)
@@ -129,7 +129,7 @@ public class CustomerController {
 
         customerToEnable = customerService.enableCustomer(customerToEnable);
 
-        return new ResponseEntity<>(customerToEnable, HttpStatus.OK);
+        return new ResponseEntity<>(customerToEnable.toPayload(), HttpStatus.OK);
     }
 
     private static List<CustomerPayload> toCustomerPayloadList(List<Customer> customerList) {
