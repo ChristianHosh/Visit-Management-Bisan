@@ -2,6 +2,7 @@ package com.example.vm.service;
 
 import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
+import com.example.vm.dto.put.AddressPutDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Address;
 import com.example.vm.model.Customer;
@@ -70,21 +71,7 @@ public class CustomerService {
                 .build();
 
         try {
-            GeoApiContext context = new GeoApiContext.Builder()
-                    .apiKey(GEOLOCATION_KEY)
-                    .build();
-
-            System.out.println("SEARCHING FOR LOCATION: " + addressRequest.getAddressLine1() + " " + addressRequest.getAddressLine2() + ", " +
-                    addressRequest.getCity() + " " + addressRequest.getZipcode());
-
-            GeocodingResult[] results = GeocodingApi.geocode(context,
-                    addressRequest.getAddressLine1() + " " + addressRequest.getAddressLine2() + ", " +
-                            addressRequest.getCity() + " " + addressRequest.getZipcode()).await();
-
-            customerToSave.getAddress().setLatitude(results[0].geometry.location.lat);
-            customerToSave.getAddress().setLongitude(results[0].geometry.location.lng);
-
-            context.shutdown();
+            setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), addressRequest.getCity(), addressRequest.getZipcode());
 
             customerToSave.getAddress().setCreatedTime(timestamp);
             customerToSave.getAddress().setLastModifiedTime(timestamp);
@@ -102,9 +89,52 @@ public class CustomerService {
     }
 
     public Customer updateCustomer(Customer customerToUpdate, CustomerPutDTO updatedDTO) {
-        customerToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
+        Timestamp timestamp = Timestamp.from(Instant.now());
+
+        AddressPutDTO addressRequest = updatedDTO.getAddress();
+
+        Address oldAddress = customerToUpdate.getAddress();
+
         customerToUpdate.setName(updatedDTO.getName() == null ? customerToUpdate.getName() : updatedDTO.getName());
-        return repository.save(customerToUpdate);
+        customerToUpdate.setAddress(Address.builder()
+                .addressLine1(addressRequest.getAddressLine1())
+                .addressLine2(addressRequest.getAddressLine2())
+                .city(addressRequest.getCity())
+                .zipcode(addressRequest.getZipcode())
+                .build());
+
+        try {
+            setLngLat(customerToUpdate, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), addressRequest.getCity(), addressRequest.getZipcode());
+
+            customerToUpdate.setLastModifiedTime(timestamp);
+
+            customerToUpdate.getAddress().setLastModifiedTime(timestamp);
+            customerToUpdate.getAddress().setCreatedTime(oldAddress.getCreatedTime());
+
+            return repository.save(customerToUpdate);
+        } catch (Exception e) {
+            System.out.println("ERROR " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    private void setLngLat(Customer customerToUpdate, String addressLine1, String addressLine2, String city, String zipcode) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException {
+        GeoApiContext context = new GeoApiContext.Builder()
+                .apiKey(GEOLOCATION_KEY)
+                .build();
+
+        System.out.println("SEARCHING FOR LOCATION: " + addressLine1 + " " + addressLine2 + ", " +
+                city + " " + zipcode);
+
+        GeocodingResult[] results = GeocodingApi.geocode(context,
+                addressLine1 + " " + addressLine2 + ", " +
+                        city + " " + zipcode).await();
+
+        customerToUpdate.getAddress().setLatitude(results[0].geometry.location.lat);
+        customerToUpdate.getAddress().setLongitude(results[0].geometry.location.lng);
+
+        context.shutdown();
     }
 
 

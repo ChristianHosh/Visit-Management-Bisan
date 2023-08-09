@@ -78,9 +78,12 @@ public class ContactController {
     @PutMapping("/{id}/endis")
     public ResponseEntity<Contact> enableCustomer(@PathVariable UUID id) {
         Contact contactToEnable = contactService.findContactByUUID(id);
+
         if (contactToEnable == null)
             throw new UserNotFoundException();
+
         contactToEnable = contactService.enableContact(contactToEnable);
+
         return new ResponseEntity<>(contactToEnable, HttpStatus.OK);
     }
 

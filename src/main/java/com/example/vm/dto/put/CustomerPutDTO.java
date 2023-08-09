@@ -1,5 +1,6 @@
 package com.example.vm.dto.put;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -14,4 +15,7 @@ public class CustomerPutDTO {
 
     @Null(message = "Invalid enabled : Must be null")
     Integer enabled;
+
+    @Valid
+    private AddressPutDTO address;
 }

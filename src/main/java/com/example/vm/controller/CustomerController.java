@@ -4,9 +4,7 @@ import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
-import com.example.vm.dto.put.AddressPutDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
-import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.payload.CustomerPayload;
@@ -46,21 +44,21 @@ public class CustomerController {
     }
 
     @GetMapping(value = "/search", params = "name")
-    public ResponseEntity<List<CustomerPayload>> searchByCustomerName(@RequestParam("name") String name){
+    public ResponseEntity<List<CustomerPayload>> searchByCustomerName(@RequestParam("name") String name) {
         List<Customer> customerList = customerService.searchByName(name);
 
         return new ResponseEntity<>(toCustomerPayloadList(customerList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "city")
-    public ResponseEntity<List<CustomerPayload>> searchByCustomerCity(@RequestParam("city") String city){
+    public ResponseEntity<List<CustomerPayload>> searchByCustomerCity(@RequestParam("city") String city) {
         List<Customer> customerList = customerService.searchByAddressCity(city);
 
         return new ResponseEntity<>(toCustomerPayloadList(customerList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "address")
-    public ResponseEntity<List<CustomerPayload>> searchByCustomerAddress(@RequestParam("address") String address){
+    public ResponseEntity<List<CustomerPayload>> searchByCustomerAddress(@RequestParam("address") String address) {
         List<Customer> customerList = customerService.searchByAddressLine(address);
 
         return new ResponseEntity<>(toCustomerPayloadList(customerList), HttpStatus.OK);
@@ -112,23 +110,12 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody @Valid CustomerPutDTO customerupdated) {
+    public ResponseEntity<Customer> updateCustomer(@PathVariable UUID id, @RequestBody @Valid CustomerPutDTO customerRequest) {
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
         if (customerToUpdate == null)
             throw new UserNotFoundException();
 
-      Customer updatedCustomer = customerService.updateCustomer(customerToUpdate,customerupdated);
-      return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}/address")
-    public ResponseEntity<Address> updateCustomerAddress (@PathVariable UUID id, @RequestBody @Valid AddressPutDTO updatedAddress ) {
-        Customer customerToUpdate = customerService.findCustomerByUUID(id);
-
-        if (customerToUpdate == null)
-            throw new UserNotFoundException();
-
-        Address updatedCustomer = addressService.updateCustomerAddress(customerToUpdate.getAddress(), updatedAddress);
+        Customer updatedCustomer = customerService.updateCustomer(customerToUpdate, customerRequest);
 
         return new ResponseEntity<>(updatedCustomer, HttpStatus.OK);
     }
