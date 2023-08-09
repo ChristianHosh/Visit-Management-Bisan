@@ -71,7 +71,7 @@ public class CustomerController {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new UserNotFoundException();
 
         return new ResponseEntity<>(customer, HttpStatus.OK);
     }
@@ -81,7 +81,7 @@ public class CustomerController {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new UserNotFoundException();
 
         List<Contact> contactList = customer.getContacts();
 
@@ -94,7 +94,6 @@ public class CustomerController {
 
         if (savedCustomer == null)
             throw new LocationNotFoundException();
-            //THROW LOCATION NOT FOUND EXCEPTION
 
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
     }
