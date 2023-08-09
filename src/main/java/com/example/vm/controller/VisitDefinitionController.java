@@ -32,37 +32,6 @@ public class VisitDefinitionController {
     }
 
 
-    @PostMapping("")
-    public ResponseEntity<VisitDefinition> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {
-        VisitDefinition savedVisitDefinition = visitDefinitionService.saveNewVisit(visitDefinitionRequest);
-
-        return new ResponseEntity<>(savedVisitDefinition, HttpStatus.CREATED);
-    }
-
-    @PutMapping("{id}")
-    public ResponseEntity<VisitDefinition> updateVisitDefinition(@PathVariable UUID id, @RequestBody @Valid VisitDefinitionPutDTO VisitDefinitionUpdate) {
-        VisitDefinition visitDefinitionToUpdate = visitDefinitionService.findVisitDefinitionByUUID(id);
-
-        if (visitDefinitionToUpdate == null)
-            throw new UserNotFoundException();
-
-        VisitDefinition updatedVisitDefinition = visitDefinitionService.updateVisitDefinition(visitDefinitionToUpdate, VisitDefinitionUpdate);
-
-        return new ResponseEntity<>(updatedVisitDefinition, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}/endis")
-    public ResponseEntity<VisitDefinition> enableVisitDefinition(@PathVariable UUID id) {
-        VisitDefinition VisitDefinitionToEnable = visitDefinitionService.findVisitDefinitionByUUID(id);
-
-        if (VisitDefinitionToEnable == null)
-            throw new UserNotFoundException();
-
-        VisitDefinitionToEnable = visitDefinitionService.enableVisitDefinition(VisitDefinitionToEnable);
-
-        return new ResponseEntity<>(VisitDefinitionToEnable, HttpStatus.OK);
-    }
-
     @GetMapping(value = "/search", params = "name")
     public ResponseEntity<List<VisitDefinition>> searchByName(@RequestParam("name") String name) {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByName(name);
@@ -98,6 +67,42 @@ public class VisitDefinitionController {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByAllowRecurring(false);
         return new ResponseEntity<>(visitDefinitionList, HttpStatus.OK);
     }
+
+
+    @PostMapping("")
+    public ResponseEntity<VisitDefinition> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {
+        VisitDefinition savedVisitDefinition = visitDefinitionService.saveNewVisit(visitDefinitionRequest);
+
+        return new ResponseEntity<>(savedVisitDefinition, HttpStatus.CREATED);
+    }
+
+    @PutMapping("{id}")
+    public ResponseEntity<VisitDefinition> updateVisitDefinition(@PathVariable UUID id, @RequestBody @Valid VisitDefinitionPutDTO VisitDefinitionUpdate) {
+        VisitDefinition visitDefinitionToUpdate = visitDefinitionService.findVisitDefinitionByUUID(id);
+
+        if (visitDefinitionToUpdate == null)
+            throw new UserNotFoundException();
+
+        VisitDefinition updatedVisitDefinition = visitDefinitionService.updateVisitDefinition(visitDefinitionToUpdate, VisitDefinitionUpdate);
+
+        return new ResponseEntity<>(updatedVisitDefinition, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}/endis")
+    public ResponseEntity<VisitDefinition> enableVisitDefinition(@PathVariable UUID id) {
+        VisitDefinition VisitDefinitionToEnable = visitDefinitionService.findVisitDefinitionByUUID(id);
+
+        if (VisitDefinitionToEnable == null)
+            throw new UserNotFoundException();
+
+        VisitDefinitionToEnable = visitDefinitionService.enableVisitDefinition(VisitDefinitionToEnable);
+
+        return new ResponseEntity<>(VisitDefinitionToEnable, HttpStatus.OK);
+    }
+
+
+//    @PostMapping("{id}/assignments")
+//    public ResponseEntity<VisitAssignment> saveAssignmentToDefinition(@PathVariable UUID id, @RequestBody VisitAssignment)
 
 
 }

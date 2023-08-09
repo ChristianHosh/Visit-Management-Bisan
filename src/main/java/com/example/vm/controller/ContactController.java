@@ -49,14 +49,14 @@ public class ContactController {
 
     @GetMapping(value = "/search", params = "phoneNumber")
     public ResponseEntity<List<Contact>> searchByPhoneNumber(@RequestParam("phoneNumber") String phoneNumber) {
-        List<Contact> contactList = contactService.searchContactByLastName(phoneNumber);
+        List<Contact> contactList = contactService.searchContactByPhoneNumber(phoneNumber);
 
         return new ResponseEntity<>(contactList, HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "email")
     public ResponseEntity<List<Contact>> searchByEmail(@RequestParam("email") String email) {
-        List<Contact> contactList = contactService.searchContactByLastName(email);
+        List<Contact> contactList = contactService.searchContactByEmail(email);
 
         return new ResponseEntity<>(contactList, HttpStatus.OK);
     }

@@ -31,6 +31,10 @@ public class VisitDefinitionPostDTO {
     @Min(value = 0, message = "Invalid Type: Equals to zero")
     @Max(value = 2, message = "Invalid Type: Exceeds two")
     Integer type;
+//    0 SALES
+//    1 MARKETING
+//    2 DELIVERY
+
 
     @NotNull(message = "Invalid Frequency: Frequency is NULL")
     @Min(value = 1, message = "Invalid Frequency: Equals to one")

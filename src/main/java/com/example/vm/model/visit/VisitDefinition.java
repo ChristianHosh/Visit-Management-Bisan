@@ -2,9 +2,11 @@ package com.example.vm.model.visit;
 
 
 import com.example.vm.model.ModelAuditSuperclass;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -39,4 +41,7 @@ public class VisitDefinition extends ModelAuditSuperclass {
     @Column(name = "enabled", length = 1, nullable = false)
     private int enabled;
 
+    @OneToMany(mappedBy = "visitDefinition" , cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<VisitAssignment> visitAssignments;
 }

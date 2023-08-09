@@ -21,10 +21,6 @@ public class ContactService {
         this.repository = repository;
     }
 
-    public List<Contact> findAllContacts() {
-        return repository.findAll();
-    }
-
     public Contact findContactByUUID(UUID uuid) {
         Optional<Contact> optional = repository.findById(uuid);
         return optional.orElse(null);
@@ -79,6 +75,7 @@ public class ContactService {
 
     public Contact enableContact(Contact contact) {
         contact.setEnabled(contact.getEnabled() == 0 ? 1 : 0);
+
         return repository.save(contact);
     }
 
