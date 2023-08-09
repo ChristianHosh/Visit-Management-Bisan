@@ -20,15 +20,14 @@ public class AddressPostDTO {
     @Size(min = 3, max = 30, message = "Invalid Address Line: Must be of 3 - 30 characters")
     String AddressLine1;
 
-    @NotBlank(message = "Invalid Address Line : Empty Address Line")
     @NotNull(message = "Invalid Address Line : Address Line is NULL")
-    @Size(min = 3, max = 30, message = "Invalid Address Line: Must be of 3 - 30 characters")
+    @Size(max = 30, message = "Invalid Address Line: Must be a maximum of 30 characters")
     String AddressLine2;
 
-    @Null(message = "Invalid Longitude : Longitude is NULL")
+    @Null(message = "Invalid Longitude : Longitude is not NULL")
     Double longitude;
 
-    @Null(message = "Invalid Latitude : Latitude is NULL")
+    @Null(message = "Invalid Latitude : Latitude is not NULL")
     Double latitude;
 
     @NotBlank(message = "Invalid Zipcode : Empty Zipcode")

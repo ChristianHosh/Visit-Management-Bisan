@@ -1,5 +1,6 @@
 package com.example.vm.controller;
 
+import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
@@ -92,7 +93,7 @@ public class CustomerController {
         Customer savedCustomer = customerService.saveNewCustomer(customerRequest);
 
         if (savedCustomer == null)
-            System.out.println("s");
+            throw new LocationNotFoundException();
             //THROW LOCATION NOT FOUND EXCEPTION
 
         return new ResponseEntity<>(savedCustomer, HttpStatus.CREATED);
@@ -123,8 +124,8 @@ public class CustomerController {
 
     @PutMapping("/{id}/address")
     public ResponseEntity<Address> updateCustomerAddress (@PathVariable UUID id, @RequestBody @Valid AddressPutDTO updatedAddress ) {
-
         Customer customerToUpdate = customerService.findCustomerByUUID(id);
+
         if (customerToUpdate == null)
             throw new UserNotFoundException();
 

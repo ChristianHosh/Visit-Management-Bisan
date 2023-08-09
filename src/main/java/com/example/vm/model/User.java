@@ -36,9 +36,4 @@ public class User extends ModelAuditSuperclass {
     @Column(name = "enabled", length = 1, nullable = false)
     private int enabled;
 
-
-    public static boolean isNotValidAccessLevel(int accessLevel) {
-        return (accessLevel != 1) && (accessLevel != 0);
-    }
-
 }

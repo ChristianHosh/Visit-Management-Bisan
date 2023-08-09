@@ -81,8 +81,6 @@ public class CustomerService {
                     addressRequest.getAddressLine1() + " " + addressRequest.getAddressLine2() + ", " +
                             addressRequest.getCity() + " " + addressRequest.getZipcode()).await();
 
-            System.out.println("FOUND LOCATIONS: " + results.length);
-
             customerToSave.getAddress().setLatitude(results[0].geometry.location.lat);
             customerToSave.getAddress().setLongitude(results[0].geometry.location.lng);
 

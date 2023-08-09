@@ -28,13 +28,13 @@ public class VisitDefinition extends ModelAuditSuperclass {
     private String description ;
 
     @Column(name = "type")
-    private Integer  type;
+    private int  type;
 
     @Column(name = "frequency")
-    private Integer  frequency;
+    private int  frequency;
 
     @Column(name = "allow_recurring")
-    private Boolean allowRecurring;
+    private boolean allowRecurring;
 
     @Column(name = "enabled", length = 1, nullable = false)
     private int enabled;
