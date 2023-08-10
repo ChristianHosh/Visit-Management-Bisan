@@ -4,7 +4,7 @@ import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
-import com.example.vm.dto.post.UUIDDTO;
+import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;

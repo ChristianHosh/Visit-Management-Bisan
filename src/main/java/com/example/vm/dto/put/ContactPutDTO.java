@@ -1,6 +1,6 @@
 package com.example.vm.dto.put;
 
-import com.example.vm.dto.post.UUIDDTO;
+import com.example.vm.dto.UUIDDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;

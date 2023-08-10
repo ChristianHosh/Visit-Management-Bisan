@@ -1,7 +1,7 @@
 package com.example.vm.controller;
 
 import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.dto.post.UUIDDTO;
+import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.visit.VisitType;
