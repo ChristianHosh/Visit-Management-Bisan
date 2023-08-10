@@ -1,9 +1,11 @@
 package com.example.vm.model;
 
+import com.example.vm.model.visit.VisitType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -39,5 +41,13 @@ public class Contact extends ModelAuditSuperclass {
     @JoinColumn(name = "customer_id")
     @JsonBackReference
     private Customer customer;
+
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "contact_type_model",
+            joinColumns = @JoinColumn(name = "contact_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_id")
+    )
+    private List<VisitType> visitTypes;
 
 }

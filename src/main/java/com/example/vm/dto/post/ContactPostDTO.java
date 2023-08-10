@@ -1,10 +1,12 @@
 package com.example.vm.dto.post;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Builder
 @Data
@@ -38,6 +40,9 @@ public class ContactPostDTO {
 
     @Null(message = "Invalid enabled : Must be null")
     Integer enabled;
+
+    @NotNull(message = "Invalid Types: Types is null")
+    List<@Valid UUIDDTO> types;
 
 
 }

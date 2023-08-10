@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -107,6 +108,7 @@ public class VisitDefinitionController {
         }
 
         VisitDefinition savedVisitDefinition = visitDefinitionService.saveNewVisit(visitDefinitionRequest, visitType);
+        savedVisitDefinition.setVisitAssignments(new ArrayList<>());
 
         return new ResponseEntity<>(savedVisitDefinition.toDetailPayload(), HttpStatus.CREATED);
     }
@@ -119,6 +121,7 @@ public class VisitDefinitionController {
             throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
 
         VisitAssignment savedVisitAssignment = visitAssignmentService.saveNewVisitAssignment(visitDefinition, visitAssignmentRequest);
+        savedVisitAssignment.setCustomers(new ArrayList<>());
 
         return new ResponseEntity<>(savedVisitAssignment.toDetailPayload(), HttpStatus.CREATED);
     }

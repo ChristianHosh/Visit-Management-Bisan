@@ -4,20 +4,23 @@ import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
+import com.example.vm.dto.post.UUIDDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
+import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.CustomerDetailPayload;
 import com.example.vm.payload.list.CustomerListPayload;
-import com.example.vm.service.AddressService;
 import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
+import com.example.vm.service.VisitTypeService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,13 +31,13 @@ public class CustomerController {
 
     private final CustomerService customerService;
     private final ContactService contactService;
-    private final AddressService addressService;
+    private final VisitTypeService visitTypeService;
 
     @Autowired
-    public CustomerController(CustomerService customerService, ContactService contactService, AddressService addressService) {
+    public CustomerController(CustomerService customerService, ContactService contactService, VisitTypeService visitTypeService) {
         this.customerService = customerService;
         this.contactService = contactService;
-        this.addressService = addressService;
+        this.visitTypeService = visitTypeService;
     }
 
     @GetMapping("")
@@ -104,7 +107,18 @@ public class CustomerController {
         if (customer == null)
             throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
 
-        Contact savedContact = contactService.saveNewContact(customer, contactRequest);
+        List<VisitType> visitTypes = new ArrayList<>();
+
+        for (UUIDDTO uuiddto : contactRequest.getTypes()){
+            VisitType visitType = visitTypeService.findById(uuiddto.getUuid());
+
+            if (visitType == null)
+                throw new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND);
+
+            visitTypes.add(visitType);
+        }
+
+        Contact savedContact = contactService.saveNewContact(customer, contactRequest, visitTypes);
 
         return new ResponseEntity<>(savedContact, HttpStatus.OK);
     }

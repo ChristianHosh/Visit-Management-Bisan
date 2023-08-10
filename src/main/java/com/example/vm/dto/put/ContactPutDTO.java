@@ -1,8 +1,12 @@
 package com.example.vm.dto.put;
 
+import com.example.vm.dto.post.UUIDDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
+
+import java.util.List;
 
 @Builder
 @Data
@@ -24,4 +28,7 @@ public class ContactPutDTO {
 
     @Null(message = "Invalid enabled : Must be null")
     Integer enabled;
+
+    @NotNull(message = "Invalid Types: Types is null")
+    List<@Valid UUIDDTO> types;
 }

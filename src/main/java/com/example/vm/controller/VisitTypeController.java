@@ -1,12 +1,7 @@
 package com.example.vm.controller;
 
-import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.dto.post.VisitDefinitionPostDTO;
 import com.example.vm.dto.post.VisitTypePostDTO;
-import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.model.visit.VisitType;
-import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
-import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.service.VisitTypeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -17,7 +12,7 @@ import java.util.List;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/types")
+@RequestMapping("/visit_types")
 public class VisitTypeController {
     private final VisitTypeService visitTypeService;
 

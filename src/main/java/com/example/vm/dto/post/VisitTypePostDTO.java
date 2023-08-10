@@ -18,8 +18,8 @@ public class VisitTypePostDTO {
     @Null(message = "Invalid lastModifiedTime : Automatically generated")
     Timestamp lastModifiedTime;
 
-    @NotBlank(message = "Invalid firstName: Empty firstName")
-    @NotNull(message = "Invalid firstName: firstName is NULL")
-    @Size(min = 3, max = 30, message = "Invalid firstName: Must be of 3 - 30 characters")
+    @NotBlank(message = "Invalid name: Empty name")
+    @NotNull(message = "Invalid name: name is NULL")
+    @Size(min = 3, max = 30, message = "Invalid name: Must be of 3 - 30 characters")
     private String name;
 }

@@ -4,6 +4,7 @@ import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
+import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.ContactRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class ContactService {
         return optional.orElse(null);
     }
 
-    public Contact saveNewContact(Customer customer, ContactPostDTO contactRequest) {
+    public Contact saveNewContact(Customer customer, ContactPostDTO contactRequest, List<VisitType> visitTypes) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
         Contact contactToSave = Contact.builder()
@@ -40,6 +41,7 @@ public class ContactService {
         contactToSave.setCreatedTime(timestamp);
         contactToSave.setLastModifiedTime(timestamp);
 
+        contactToSave.setVisitTypes(visitTypes);
         contactToSave.setCustomer(customer);
 
         return repository.save(contactToSave);
@@ -62,7 +64,7 @@ public class ContactService {
     }
 
 
-    public Contact updateContact(Contact contactToUpdate, ContactPutDTO updatedDTO) {
+    public Contact updateContact(Contact contactToUpdate, ContactPutDTO updatedDTO, List<VisitType> visitTypes) {
 
         contactToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 
@@ -70,6 +72,8 @@ public class ContactService {
         contactToUpdate.setLastName(updatedDTO.getLastName() == null ? contactToUpdate.getLastName() : updatedDTO.getLastName());
         contactToUpdate.setPhoneNumber(updatedDTO.getPhoneNumber() == null ? contactToUpdate.getPhoneNumber() : updatedDTO.getPhoneNumber());
         contactToUpdate.setEmail(updatedDTO.getEmail() == null ? contactToUpdate.getEmail() : updatedDTO.getEmail());
+
+        contactToUpdate.setVisitTypes(visitTypes);
 
         return repository.save(contactToUpdate);
     }
