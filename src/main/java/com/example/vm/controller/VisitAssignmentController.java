@@ -5,8 +5,8 @@ import com.example.vm.dto.post.UUIDDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
 import com.example.vm.model.Customer;
 import com.example.vm.model.visit.VisitAssignment;
-import com.example.vm.payload.VisitAssignmentDetailedPayload;
-import com.example.vm.payload.VisitAssignmentPayload;
+import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
+import com.example.vm.payload.list.VisitAssignmentListPayload;
 import com.example.vm.service.CustomerService;
 import com.example.vm.service.VisitAssignmentService;
 import jakarta.validation.Valid;
@@ -30,25 +30,25 @@ public class VisitAssignmentController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<VisitAssignmentPayload>> getAllVisitAssignment() {
+    public ResponseEntity<List<VisitAssignmentListPayload>> getAllVisitAssignment() {
         List<VisitAssignment> visitAssignmentList = visitAssignmentService.findAllVisitAssignments();
 
         return new ResponseEntity<>(toPayloadList(visitAssignmentList), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VisitAssignmentDetailedPayload> getVisitAssignmentById(@PathVariable UUID id) {
+    public ResponseEntity<VisitAssignmentDetailPayload> getVisitAssignmentById(@PathVariable UUID id) {
         VisitAssignment visitAssignment = visitAssignmentService.findVisitAssignmentByUUID(id);
 
         if (visitAssignment == null)
             throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND);
 
-        return new ResponseEntity<>(visitAssignment.toDetailedPayload(), HttpStatus.OK);
+        return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<VisitAssignmentDetailedPayload> updateContact(@PathVariable UUID id,
-                                                         @RequestBody @Valid VisitAssignmentPutDTO visitAssignmentUpdate) {
+    public ResponseEntity<VisitAssignmentDetailPayload> updateContact(@PathVariable UUID id,
+                                                                      @RequestBody @Valid VisitAssignmentPutDTO visitAssignmentUpdate) {
 
         VisitAssignment visitAssignmentToUpdate = visitAssignmentService.findVisitAssignmentByUUID(id);
 
@@ -57,11 +57,11 @@ public class VisitAssignmentController {
 
         VisitAssignment updatedVisitAssignment = visitAssignmentService.updateVisitAssignment(visitAssignmentToUpdate, visitAssignmentUpdate);
 
-        return new ResponseEntity<>(updatedVisitAssignment.toDetailedPayload(), HttpStatus.OK);
+        return new ResponseEntity<>(updatedVisitAssignment.toDetailPayload(), HttpStatus.OK);
     }
 
     @PutMapping("/{id}/endis")
-    public ResponseEntity<VisitAssignmentDetailedPayload> enableCustomer(@PathVariable UUID id) {
+    public ResponseEntity<VisitAssignmentDetailPayload> enableCustomer(@PathVariable UUID id) {
         VisitAssignment visitAssignmentToEnable = visitAssignmentService.findVisitAssignmentByUUID(id);
 
         if (visitAssignmentToEnable == null)
@@ -69,11 +69,11 @@ public class VisitAssignmentController {
 
         visitAssignmentToEnable = visitAssignmentService.enableVisitAssignment(visitAssignmentToEnable);
 
-        return new ResponseEntity<>(visitAssignmentToEnable.toDetailedPayload(), HttpStatus.OK);
+        return new ResponseEntity<>(visitAssignmentToEnable.toDetailPayload(), HttpStatus.OK);
     }
 
     @PostMapping("/{id}/customers")
-    public ResponseEntity<VisitAssignmentDetailedPayload> assignVisitToCustomer(@PathVariable UUID id, @RequestBody @Valid UUIDDTO uuidDTO) {
+    public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(@PathVariable UUID id, @RequestBody @Valid UUIDDTO uuidDTO) {
         VisitAssignment visitAssignment = visitAssignmentService.findVisitAssignmentByUUID(id);
 
         if (visitAssignment == null)
@@ -86,10 +86,10 @@ public class VisitAssignmentController {
 
         visitAssignment = visitAssignmentService.assignVisitToCustomer(visitAssignment, customer);
 
-        return new ResponseEntity<>(visitAssignment.toDetailedPayload(), HttpStatus.OK);
+        return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
     }
 
-    private static List<VisitAssignmentPayload> toPayloadList(List<VisitAssignment> assignmentList){
-        return assignmentList.stream().map(VisitAssignment::toPayload).toList();
+    private static List<VisitAssignmentListPayload> toPayloadList(List<VisitAssignment> assignmentList){
+        return assignmentList.stream().map(VisitAssignment::toListPayload).toList();
     }
 }

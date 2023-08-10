@@ -2,7 +2,7 @@ package com.example.vm.model.visit;
 
 
 import com.example.vm.model.ModelAuditSuperclass;
-import com.example.vm.payload.VisitDefinitionPayload;
+import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -28,13 +28,13 @@ public class VisitDefinition extends ModelAuditSuperclass {
     private String name;
 
     @Column(name = "description")
-    private String description ;
+    private String description;
 
     @Column(name = "type")
-    private int  type;
+    private int type;
 
     @Column(name = "frequency")
-    private int  frequency;
+    private int frequency;
 
     @Column(name = "allow_recurring")
     private boolean allowRecurring;
@@ -42,11 +42,12 @@ public class VisitDefinition extends ModelAuditSuperclass {
     @Column(name = "enabled", length = 1, nullable = false)
     private int enabled;
 
-    @OneToMany(mappedBy = "visitDefinition" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "visitDefinition", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<VisitAssignment> visitAssignments;
 
-    public VisitDefinitionPayload toPayload(){
-        return new VisitDefinitionPayload(uuid,name,description,type,frequency,allowRecurring,enabled);
+    public VisitDefinitionListPayload toListPayload() {
+        return new VisitDefinitionListPayload(this.getUuid(), this.getName(), this.getDescription(),
+                this.getType(), this.getFrequency(), this.isAllowRecurring(), this.getEnabled());
     }
 }

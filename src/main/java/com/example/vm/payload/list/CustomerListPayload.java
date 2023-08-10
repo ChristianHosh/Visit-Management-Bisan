@@ -1,20 +1,18 @@
-package com.example.vm.payload;
+package com.example.vm.payload.list;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
-import java.sql.Date;
 import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class VisitAssignmentPayload {
+public class CustomerListPayload {
 
     private UUID uuid;
 
-    private Date date;
-
-    private String comment;
+    private String name;
 
     private int enabled;
+
 }

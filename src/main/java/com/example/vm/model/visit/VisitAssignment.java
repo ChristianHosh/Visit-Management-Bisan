@@ -2,9 +2,8 @@ package com.example.vm.model.visit;
 
 import com.example.vm.model.Customer;
 import com.example.vm.model.ModelAuditSuperclass;
-import com.example.vm.payload.CustomerPayload;
-import com.example.vm.payload.VisitAssignmentDetailedPayload;
-import com.example.vm.payload.VisitAssignmentPayload;
+import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
+import com.example.vm.payload.list.VisitAssignmentListPayload;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,13 +48,13 @@ public class VisitAssignment extends ModelAuditSuperclass {
     )
     private List<Customer> customers;
 
-    public VisitAssignmentPayload toPayload() {
-        return new VisitAssignmentPayload(uuid, date, comment, enabled);
+    public VisitAssignmentListPayload toListPayload() {
+        return new VisitAssignmentListPayload(this.getUuid(), this.getDate(), this.getComment(), this.getEnabled());
     }
 
-    public VisitAssignmentDetailedPayload toDetailedPayload() {
-        List<CustomerPayload> customerPayloadList = customers.stream().map(Customer::toPayload).toList();
-
-        return new VisitAssignmentDetailedPayload(uuid, date, comment, enabled, customerPayloadList);
+    public VisitAssignmentDetailPayload toDetailPayload() {
+        return new VisitAssignmentDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getUuid(),
+                this.getDate(), this.getComment(), this.getEnabled(),
+                this.getCustomers().stream().map(Customer::toListPayload).toList());
     }
 }

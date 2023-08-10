@@ -1,4 +1,4 @@
-package com.example.vm.payload;
+package com.example.vm.payload.list;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.util.UUID;
 
 @Data
 @AllArgsConstructor
-public class VisitDefinitionPayload {
+public class VisitDefinitionListPayload {
 
     private UUID uuid;
 

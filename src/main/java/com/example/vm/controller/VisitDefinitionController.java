@@ -6,8 +6,8 @@ import com.example.vm.dto.post.VisitDefinitionPostDTO;
 import com.example.vm.dto.put.VisitDefinitionPutDTO;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
-import com.example.vm.payload.VisitAssignmentDetailedPayload;
-import com.example.vm.payload.VisitDefinitionPayload;
+import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
+import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.service.VisitAssignmentService;
 import com.example.vm.service.VisitDefinitionService;
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ public class VisitDefinitionController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<VisitDefinitionPayload>> getAllVisitDefinition() {
+    public ResponseEntity<List<VisitDefinitionListPayload>> getAllVisitDefinition() {
         List<VisitDefinition> visitDefinitionsList = visitDefinitionService.findAllVisitDefinition();
 
         return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionsList), HttpStatus.OK);
@@ -49,42 +49,42 @@ public class VisitDefinitionController {
     }
 
     @GetMapping(value = "/search", params = "name")
-    public ResponseEntity<List<VisitDefinitionPayload>> searchByName(@RequestParam("name") String name) {
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByName(@RequestParam("name") String name) {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByName(name);
 
         return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "description")
-    public ResponseEntity<List<VisitDefinitionPayload>> searchByDescription(@RequestParam("description") String description) {
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByDescription(@RequestParam("description") String description) {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByDescription(description);
 
         return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "type")
-    public ResponseEntity<List<VisitDefinitionPayload>> searchByType(@RequestParam("type") int type) {
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByType(@RequestParam("type") int type) {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByType(type);
 
         return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "frequency")
-    public ResponseEntity<List<VisitDefinitionPayload>> searchByFrequency(@RequestParam("frequency") int frequency) {
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByFrequency(@RequestParam("frequency") int frequency) {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByFrequency(frequency);
 
         return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/recurring/true")
-    public ResponseEntity<List<VisitDefinitionPayload>> getAllRecurringDefinitions() {
+    public ResponseEntity<List<VisitDefinitionListPayload>> getAllRecurringDefinitions() {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByAllowRecurring(true);
 
         return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
     }
 
     @GetMapping(value = "/recurring/false")
-    public ResponseEntity<List<VisitDefinitionPayload>> getAllNotRecurringDefinitions() {
+    public ResponseEntity<List<VisitDefinitionListPayload>> getAllNotRecurringDefinitions() {
         List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByAllowRecurring(false);
 
         return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
@@ -99,7 +99,7 @@ public class VisitDefinitionController {
     }
 
     @PostMapping("/{id}/assignments")
-    public ResponseEntity<VisitAssignmentDetailedPayload> saveNewVisitAssignmentToDefinition(@PathVariable UUID id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {
+    public ResponseEntity<VisitAssignmentDetailPayload> saveNewVisitAssignmentToDefinition(@PathVariable UUID id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {
         VisitDefinition visitDefinition = visitDefinitionService.findVisitDefinitionByUUID(id);
 
         if (visitDefinition == null)
@@ -107,7 +107,7 @@ public class VisitDefinitionController {
 
         VisitAssignment savedVisitAssignment = visitAssignmentService.saveNewVisitAssignment(visitDefinition, visitAssignmentRequest);
 
-        return new ResponseEntity<>(savedVisitAssignment.toDetailedPayload(), HttpStatus.CREATED);
+        return new ResponseEntity<>(savedVisitAssignment.toDetailPayload(), HttpStatus.CREATED);
     }
 
     @PutMapping("{id}")
@@ -134,7 +134,7 @@ public class VisitDefinitionController {
         return new ResponseEntity<>(VisitDefinitionToEnable, HttpStatus.OK);
     }
 
-    private static List<VisitDefinitionPayload> toDefinitionPayloadList(List<VisitDefinition> visitDefinitionList) {
-        return visitDefinitionList.stream().map(VisitDefinition::toPayload).toList();
+    private static List<VisitDefinitionListPayload> toDefinitionPayloadList(List<VisitDefinition> visitDefinitionList) {
+        return visitDefinitionList.stream().map(VisitDefinition::toListPayload).toList();
     }
 }
