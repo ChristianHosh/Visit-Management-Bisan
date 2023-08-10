@@ -84,5 +84,9 @@ public class ContactService {
         return repository.save(contact);
     }
 
+    public List<Contact> findContactsByCustomerAndVisitTypes(Customer customer, VisitType visitType){
+        return repository.findContactsByCustomerAndVisitTypesContaining(customer, visitType);
+    }
+
 
 }

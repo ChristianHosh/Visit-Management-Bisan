@@ -3,10 +3,13 @@ package com.example.vm.controller;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
+import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.visit.VisitAssignment;
+import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
+import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
 import com.example.vm.service.VisitAssignmentService;
 import jakarta.validation.Valid;
@@ -23,10 +26,12 @@ import java.util.UUID;
 public class VisitAssignmentController {
     private final VisitAssignmentService visitAssignmentService;
     private final CustomerService customerService;
+    private final ContactService contactService;
 
-    public VisitAssignmentController(VisitAssignmentService visitAssignmentService, CustomerService customerService) {
+    public VisitAssignmentController(VisitAssignmentService visitAssignmentService, CustomerService customerService, ContactService contactService) {
         this.visitAssignmentService = visitAssignmentService;
         this.customerService = customerService;
+        this.contactService = contactService;
     }
 
     @GetMapping("")
@@ -44,6 +49,28 @@ public class VisitAssignmentController {
             throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND);
 
         return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
+    }
+
+    @GetMapping("/{assignmentId}/customer_contacts")
+    public ResponseEntity<List<Contact>> getContactsByAssignmentType(@PathVariable UUID assignmentId, @RequestBody @Valid UUIDDTO customerUUIDDTO){
+        VisitAssignment currentAssignment = visitAssignmentService.findVisitAssignmentByUUID(assignmentId);
+
+        if (currentAssignment == null)
+            throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND);
+
+        Customer currentCustomer = customerService.findCustomerByUUID(customerUUIDDTO.getUuid());
+
+        if (currentCustomer == null)
+            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
+
+        if (!currentAssignment.getCustomers().contains(currentCustomer))
+            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_ASSIGNED);
+
+        VisitType currentVisitType = currentAssignment.getVisitDefinition().getType();
+
+        List<Contact> contactList = contactService.findContactsByCustomerAndVisitTypes(currentCustomer, currentVisitType);
+
+        return new ResponseEntity<>(contactList, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
