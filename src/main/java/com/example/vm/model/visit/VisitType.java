@@ -23,5 +23,4 @@ public class VisitType extends ModelAuditSuperclass {
     @Column(name = "name", nullable = false)
     private String name;
 
-
 }
