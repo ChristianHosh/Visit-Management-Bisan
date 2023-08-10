@@ -1,6 +1,8 @@
 package com.example.vm.model;
 
 import com.example.vm.model.visit.VisitType;
+import com.example.vm.payload.list.ContactListPayload;
+import com.example.vm.payload.list.CustomerListPayload;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -49,5 +51,11 @@ public class Contact extends ModelAuditSuperclass {
             inverseJoinColumns = @JoinColumn(name = "type_id")
     )
     private List<VisitType> visitTypes;
+    public ContactListPayload toListPayload(){
+        return new ContactListPayload(this.getUuid(),
+                this.getFirstName(),this.getLastName(), this.getEmail(),
+                this.getPhoneNumber(), this.getEnabled());
+    }
+
 
 }

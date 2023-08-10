@@ -31,7 +31,7 @@ public class ContactController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Contact> getContactId(@PathVariable UUID id){
+    public ResponseEntity<Contact> getContactId(@PathVariable UUID id){//details
         Contact contact = contactService.findContactByUUID(id);
 
         if (contact == null)
@@ -67,7 +67,7 @@ public class ContactController {
         return new ResponseEntity<>(contactList, HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}")//details
     public ResponseEntity<Contact> updateContact(@PathVariable UUID id,
                                                  @RequestBody @Valid ContactPutDTO contactUpdate) {
 

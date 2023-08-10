@@ -10,6 +10,7 @@ import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.CustomerDetailPayload;
+import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
 import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
@@ -79,15 +80,13 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}/contacts")
-    public ResponseEntity<List<Contact>> getContactsByCustomerUUID(@PathVariable UUID id) {
+    public ResponseEntity<List<ContactListPayload>> getContactsByCustomerUUID(@PathVariable UUID id) {
         Customer customer = customerService.findCustomerByUUID(id);
 
         if (customer == null)
             throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
-
         List<Contact> contactList = customer.getContacts();
-
-        return new ResponseEntity<>(contactList, HttpStatus.OK);
+        return new ResponseEntity<>(toContactPayloadList(contactList), HttpStatus.OK);
     }
 
     @PostMapping("")
@@ -148,5 +147,8 @@ public class CustomerController {
 
     private static List<CustomerListPayload> toCustomerPayloadList(List<Customer> customerList) {
         return customerList.stream().map(Customer::toListPayload).toList();
+    }
+    private static List<ContactListPayload> toContactPayloadList(List<Contact> contactList) {
+        return contactList.stream().map(Contact::toListPayload).toList();
     }
 }
