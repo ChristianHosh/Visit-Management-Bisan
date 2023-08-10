@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/assignments")
+@RequestMapping("/visit_assignments")
 public class VisitAssignmentController {
     private final VisitAssignmentService visitAssignmentService;
     private final CustomerService customerService;

@@ -1,5 +1,6 @@
 package com.example.vm.payload.list;
 
+import com.example.vm.model.visit.VisitType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,7 +16,7 @@ public class VisitDefinitionListPayload {
 
     private String description ;
 
-    private int  type;
+    private VisitType type;
 
     private int  frequency;
 

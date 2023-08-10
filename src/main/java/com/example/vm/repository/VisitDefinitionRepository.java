@@ -15,8 +15,6 @@ public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition
 
     List<VisitDefinition> searchVisitDefinitionsByAllowRecurring(boolean allowRecurring);
 
-    List<VisitDefinition> searchVisitDefinitionsByType(int type);
-
     List<VisitDefinition> searchVisitDefinitionsByFrequency(int frequency);
 
 }

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -26,13 +27,8 @@ public class VisitDefinitionPostDTO {
     @Size(min = 3, max = 255, message = "Invalid Description: Must be of 3 - 255 characters")
     String description;
 
-    @NotNull(message = "Invalid Type: Type is NULL")
-    @Min(value = 0, message = "Invalid Type: Equals to zero")
-    @Max(value = 2, message = "Invalid Type: Exceeds two")
-    Integer type;
-//    0 SALES
-//    1 MARKETING
-//    2 DELIVERY
+    @NotNull(message = "Invalid TypeUUID: TypeUUID is NULL")
+    UUID typeUUID;
 
 
     @NotNull(message = "Invalid Frequency: Frequency is NULL")

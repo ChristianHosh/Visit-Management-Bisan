@@ -1,8 +1,7 @@
 package com.example.vm.payload.detail;
 
-import com.example.vm.model.visit.VisitAssignment;
+import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -12,17 +11,18 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class VisitDefinitionDetailPayload {
+
     private Timestamp createdTime;
 
     private Timestamp lastModifiedTime;
+
     private UUID uuid;
 
     private String name;
 
-
     private String description;
 
-    private int type;
+    private VisitType type;
 
     private int frequency;
 

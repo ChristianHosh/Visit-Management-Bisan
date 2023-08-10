@@ -6,11 +6,13 @@ import com.example.vm.dto.post.VisitDefinitionPostDTO;
 import com.example.vm.dto.put.VisitDefinitionPutDTO;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
+import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
 import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.service.VisitAssignmentService;
 import com.example.vm.service.VisitDefinitionService;
+import com.example.vm.service.VisitTypeService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +28,13 @@ public class VisitDefinitionController {
     private final VisitDefinitionService visitDefinitionService;
     private final VisitAssignmentService visitAssignmentService;
 
+    private final VisitTypeService visitTypeService;
 
-    public VisitDefinitionController(VisitDefinitionService visitDefinitionService, VisitAssignmentService visitAssignmentService) {
+
+    public VisitDefinitionController(VisitDefinitionService visitDefinitionService, VisitAssignmentService visitAssignmentService, VisitTypeService visitTypeService) {
         this.visitDefinitionService = visitDefinitionService;
         this.visitAssignmentService = visitAssignmentService;
+        this.visitTypeService = visitTypeService;
     }
 
     @GetMapping("")
@@ -63,12 +68,13 @@ public class VisitDefinitionController {
         return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
     }
 
-    @GetMapping(value = "/search", params = "type")
-    public ResponseEntity<List<VisitDefinitionListPayload>> searchByType(@RequestParam("type") int type) {
-        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByType(type);
-
-        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
-    }
+    //TODO FIX SEARCH BY TYPE
+//    @GetMapping(value = "/search", params = "type")
+//    public ResponseEntity<List<VisitDefinitionListPayload>> searchByType(@RequestParam("type") int type) {
+//        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByType(type);
+//
+//        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
+//    }
 
     @GetMapping(value = "/search", params = "frequency")
     public ResponseEntity<List<VisitDefinitionListPayload>> searchByFrequency(@RequestParam("frequency") int frequency) {
@@ -94,7 +100,13 @@ public class VisitDefinitionController {
 
     @PostMapping("")
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {
-        VisitDefinition savedVisitDefinition = visitDefinitionService.saveNewVisit(visitDefinitionRequest);
+        VisitType visitType = visitTypeService.findById(visitDefinitionRequest.getTypeUUID());
+
+        if (visitType == null){
+            throw new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND);
+        }
+
+        VisitDefinition savedVisitDefinition = visitDefinitionService.saveNewVisit(visitDefinitionRequest, visitType);
 
         return new ResponseEntity<>(savedVisitDefinition.toDetailPayload(), HttpStatus.CREATED);
     }
@@ -118,7 +130,13 @@ public class VisitDefinitionController {
         if (visitDefinitionToUpdate == null)
             throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
 
-        VisitDefinition updatedVisitDefinition = visitDefinitionService.updateVisitDefinition(visitDefinitionToUpdate, VisitDefinitionUpdate);
+        VisitType visitType = visitTypeService.findById(VisitDefinitionUpdate.getTypeUUID());
+
+        if (visitType == null){
+            throw new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND);
+        }
+
+        VisitDefinition updatedVisitDefinition = visitDefinitionService.updateVisitDefinition(visitDefinitionToUpdate, VisitDefinitionUpdate, visitType);
 
         return new ResponseEntity<>(updatedVisitDefinition.toDetailPayload(), HttpStatus.OK);
     }

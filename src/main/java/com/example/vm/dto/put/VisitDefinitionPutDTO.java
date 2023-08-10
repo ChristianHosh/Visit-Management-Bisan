@@ -4,6 +4,8 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Builder
 @Data
 public class VisitDefinitionPutDTO {
@@ -14,9 +16,7 @@ public class VisitDefinitionPutDTO {
     @Size(min = 3, max = 255, message = "Invalid Description: Must be of 3 - 255 characters")
     String description;
 
-    @Min(value = 0, message = "Invalid Type: Equals to zero")
-    @Max(value = 2, message = "Invalid Type: Exceeds two")
-    Integer type;
+    UUID typeUUID;
 
     @Min(value = 1, message = "Invalid Frequency: Equals to one")
     @Max(value = 365, message = "Invalid Frequency: Exceeds one year")

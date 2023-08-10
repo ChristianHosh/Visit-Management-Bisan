@@ -31,8 +31,6 @@ public class VisitAssignmentService {
         Optional<VisitAssignment> optional = repository.findById(uuid);
         return optional.orElse(null);
     }
-
-
     public VisitAssignment saveNewVisitAssignment(VisitDefinition visitDefinition, VisitAssignmentPostDTO visitAssignmentRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
@@ -49,14 +47,12 @@ public class VisitAssignmentService {
 
         return repository.save(visitAssignmentToSave);
     }
-
     public VisitAssignment updateVisitAssignment(VisitAssignment VisitAssignmentToUpdate, VisitAssignmentPutDTO updatedDTO) {
         VisitAssignmentToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
         VisitAssignmentToUpdate.setComment(updatedDTO.getComment());
         VisitAssignmentToUpdate.setDate(updatedDTO.getDate());
         return repository.save(VisitAssignmentToUpdate);
     }
-
     public VisitAssignment enableVisitAssignment(VisitAssignment visitAssignment) {
         visitAssignment.setEnabled(visitAssignment.getEnabled() == 0 ? 1 : 0);
 

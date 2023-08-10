@@ -1,11 +1,8 @@
 package com.example.vm.model.visit;
 
 
-import com.example.vm.model.Customer;
 import com.example.vm.model.ModelAuditSuperclass;
-import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
-import com.example.vm.payload.list.VisitAssignmentListPayload;
 import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -34,8 +31,9 @@ public class VisitDefinition extends ModelAuditSuperclass {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "type")
-    private int type;
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "type_id")
+    private VisitType type;
 
     @Column(name = "frequency")
     private int frequency;
