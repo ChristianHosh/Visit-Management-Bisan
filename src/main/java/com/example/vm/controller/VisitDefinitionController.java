@@ -7,6 +7,7 @@ import com.example.vm.dto.put.VisitDefinitionPutDTO;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
+import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
 import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.service.VisitAssignmentService;
 import com.example.vm.service.VisitDefinitionService;
@@ -39,13 +40,13 @@ public class VisitDefinitionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VisitDefinition> getVisitDefinitionById(@PathVariable UUID id) {
+    public ResponseEntity<VisitDefinitionDetailPayload> getVisitDefinitionById(@PathVariable UUID id) {
         VisitDefinition user = visitDefinitionService.findVisitDefinitionByUUID(id);
 
         if (user == null)
             throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
 
-        return new ResponseEntity<>(user, HttpStatus.OK);
+        return new ResponseEntity<>(user.toDetailPayload(), HttpStatus.OK);
     }
 
     @GetMapping(value = "/search", params = "name")
@@ -92,10 +93,10 @@ public class VisitDefinitionController {
 
 
     @PostMapping("")
-    public ResponseEntity<VisitDefinition> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {
+    public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {
         VisitDefinition savedVisitDefinition = visitDefinitionService.saveNewVisit(visitDefinitionRequest);
 
-        return new ResponseEntity<>(savedVisitDefinition, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedVisitDefinition.toDetailPayload(), HttpStatus.CREATED);
     }
 
     @PostMapping("/{id}/assignments")
@@ -111,7 +112,7 @@ public class VisitDefinitionController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<VisitDefinition> updateVisitDefinition(@PathVariable UUID id, @RequestBody @Valid VisitDefinitionPutDTO VisitDefinitionUpdate) {
+    public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(@PathVariable UUID id, @RequestBody @Valid VisitDefinitionPutDTO VisitDefinitionUpdate) {
         VisitDefinition visitDefinitionToUpdate = visitDefinitionService.findVisitDefinitionByUUID(id);
 
         if (visitDefinitionToUpdate == null)
@@ -119,11 +120,11 @@ public class VisitDefinitionController {
 
         VisitDefinition updatedVisitDefinition = visitDefinitionService.updateVisitDefinition(visitDefinitionToUpdate, VisitDefinitionUpdate);
 
-        return new ResponseEntity<>(updatedVisitDefinition, HttpStatus.OK);
+        return new ResponseEntity<>(updatedVisitDefinition.toDetailPayload(), HttpStatus.OK);
     }
 
     @PutMapping("/{id}/endis")
-    public ResponseEntity<VisitDefinition> enableVisitDefinition(@PathVariable UUID id) {
+    public ResponseEntity<VisitDefinitionDetailPayload> enableVisitDefinition(@PathVariable UUID id) {
         VisitDefinition VisitDefinitionToEnable = visitDefinitionService.findVisitDefinitionByUUID(id);
 
         if (VisitDefinitionToEnable == null)
@@ -131,7 +132,7 @@ public class VisitDefinitionController {
 
         VisitDefinitionToEnable = visitDefinitionService.enableVisitDefinition(VisitDefinitionToEnable);
 
-        return new ResponseEntity<>(VisitDefinitionToEnable, HttpStatus.OK);
+        return new ResponseEntity<>(VisitDefinitionToEnable.toDetailPayload(), HttpStatus.OK);
     }
 
     private static List<VisitDefinitionListPayload> toDefinitionPayloadList(List<VisitDefinition> visitDefinitionList) {

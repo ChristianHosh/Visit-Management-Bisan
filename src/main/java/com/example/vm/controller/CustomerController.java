@@ -104,7 +104,6 @@ public class CustomerController {
         if (customer == null)
             throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
 
-
         Contact savedContact = contactService.saveNewContact(customer, contactRequest);
 
         return new ResponseEntity<>(savedContact, HttpStatus.OK);

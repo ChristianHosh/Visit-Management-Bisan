@@ -1,7 +1,11 @@
 package com.example.vm.model.visit;
 
 
+import com.example.vm.model.Customer;
 import com.example.vm.model.ModelAuditSuperclass;
+import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
+import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
+import com.example.vm.payload.list.VisitAssignmentListPayload;
 import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -50,4 +54,13 @@ public class VisitDefinition extends ModelAuditSuperclass {
         return new VisitDefinitionListPayload(this.getUuid(), this.getName(), this.getDescription(),
                 this.getType(), this.getFrequency(), this.isAllowRecurring(), this.getEnabled());
     }
+
+    public VisitDefinitionDetailPayload toDetailPayload() {
+        return new VisitDefinitionDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getUuid(),
+                this.getName(), this.getDescription(),
+                this.getType(), this.getFrequency(), this.isAllowRecurring(), this.getEnabled(),
+
+                this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());
+    }
 }
+
