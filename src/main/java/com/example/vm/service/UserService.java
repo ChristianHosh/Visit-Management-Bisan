@@ -37,18 +37,10 @@ public class UserService {
     }
 
 
-    public ResponseEntity<List<User>> searchUsersByFirstName(String firstName) {
-        return ResponseEntity.ok(repository.searchUsersByFirstNameContaining(firstName));
+    public ResponseEntity<List<User>> searchUsersByQuery(String query) {
+        return ResponseEntity.ok(repository
+                .searchUsersByFirstNameContainingOrLastNameContainingOrAccessLevel(query, query, Integer.parseInt(query)));
     }
-
-    public ResponseEntity<List<User>> searchUsersByLastName(String lastName) {
-        return ResponseEntity.ok(repository.searchUsersByLastNameContaining(lastName));
-    }
-
-    public ResponseEntity<List<User>> searchUsersByAccessLevel(int accessLevel) {
-        return ResponseEntity.ok(repository.searchUsersByAccessLevel(accessLevel));
-    }
-
 
     public ResponseEntity<User> saveNewUser(UserPostDTO userRequest) {
 //        VALIDATE PASSWORD

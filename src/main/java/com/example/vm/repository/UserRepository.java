@@ -9,10 +9,7 @@ import java.util.List;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
-    List<User> searchUsersByFirstNameContaining(String firstName);
+    List<User> searchUsersByFirstNameContainingOrLastNameContainingOrAccessLevel(String firstName, String lastName, int accessLevel);
 
-    List<User> searchUsersByLastNameContaining(String lastName);
-
-    List<User> searchUsersByAccessLevel(int accessLevel);
 
 }

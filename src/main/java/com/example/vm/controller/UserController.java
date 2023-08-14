@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/users")
@@ -29,19 +27,9 @@ public class UserController {
         return userService.findAllUsers();
     }
 
-    @GetMapping(value = "/search", params = "firstName")
-    public ResponseEntity<?> searchByFirstName(@RequestParam("firstName") String firstName) {
-        return userService.searchUsersByFirstName(firstName);
-    }
-
-    @GetMapping(value = "/search", params = "lastName")
-    public ResponseEntity<List<User>> searchByLastName(@RequestParam("lastName") String lastName) {
-        return userService.searchUsersByLastName(lastName);
-    }
-
-    @GetMapping(value = "/search", params = "accessLevel")
-    public ResponseEntity<List<User>> searchByAccessLevel(@RequestParam("accessLevel") int accessLevel) {
-        return userService.searchUsersByAccessLevel(accessLevel);
+    @GetMapping(value = "/search", params = "query")
+    public ResponseEntity<?> searchByFirstName(@RequestParam("query") String query) {
+        return userService.searchUsersByQuery(query);
     }
 
     @GetMapping("/{username}")
