@@ -81,17 +81,11 @@ public class VisitDefinitionController {
         return visitDefinitionService.updateVisitDefinition(id, visitDefinitionRequest);
     }
 
-   /* @PutMapping("/{id}/endis")
-    public ResponseEntity<VisitDefinitionDetailPayload> enableVisitDefinition(@PathVariable UUID id) {
-        VisitDefinition VisitDefinitionToEnable = visitDefinitionService.findVisitDefinitionByUUID(id);
+    @PutMapping("/{id}/endis")
+    public ResponseEntity<?> enableVisitDefinition(@PathVariable UUID id) {
+        return  visitDefinitionService.findVisitDefinitionByUUID(id);
 
-        if (VisitDefinitionToEnable == null)
-            throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
-
-        VisitDefinitionToEnable = visitDefinitionService.enableVisitDefinition(VisitDefinitionToEnable);
-
-        return new ResponseEntity<>(VisitDefinitionToEnable.toDetailPayload(), HttpStatus.OK);
     }
-*/
+
 
 }

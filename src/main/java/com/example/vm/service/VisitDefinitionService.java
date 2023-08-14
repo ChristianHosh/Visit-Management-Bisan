@@ -46,7 +46,7 @@ public class VisitDefinitionService {
 
     public ResponseEntity<VisitDefinition> saveNewVisit(VisitDefinitionPostDTO VisitDefinitionRequest) {
         VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeUUID())
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND));
 
         Timestamp timestamp = Timestamp.from(Instant.now());
 
@@ -87,7 +87,7 @@ public class VisitDefinitionService {
                 .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
 
         VisitType foundVisitType = visitTypeRepository.findById(updatedDTO.getTypeUUID())
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND));
 
         foundDefinition.setName(updatedDTO.getName());
         foundDefinition.setType(foundVisitType);
@@ -101,10 +101,12 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(foundDefinition.toDetailPayload());
     }
 
-    public VisitDefinition enableVisitDefinition(VisitDefinition visitDefinition) {
-        visitDefinition.setEnabled(visitDefinition.getEnabled() == 0 ? 1 : 0);
+    public  ResponseEntity<VisitDefinitionDetailPayload>  enableVisitDefinition(UUID id) {
+        VisitDefinition foundDefinition = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
+        foundDefinition.setEnabled(foundDefinition.getEnabled() == 0 ? 1 : 0);
+        return ResponseEntity.ok(foundDefinition.toDetailPayload());
 
-        return repository.save(visitDefinition);
     }
 
 
