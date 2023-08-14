@@ -26,6 +26,11 @@ public class UserPostDTO {
     @Size(min = 8, max = 30, message = "Invalid password: Must be of 8 - 30 characters")
     String password;
 
+    @NotBlank(message = "Invalid confirm password: Empty password")
+    @NotNull(message = "Invalid confirm password: password is NULL")
+    @Size(min = 8, max = 30, message = "Invalid confirm password: Must be of 8 - 30 characters")
+    String confirmPassword;
+
     @NotBlank(message = "Invalid firstName: Empty firstName")
     @NotNull(message = "Invalid firstName: firstName is NULL")
     @Size(min = 3, max = 30, message = "Invalid firstName: Must be of 3 - 30 characters")

@@ -57,7 +57,7 @@ public class VisitAssignmentController {
     }
 
     @GetMapping("/{assignmentId}/customer_contacts")
-    public ResponseEntity<List<Contact>> getContactsByAssignmentType(@PathVariable UUID assignmentId, @RequestBody @Valid UUIDDTO customerUUIDDTO){
+    public ResponseEntity<List<Contact>> getContactsByAssignmentType(@PathVariable UUID assignmentId, @RequestBody @Valid UUIDDTO customerUUIDDTO) {
         VisitAssignment currentAssignment = visitAssignmentService.findVisitAssignmentByUUID(assignmentId);
 
         if (currentAssignment == null)
@@ -77,7 +77,6 @@ public class VisitAssignmentController {
 
         return new ResponseEntity<>(contactList, HttpStatus.OK);
     }
-
 
 
     @PutMapping("/{id}")
@@ -141,32 +140,34 @@ public class VisitAssignmentController {
 
         System.out.println(contactList);
 
-        if(contactList.isEmpty()){
+        if (contactList.isEmpty()) {
 
             throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_INVALID_CONTACT_TYPES);
 
         }
+
         visitAssignment = visitAssignmentService.assignVisitToCustomer(visitAssignment, customer);
         return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
     }
-    @PostMapping("/{id}/users")
-    public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToUser(@PathVariable UUID id, @RequestBody @Valid USERDTO userDTO) {
-        VisitAssignment visitAssignment = visitAssignmentService.findVisitAssignmentByUUID(id);
+//
+//    @PostMapping("/{id}/users")
+//    public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToUser(@PathVariable UUID id, @RequestBody @Valid USERDTO userDTO) {
+//        VisitAssignment visitAssignment = visitAssignmentService.findVisitAssignmentByUUID(id);
+//
+//        if (visitAssignment == null)
+//            throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND);
+//
+//        User user = userService.findUserByUsername(userDTO.getUsername());
+//
+//        if (user == null)
+//            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+//
+//        visitAssignment = visitAssignmentService.assignVisitTouser(visitAssignment,user);
+//
+//        return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
+//    }
 
-        if (visitAssignment == null)
-            throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND);
-
-        User user = userService.findUserByUsername(userDTO.getUsername());
-
-        if (user == null)
-            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
-
-        visitAssignment = visitAssignmentService.assignVisitTouser(visitAssignment,user);
-
-        return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
-    }
-
-    private static List<VisitAssignmentListPayload> toPayloadList(List<VisitAssignment> assignmentList){
+    private static List<VisitAssignmentListPayload> toPayloadList(List<VisitAssignment> assignmentList) {
         return assignmentList.stream().map(VisitAssignment::toListPayload).toList();
     }
 }

@@ -27,79 +27,57 @@ public class UserController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<User>> getAllUsers() {
-        List<User> userList = userService.findAllUsers();
-
-        return new ResponseEntity<>(userList, HttpStatus.OK);
+    public ResponseEntity<?> getAllUsers() {
+        return userService.findAllUsers();
     }
 
     @GetMapping(value = "/search", params = "firstName")
-    public ResponseEntity<List<User>> searchByFirstName(@RequestParam("firstName") String firstName) {
-        List<User> userList = userService.searchUsersByFirstName(firstName);
-
-        return new ResponseEntity<>(userList, HttpStatus.OK);
+    public ResponseEntity<?> searchByFirstName(@RequestParam("firstName") String firstName) {
+        return userService.searchUsersByFirstName(firstName);
     }
 
     @GetMapping(value = "/search", params = "lastName")
     public ResponseEntity<List<User>> searchByLastName(@RequestParam("lastName") String lastName) {
-        List<User> userList = userService.searchUsersByLastName(lastName);
-
-        return new ResponseEntity<>(userList, HttpStatus.OK);
+        return userService.searchUsersByLastName(lastName);
     }
 
     @GetMapping(value = "/search", params = "accessLevel")
     public ResponseEntity<List<User>> searchByAccessLevel(@RequestParam("accessLevel") int accessLevel) {
-        List<User> userList = userService.searchUsersByAccessLevel(accessLevel);
-
-        return new ResponseEntity<>(userList, HttpStatus.OK);
+        return userService.searchUsersByAccessLevel(accessLevel);
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<User> getByUsername(@PathVariable String username) {
-        User user = userService.findUserByUsername(username);
-
-        if (user == null)
-            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
-
-
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<User> getByUsername(@PathVariable @Valid String username) {
+        return userService.findUserByUsername(username);
     }
 
     @PostMapping("")
-    public ResponseEntity<User> saveNewUser(@RequestBody @Valid UserPostDTO userRequest) {
-        User user = userService.findUserByUsername(userRequest.getUsername().trim());
-
-        if (user != null) {
-            throw new UserAlreadyExistsException();
-        }
-
-        User savedUser = userService.saveNewUser(userRequest);
-
-        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
+    public ResponseEntity<?> saveNewUser(@RequestBody @Valid UserPostDTO userRequest) {
+        return userService.saveNewUser(userRequest);
     }
 
-    @PutMapping("/{username}")
-    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody @Valid UserPutDTO userUpdate) {
-        User userToUpdate = userService.findUserByUsername(username);
+//    @PutMapping("/{username}")
+//    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody @Valid UserPutDTO userUpdate) {
+//        User userToUpdate = userService.findUserByUsername(username);
+//
+//        if (userToUpdate == null)
+//            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+//
+//        User updatedUser = userService.updateUser(userToUpdate, userUpdate);
+//
+//        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+//    }
 
-        if (userToUpdate == null)
-            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
-
-        User updatedUser = userService.updateUser(userToUpdate, userUpdate);
-
-        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-    }
-
-    @PutMapping("/{username}/endis")
-    public ResponseEntity<User> enableUser(@PathVariable String username) {
-        User userToEnable = userService.findUserByUsername(username);
-
-        if (userToEnable == null)
-            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
-
-        userToEnable = userService.enableUser(userToEnable);
-
-        return new ResponseEntity<>(userToEnable, HttpStatus.OK);
-    }
+//    @PutMapping("/{username}/endis")
+//    public ResponseEntity<User> enableUser(@PathVariable String username) {
+//        User userToEnable = userService.findUserByUsername(username);
+//
+//        if (userToEnable == null)
+//            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+//
+//        userToEnable = userService.enableUser(userToEnable);
+//
+//        return new ResponseEntity<>(userToEnable, HttpStatus.OK);
+//    }
 
 }
