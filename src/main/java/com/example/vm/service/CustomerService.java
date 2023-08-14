@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -91,6 +92,7 @@ public class CustomerService {
                         .zipcode(addressRequest.getZipcode())
                         .city(addressRequest.getCity())
                         .build())
+                .visitAssignments(new ArrayList<>())
                 .enabled(1)
                 .build();
 
@@ -116,6 +118,8 @@ public class CustomerService {
 
 
     public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(UUID id, ContactPostDTO contactRequest) {
+        Timestamp timestamp = Timestamp.from(Instant.now());
+
         Customer foundCustomer = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND));
 
@@ -131,7 +135,11 @@ public class CustomerService {
                 .enabled(1)
                 .build();
 
+        newContact.setCreatedTime(timestamp);
+        newContact.setLastModifiedTime(timestamp);
+
         foundCustomer.getContacts().add(newContact);
+        newContact.setCustomer(foundCustomer);
 
         foundCustomer = repository.save(foundCustomer);
 
