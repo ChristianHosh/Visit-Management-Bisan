@@ -32,7 +32,7 @@ public class UserService {
 
     public ResponseEntity<User> findUserByUsername(String username) {
         User foundUser = repository.findById(username)
-                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundUser);
     }
@@ -53,7 +53,7 @@ public class UserService {
 
     public ResponseEntity<?> saveNewUser(UserPostDTO userRequest) {
 //        VALIDATE PASSWORD
-        if(!userRequest.getConfirmPassword().equals(userRequest.getPassword())) {
+        if (!userRequest.getConfirmPassword().equals(userRequest.getPassword())) {
             throw new ValidationException(ValidationException.NOT_Match);
         }
 
@@ -71,7 +71,8 @@ public class UserService {
         userToSave.setCreatedTime(timestamp);
         userToSave.setLastModifiedTime(timestamp);
 
-        userToSave =  repository.save(userToSave);
+        userToSave = repository.save(userToSave);
+
         return ResponseEntity.ok(userToSave);
     }
 
@@ -79,14 +80,12 @@ public class UserService {
     public ResponseEntity<User> updateUser(String username, UserPutDTO updatedDTO) {
 
         User userToUpdate = repository.findById(username)
-                        .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
 
-
+        userToUpdate.setFirstName(updatedDTO.getFirstName());
+        userToUpdate.setLastName(updatedDTO.getLastName());
+        userToUpdate.setAccessLevel(updatedDTO.getAccessLevel());
         userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
-
-        userToUpdate.setFirstName(updatedDTO.getFirstName() == null ? userToUpdate.getFirstName() : updatedDTO.getFirstName());
-        userToUpdate.setLastName(updatedDTO.getLastName() == null ? userToUpdate.getLastName() : updatedDTO.getLastName());
-        userToUpdate.setAccessLevel(updatedDTO.getAccessLevel() == null ? userToUpdate.getAccessLevel() : updatedDTO.getAccessLevel());
 
         return ResponseEntity.ok(userToUpdate);
     }
@@ -94,9 +93,12 @@ public class UserService {
 
     public ResponseEntity<User> enableUser(String username) {
         User user = repository.findById(username)
-                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+
         user.setEnabled(user.getEnabled() == 0 ? 1 : 0);
-       user= repository.save(user);
+
+        user = repository.save(user);
+
         return ResponseEntity.ok(user);
     }
 }

@@ -1,91 +1,78 @@
 package com.example.vm.service;
 
-import com.example.vm.dto.post.ContactPostDTO;
+import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.ContactRepository;
+import com.example.vm.repository.VisitTypeRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class ContactService {
-    private final ContactRepository repository;
+    private final ContactRepository contactRepository;
+    private final VisitTypeRepository visitTypeRepository;
 
-    public ContactService(ContactRepository repository) {
-        this.repository = repository;
+    public ContactService(ContactRepository contactRepository, VisitTypeRepository visitTypeRepository) {
+        this.contactRepository = contactRepository;
+        this.visitTypeRepository = visitTypeRepository;
     }
 
-    public Contact findContactByUUID(UUID uuid) {
-        Optional<Contact> optional = repository.findById(uuid);
-        return optional.orElse(null);
+    public ResponseEntity<Contact> findContactByUUID(UUID id) {
+        Contact foundContact = contactRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CONTACT_NOT_FOUND));
+
+        return ResponseEntity.ok(foundContact);
     }
 
-    public Contact saveNewContact(Customer customer, ContactPostDTO contactRequest, List<VisitType> visitTypes) {
-        Timestamp timestamp = Timestamp.from(Instant.now());
+    public ResponseEntity<Contact> updateContact(UUID id, ContactPutDTO contactRequest) {
+        Contact contactToUpdate = contactRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CONTACT_NOT_FOUND));
 
-        Contact contactToSave = Contact.builder()
-                .firstName(contactRequest.getFirstName())
-                .lastName(contactRequest.getLastName())
-                .phoneNumber(contactRequest.getPhoneNumber())
-                .email(contactRequest.getEmail())
-                .enabled(1)
-                .build();
+        List<VisitType> visitTypes = new ArrayList<>();
 
-        contactToSave.setCreatedTime(timestamp);
-        contactToSave.setLastModifiedTime(timestamp);
+        for (UUIDDTO uuiddto : contactRequest.getTypes()) {
+            VisitType visitType = visitTypeRepository.findById(uuiddto.getUuid())
+                    .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND));
 
-        contactToSave.setVisitTypes(visitTypes);
-        contactToSave.setCustomer(customer);
+            visitTypes.add(visitType);
+        }
 
-        return repository.save(contactToSave);
-    }
-
-    public List<Contact> searchContactByFirstName(String firstName) {
-        return repository.searchContactByFirstNameContaining(firstName);
-    }
-
-    public List<Contact> searchContactByLastName(String lastName) {
-        return repository.searchContactByLastNameContaining(lastName);
-    }
-
-    public List<Contact> searchContactByPhoneNumber(String phoneNumber) {
-        return repository.searchContactByPhoneNumberContaining(phoneNumber);
-    }
-
-    public List<Contact> searchContactByEmail(String email) {
-        return repository.searchContactByEmailContaining(email);
-    }
-
-
-    public Contact updateContact(Contact contactToUpdate, ContactPutDTO updatedDTO, List<VisitType> visitTypes) {
+        contactToUpdate.setFirstName(contactRequest.getFirstName());
+        contactToUpdate.setLastName(contactRequest.getLastName());
+        contactToUpdate.setPhoneNumber(contactRequest.getPhoneNumber());
+        contactToUpdate.setEmail(contactRequest.getEmail());
+        contactToUpdate.setVisitTypes(visitTypes);
 
         contactToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 
-        contactToUpdate.setFirstName(updatedDTO.getFirstName() == null ? contactToUpdate.getFirstName() : updatedDTO.getFirstName());
-        contactToUpdate.setLastName(updatedDTO.getLastName() == null ? contactToUpdate.getLastName() : updatedDTO.getLastName());
-        contactToUpdate.setPhoneNumber(updatedDTO.getPhoneNumber() == null ? contactToUpdate.getPhoneNumber() : updatedDTO.getPhoneNumber());
-        contactToUpdate.setEmail(updatedDTO.getEmail() == null ? contactToUpdate.getEmail() : updatedDTO.getEmail());
+        contactToUpdate = contactRepository.save(contactToUpdate);
 
-        contactToUpdate.setVisitTypes(visitTypes);
-
-        return repository.save(contactToUpdate);
+        return ResponseEntity.ok(contactToUpdate);
     }
 
-    public Contact enableContact(Contact contact) {
+    public ResponseEntity<Contact> enableContact(UUID id) {
+        Contact contact = contactRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+
         contact.setEnabled(contact.getEnabled() == 0 ? 1 : 0);
 
-        return repository.save(contact);
+        contact = contactRepository.save(contact);
+
+        return ResponseEntity.ok(contact);
     }
 
-    public List<Contact> findContactsByCustomerAndVisitTypes(Customer customer, VisitType visitType){
-        return repository.findContactsByCustomerAndVisitTypesContaining(customer, visitType);
+    public List<Contact> findContactsByCustomerAndVisitTypes(Customer customer, VisitType visitType) {
+        return contactRepository.findContactsByCustomerAndVisitTypesContaining(customer, visitType);
     }
 
 
