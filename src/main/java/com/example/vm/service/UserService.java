@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -38,8 +39,19 @@ public class UserService {
 
 
     public ResponseEntity<List<User>> searchUsersByQuery(String query) {
-        return ResponseEntity.ok(repository
-                .searchUsersByFirstNameContainingOrLastNameContainingOrAccessLevel(query, query, Integer.parseInt(query)));
+        List<User> result = new ArrayList<>();
+
+        List<User> list1 = repository.searchUsersByFirstNameContainingOrLastNameContainingOrUsernameContaining(query, query, query);
+        List<User> list2 = new ArrayList<>();
+        try {
+            list2 = repository.searchUsersByAccessLevel(Integer.parseInt(query));
+        } catch (NumberFormatException ignored) {
+        }
+
+        result.addAll(list1);
+        result.addAll(list2);
+
+        return ResponseEntity.ok(result);
     }
 
     public ResponseEntity<User> saveNewUser(UserPostDTO userRequest) {

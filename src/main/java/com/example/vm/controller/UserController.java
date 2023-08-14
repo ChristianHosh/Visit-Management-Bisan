@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @GetMapping(value = "/search", params = "query")
-    public ResponseEntity<?> searchByFirstName(@RequestParam("query") String query) {
+    public ResponseEntity<?> searchUsersByQuery(@RequestParam("query") String query) {
         return userService.searchUsersByQuery(query);
     }
 
