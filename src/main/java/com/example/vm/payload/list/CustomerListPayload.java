@@ -17,6 +17,8 @@ public class CustomerListPayload {
 
     private int enabled;
 
+    private AddressListPayload address;
+
     public static List<CustomerListPayload> toPayload(List<Customer> customerList) {
         return customerList.stream().map(Customer::toListPayload).toList();
     }

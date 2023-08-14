@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -44,7 +45,7 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(foundVisitDefinition.toDetailPayload());
     }
 
-    public ResponseEntity<VisitDefinition> saveNewVisit(VisitDefinitionPostDTO VisitDefinitionRequest) {
+    public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisit(VisitDefinitionPostDTO VisitDefinitionRequest) {
         VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeUUID())
                 .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND));
 
@@ -78,7 +79,7 @@ public class VisitDefinitionService {
 
         VisitDefinitionToSave = repository.save(VisitDefinitionToSave);
 
-        return ResponseEntity.ok(VisitDefinitionToSave);
+        return ResponseEntity.ok(VisitDefinitionToSave.toDetailPayload());
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(UUID id, VisitDefinitionPutDTO updatedDTO) {
@@ -93,6 +94,7 @@ public class VisitDefinitionService {
         foundDefinition.setType(foundVisitType);
         foundDefinition.setDescription(updatedDTO.getDescription());
         foundDefinition.setAllowRecurring(updatedDTO.getAllowRecurring());
+        foundDefinition.setFrequency(updatedDTO.getFrequency());
 
         foundDefinition.setLastModifiedTime(Timestamp.from(Instant.now()));
 
@@ -113,28 +115,29 @@ public class VisitDefinitionService {
 
     }
 
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByQuery(String query) {
 
-    public ResponseEntity<List<VisitDefinitionListPayload>> searchByFrequency(int frequency) {
-        List<VisitDefinition> visitDefinitionList = repository.searchVisitDefinitionsByFrequency(frequency);
+        List<VisitDefinitionListPayload> result = new ArrayList<>();
 
-        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionList));
-    }
+        List<VisitDefinitionListPayload> list1 = VisitDefinitionListPayload.toPayload(repository.searchVisitDefinitionsByNameContaining(query));
+        List<VisitDefinitionListPayload> list2 = new ArrayList<>();
 
+        try {
+            list2 = VisitDefinitionListPayload.toPayload(repository.searchVisitDefinitionsByFrequency(Integer.parseInt(query)));
+        } catch (NumberFormatException ignored) {
+        }
 
-    public ResponseEntity<List<VisitDefinitionListPayload>> searchByAllowRecurring(boolean allowRecurring) {
-        List<VisitDefinition> visitDefinitionList = repository.searchVisitDefinitionsByAllowRecurring(allowRecurring);
+        result.addAll(list1);
+        result.addAll(list2);
 
-        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionList));
-    }
-
-    public ResponseEntity<List<VisitDefinitionListPayload>> searchByName(String name) {
-        List<VisitDefinition> visitDefinitionList = repository.searchVisitDefinitionsByNameContaining(name);
-
-        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionList));
+        return ResponseEntity.ok(result);
 
     }
+
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(UUID id, VisitAssignmentPostDTO visitAssignmentRequest) {
+        Timestamp timestamp = Timestamp.from(Instant.now());
+
         VisitDefinition visitDefinition = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
 
@@ -143,6 +146,9 @@ public class VisitDefinitionService {
                 .date(visitAssignmentRequest.getDate())
                 .enabled(1)
                 .build();
+
+        visitAssignment.setCreatedTime(timestamp);
+        visitAssignment.setLastModifiedTime(timestamp);
 
         visitDefinition.getVisitAssignments().add(visitAssignment);
 

@@ -27,6 +27,8 @@ public class VisitDefinitionListPayload {
     private int enabled;
 
     public static List<VisitDefinitionListPayload> toPayload(List<VisitDefinition> visitDefinitionList) {
+
         return visitDefinitionList.stream().map(VisitDefinition::toListPayload).toList();
+
     }
 }

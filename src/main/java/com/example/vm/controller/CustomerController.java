@@ -29,20 +29,14 @@ public class CustomerController {
         return customerService.findAllCustomers();
     }
 
-    @GetMapping(value = "/search", params = "name")
-    public ResponseEntity<?> searchByCustomerName(@RequestParam("name") String name) {
-        return customerService.searchByName(name);
+    @GetMapping(value = "/search",params = "query")
+    public ResponseEntity<?> searchByQuery(@RequestParam("query") String name) {
+        return customerService.searchByQuery(name);
     }
 
-    @GetMapping(value = "/search", params = "city")
-    public ResponseEntity<?> searchByCustomerCity(@RequestParam("city") String city) {
-        return customerService.searchByAddressCity(city);
-    }
 
-    @GetMapping(value = "/search", params = "address")
-    public ResponseEntity<?> searchByCustomerAddress(@RequestParam("address") String address) {
-        return customerService.searchByAddressLine(address);
-    }
+
+
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDetailPayload> getCustomerById(@PathVariable UUID id) {

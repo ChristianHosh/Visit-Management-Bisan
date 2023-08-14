@@ -52,21 +52,12 @@ public class CustomerService {
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
 
-    public ResponseEntity<List<CustomerListPayload>> searchByName(String name) {
-        List<Customer> customerList = repository.searchCustomersByNameContaining(name);
 
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
-    }
 
-    public ResponseEntity<List<CustomerListPayload>> searchByAddressCity(String city) {
-        List<Customer> customerList = repository.searchCustomersByAddress_CityContaining(city);
 
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
-    }
+    public ResponseEntity<List<CustomerListPayload>> searchByQuery(String query ) {
 
-    public ResponseEntity<List<CustomerListPayload>> searchByAddressLine(String addressLine) {
-        List<Customer> customerList = repository.searchCustomersByAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(addressLine, addressLine);
-
+        List<Customer> customerList = repository.searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing( query ,query,query,query);
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
     }
 
@@ -137,12 +128,9 @@ public class CustomerService {
 
         newContact.setCreatedTime(timestamp);
         newContact.setLastModifiedTime(timestamp);
-
         foundCustomer.getContacts().add(newContact);
         newContact.setCustomer(foundCustomer);
-
         foundCustomer = repository.save(foundCustomer);
-
         return ResponseEntity.status(HttpStatus.CREATED).body(foundCustomer.toDetailPayload());
     }
 

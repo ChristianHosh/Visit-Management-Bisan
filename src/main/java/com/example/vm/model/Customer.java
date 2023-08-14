@@ -2,6 +2,7 @@ package com.example.vm.model;
 
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.payload.detail.CustomerDetailPayload;
+import com.example.vm.payload.list.AddressListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
@@ -48,11 +49,13 @@ public class Customer extends ModelAuditSuperclass {
     )
     private List<VisitAssignment> visitAssignments;
 
-    public CustomerListPayload toListPayload(){
-        return new CustomerListPayload(this.getUuid(), this.getName(), this.getEnabled());
+    public CustomerListPayload toListPayload() {
+        return new CustomerListPayload(this.getUuid(), this.getName(), this.getEnabled(),
+                new AddressListPayload(this.getAddress().getCity(), this.getAddress().getAddressLine1(),
+                        this.getAddress().getAddressLine2()));
     }
 
-    public CustomerDetailPayload toDetailPayload(){
+    public CustomerDetailPayload toDetailPayload() {
         return new CustomerDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getUuid(),
                 this.getName(), this.getEnabled(), this.getAddress(), this.getContacts(),
                 this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());

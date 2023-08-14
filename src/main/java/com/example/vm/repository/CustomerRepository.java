@@ -9,12 +9,8 @@ import java.util.UUID;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
+    List<Customer> searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(String name, String addressLine1, String addressLine2, String city);
 
-    List<Customer> searchCustomersByNameContaining(String name);
-
-    List<Customer> searchCustomersByAddress_CityContaining(String city);
-
-    List<Customer> searchCustomersByAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(String addressLine1, String addressLine2);
 
 
 }

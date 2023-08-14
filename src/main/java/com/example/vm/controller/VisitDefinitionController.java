@@ -33,10 +33,7 @@ public class VisitDefinitionController {
     }
 
 
-    @GetMapping(value = "/search", params = "name")
-    public ResponseEntity<?> searchByName(@RequestParam("name") String name) {
-        return  visitDefinitionService.searchByName(name);
-    }
+
 
 
 
@@ -48,22 +45,10 @@ public class VisitDefinitionController {
 //        return new ResponseEntity<>(toPayload(visitDefinitionList), HttpStatus.OK);
 //    }
 
-    @GetMapping(value = "/search", params = "frequency")
-    public ResponseEntity<?> searchByFrequency(@RequestParam("frequency") int frequency) {
-        return visitDefinitionService.searchByFrequency(frequency);
+    @GetMapping(value = "/search", params = "query")
+    public ResponseEntity<?> searchByFrequency(@RequestParam("query") String query) {
+        return visitDefinitionService.searchByQuery(query);
     }
-
-    @GetMapping(value = "/recurring/true")
-    public ResponseEntity<?> getAllRecurringDefinitions() {
-      return visitDefinitionService.searchByAllowRecurring(true);
-    }
-
-    @GetMapping(value = "/recurring/false")
-    public ResponseEntity<?> getAllNotRecurringDefinitions() {
-       return visitDefinitionService.searchByAllowRecurring(false);
-
-    }
-
 
     @PostMapping("")
     public ResponseEntity<?> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {

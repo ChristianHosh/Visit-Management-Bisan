@@ -11,10 +11,6 @@ import java.util.UUID;
 public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition, UUID> {
     List<VisitDefinition> searchVisitDefinitionsByNameContaining(String name);
 
-    List<VisitDefinition> searchVisitDefinitionsByDescriptionContaining(String description);
-
-    List<VisitDefinition> searchVisitDefinitionsByAllowRecurring(boolean allowRecurring);
-
     List<VisitDefinition> searchVisitDefinitionsByFrequency(int frequency);
 
 }
