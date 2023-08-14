@@ -54,7 +54,7 @@ public class UserService {
     public ResponseEntity<User> saveNewUser(UserPostDTO userRequest) {
 //        VALIDATE PASSWORD
         if (!userRequest.getConfirmPassword().equals(userRequest.getPassword())) {
-            throw new ValidationException(ValidationException.NOT_Match);
+            throw new ValidationException(ValidationException.PASSWORD_DOES_NOT_MATCH);
         }
 
         Timestamp timestamp = Timestamp.from(Instant.now());

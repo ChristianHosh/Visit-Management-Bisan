@@ -1,14 +1,11 @@
 package com.example.vm.controller;
 
-import com.example.vm.controller.error.exception.UserAlreadyExistsException;
-import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.UserPostDTO;
 import com.example.vm.dto.put.UserPutDTO;
 import com.example.vm.model.User;
 import com.example.vm.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,15 +54,15 @@ public class UserController {
         return userService.saveNewUser(userRequest);
     }
 
- @PutMapping("/{username}")
- public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody @Valid UserPutDTO userRequest) {
-     return userService.updateUser(username, userRequest);
- }
+    @PutMapping("/{username}")
+    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody @Valid UserPutDTO userRequest) {
+        return userService.updateUser(username, userRequest);
+    }
 
-  @PutMapping("/{username}/endis")
-   public ResponseEntity<User> enableUser(@PathVariable String username) {
-      return userService.enableUser(username);
-  }
+    @PutMapping("/{username}/endis")
+    public ResponseEntity<User> enableUser(@PathVariable String username) {
+        return userService.enableUser(username);
+    }
 
 
 }
