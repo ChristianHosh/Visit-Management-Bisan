@@ -2,6 +2,7 @@ package com.example.vm.service;
 
 
 import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.controller.error.exception.ValidationException;
 import com.example.vm.dto.post.UserPostDTO;
 import com.example.vm.dto.put.UserPutDTO;
 import com.example.vm.model.User;
@@ -18,6 +19,7 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository repository;
+
 
     @Autowired
     public UserService(UserRepository repository) {
@@ -51,6 +53,9 @@ public class UserService {
 
     public ResponseEntity<?> saveNewUser(UserPostDTO userRequest) {
 //        VALIDATE PASSWORD
+        if(!userRequest.getConfirmPassword().equals(userRequest.getPassword())) {
+            throw new ValidationException(ValidationException.NOT_Match);
+        }
 
         Timestamp timestamp = Timestamp.from(Instant.now());
 
@@ -66,12 +71,16 @@ public class UserService {
         userToSave.setCreatedTime(timestamp);
         userToSave.setLastModifiedTime(timestamp);
 
-//        return repository.save(userToSave);
+        userToSave =  repository.save(userToSave);
         return ResponseEntity.ok(userToSave);
     }
 
 
-    public User updateUser(User userToUpdate, UserPutDTO updatedDTO) {
+    public ResponseEntity<User> updateUser(String username, UserPutDTO updatedDTO) {
+
+        User userToUpdate = repository.findById(username)
+                        .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+
 
         userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 
@@ -79,13 +88,15 @@ public class UserService {
         userToUpdate.setLastName(updatedDTO.getLastName() == null ? userToUpdate.getLastName() : updatedDTO.getLastName());
         userToUpdate.setAccessLevel(updatedDTO.getAccessLevel() == null ? userToUpdate.getAccessLevel() : updatedDTO.getAccessLevel());
 
-        return repository.save(userToUpdate);
+        return ResponseEntity.ok(userToUpdate);
     }
 
 
-
-    public User enableUser(User user) {
+    public ResponseEntity<User> enableUser(String username) {
+        User user = repository.findById(username)
+                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
         user.setEnabled(user.getEnabled() == 0 ? 1 : 0);
-        return repository.save(user);
+       user= repository.save(user);
+        return ResponseEntity.ok(user);
     }
 }

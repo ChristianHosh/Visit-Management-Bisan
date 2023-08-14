@@ -3,6 +3,7 @@ package com.example.vm.controller;
 import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.controller.error.exception.ValidationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,6 +30,13 @@ public class ControllerAdvice {
 
     @ExceptionHandler
     public ResponseEntity<Map<String, List<String>>> handleException(UserAlreadyExistsException exception) {
+        List<String> errors = new ArrayList<>();
+        errors.add(exception.getMessage());
+
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
+    }
+    @ExceptionHandler
+    public ResponseEntity<Map<String, List<String>>> handleException(ValidationException exception) {
         List<String> errors = new ArrayList<>();
         errors.add(exception.getMessage());
 

@@ -28,6 +28,7 @@ public class UserController {
 
     @GetMapping("")
     public ResponseEntity<?> getAllUsers() {
+
         return userService.findAllUsers();
     }
 
@@ -56,28 +57,15 @@ public class UserController {
         return userService.saveNewUser(userRequest);
     }
 
-//    @PutMapping("/{username}")
-//    public ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody @Valid UserPutDTO userUpdate) {
-//        User userToUpdate = userService.findUserByUsername(username);
-//
-//        if (userToUpdate == null)
-//            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
-//
-//        User updatedUser = userService.updateUser(userToUpdate, userUpdate);
-//
-//        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
-//    }
+ @PutMapping("/{username}")
+ public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody @Valid UserPutDTO userRequest) {
+     return userService.updateUser(username, userRequest);
+ }
 
-//    @PutMapping("/{username}/endis")
-//    public ResponseEntity<User> enableUser(@PathVariable String username) {
-//        User userToEnable = userService.findUserByUsername(username);
-//
-//        if (userToEnable == null)
-//            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
-//
-//        userToEnable = userService.enableUser(userToEnable);
-//
-//        return new ResponseEntity<>(userToEnable, HttpStatus.OK);
-//    }
+  @PutMapping("/{username}/endis")
+   public ResponseEntity<User> enableUser(@PathVariable String username) {
+      return userService.enableUser(username);
+  }
+
 
 }

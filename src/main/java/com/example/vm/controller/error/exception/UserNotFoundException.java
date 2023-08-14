@@ -11,6 +11,7 @@ public class UserNotFoundException extends RuntimeException {
     public static final String TYPE_NOT_FOUND = "Invalid ID : Visit Type Not Found";
     public static final String ASSIGNMENT_INVALID_CONTACT_TYPES = "Invalid Assignment : Contacts for this Type are not Available ";
 
+
     public UserNotFoundException(String errorMessage) {
         super(errorMessage);
     }
