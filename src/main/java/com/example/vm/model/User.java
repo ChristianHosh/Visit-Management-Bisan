@@ -1,11 +1,12 @@
 package com.example.vm.model;
 
+import com.example.vm.model.visit.VisitAssignment;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -36,4 +37,7 @@ public class User extends ModelAuditSuperclass {
     @Column(name = "enabled", length = 1, nullable = false)
     private int enabled;
 
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
+    @JsonBackReference
+    private List<VisitAssignment> visitassignments;
 }

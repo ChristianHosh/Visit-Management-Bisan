@@ -58,4 +58,5 @@ public class Customer extends ModelAuditSuperclass {
                 this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());
     }
 
+
 }

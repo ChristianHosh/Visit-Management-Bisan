@@ -57,7 +57,6 @@ public class VisitDefinition extends ModelAuditSuperclass {
         return new VisitDefinitionDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getUuid(),
                 this.getName(), this.getDescription(),
                 this.getType(), this.getFrequency(), this.isAllowRecurring(), this.getEnabled(),
-
                 this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());
     }
 }

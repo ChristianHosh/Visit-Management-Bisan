@@ -1,16 +1,19 @@
 package com.example.vm.controller;
 
 import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.dto.USERDTO;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
+import com.example.vm.model.User;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
 import com.example.vm.service.ContactService;
 import com.example.vm.service.CustomerService;
+import com.example.vm.service.UserService;
 import com.example.vm.service.VisitAssignmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -27,11 +30,13 @@ public class VisitAssignmentController {
     private final VisitAssignmentService visitAssignmentService;
     private final CustomerService customerService;
     private final ContactService contactService;
+    private final UserService userService;
 
-    public VisitAssignmentController(VisitAssignmentService visitAssignmentService, CustomerService customerService, ContactService contactService) {
+    public VisitAssignmentController(VisitAssignmentService visitAssignmentService, CustomerService customerService, ContactService contactService, UserService userService) {
         this.visitAssignmentService = visitAssignmentService;
         this.customerService = customerService;
         this.contactService = contactService;
+        this.userService = userService;
     }
 
     @GetMapping("")
@@ -73,6 +78,8 @@ public class VisitAssignmentController {
         return new ResponseEntity<>(contactList, HttpStatus.OK);
     }
 
+
+
     @PutMapping("/{id}")
     public ResponseEntity<VisitAssignmentDetailPayload> updateContact(@PathVariable UUID id,
                                                                       @RequestBody @Valid VisitAssignmentPutDTO visitAssignmentUpdate) {
@@ -99,7 +106,7 @@ public class VisitAssignmentController {
         return new ResponseEntity<>(visitAssignmentToEnable.toDetailPayload(), HttpStatus.OK);
     }
 
-    @PostMapping("/{id}/customers")
+    /*@PostMapping("/{id}/customers")
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(@PathVariable UUID id, @RequestBody @Valid UUIDDTO uuidDTO) {
         VisitAssignment visitAssignment = visitAssignmentService.findVisitAssignmentByUUID(id);
 
@@ -112,6 +119,49 @@ public class VisitAssignmentController {
             throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
 
         visitAssignment = visitAssignmentService.assignVisitToCustomer(visitAssignment, customer);
+
+        return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
+    }*/
+
+    @PostMapping("/{id}/customers")
+    public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(@PathVariable UUID id, @RequestBody @Valid UUIDDTO uuidDTO) {
+        VisitAssignment visitAssignment = visitAssignmentService.findVisitAssignmentByUUID(id);
+
+        if (visitAssignment == null)
+            throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND);
+
+        Customer customer = customerService.findCustomerByUUID(uuidDTO.getUuid());
+
+        if (customer == null)
+            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND);
+
+        VisitType currentVisitType = visitAssignment.getVisitDefinition().getType();
+
+        List<Contact> contactList = contactService.findContactsByCustomerAndVisitTypes(customer, currentVisitType);
+
+        System.out.println(contactList);
+
+        if(contactList.isEmpty()){
+
+            throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_INVALID_CONTACT_TYPES);
+
+        }
+        visitAssignment = visitAssignmentService.assignVisitToCustomer(visitAssignment, customer);
+        return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
+    }
+    @PostMapping("/{id}/users")
+    public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToUser(@PathVariable UUID id, @RequestBody @Valid USERDTO userDTO) {
+        VisitAssignment visitAssignment = visitAssignmentService.findVisitAssignmentByUUID(id);
+
+        if (visitAssignment == null)
+            throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND);
+
+        User user = userService.findUserByUsername(userDTO.getUsername());
+
+        if (user == null)
+            throw new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND);
+
+        visitAssignment = visitAssignmentService.assignVisitTouser(visitAssignment,user);
 
         return new ResponseEntity<>(visitAssignment.toDetailPayload(), HttpStatus.OK);
     }

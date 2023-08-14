@@ -28,7 +28,6 @@ import java.util.UUID;
 public class VisitDefinitionController {
     private final VisitDefinitionService visitDefinitionService;
     private final VisitAssignmentService visitAssignmentService;
-
     private final VisitTypeService visitTypeService;
 
 
@@ -54,6 +53,7 @@ public class VisitDefinitionController {
 
         return new ResponseEntity<>(user.toDetailPayload(), HttpStatus.OK);
     }
+
 
     @GetMapping(value = "/search", params = "name")
     public ResponseEntity<List<VisitDefinitionListPayload>> searchByName(@RequestParam("name") String name) {
@@ -112,6 +112,7 @@ public class VisitDefinitionController {
 
         return new ResponseEntity<>(savedVisitDefinition.toDetailPayload(), HttpStatus.CREATED);
     }
+
 
     @PostMapping("/{id}/assignments")
     public ResponseEntity<VisitAssignmentDetailPayload> saveNewVisitAssignmentToDefinition(@PathVariable UUID id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {

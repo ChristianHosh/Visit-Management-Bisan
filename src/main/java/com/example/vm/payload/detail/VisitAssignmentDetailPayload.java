@@ -1,5 +1,6 @@
 package com.example.vm.payload.detail;
 
+import com.example.vm.model.User;
 import com.example.vm.payload.list.CustomerListPayload;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,17 +14,20 @@ import java.util.UUID;
 @AllArgsConstructor
 public class VisitAssignmentDetailPayload {
 
-    private Timestamp createdTime;
+        private Timestamp createdTime;
 
-    private Timestamp lastModifiedTime;
+        private Timestamp lastModifiedTime;
 
-    private UUID uuid;
+        private UUID uuid;
 
-    private Date date;
+        private Date date;
 
-    private String comment;
+        private String comment;
 
-    private int enabled;
+        private int enabled;
 
-    private List<CustomerListPayload> customers;
+        private List<CustomerListPayload> customers;
+
+        private User user;
+
 }

@@ -14,5 +14,4 @@ public class CustomerListPayload {
     private String name;
 
     private int enabled;
-
 }

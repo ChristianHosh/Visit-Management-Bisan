@@ -3,6 +3,7 @@ package com.example.vm.service;
 import com.example.vm.dto.post.VisitAssignmentPostDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
 import com.example.vm.model.Customer;
+import com.example.vm.model.User;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.repository.VisitAssignmentRepository;
@@ -69,6 +70,12 @@ public class VisitAssignmentService {
 
         visitAssignment.setCustomers(assignmentCustomers);
 
+        return repository.save(visitAssignment);
+    }
+
+    public VisitAssignment assignVisitTouser(VisitAssignment visitAssignment, User user) {
+
+        visitAssignment.setUser(user);
         return repository.save(visitAssignment);
     }
 }
