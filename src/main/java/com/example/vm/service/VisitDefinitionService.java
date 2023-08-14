@@ -7,7 +7,6 @@ import com.example.vm.dto.put.VisitDefinitionPutDTO;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.model.visit.VisitType;
-import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
 import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.repository.VisitDefinitionRepository;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,21 +33,20 @@ public class VisitDefinitionService {
 
     public ResponseEntity<List<VisitDefinitionListPayload>> findAllVisitDefinition() {
 
-        return ResponseEntity.ok(toDefinitionPayloadList(repository.findAll()));
+        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(repository.findAll()));
 
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByUUID(UUID uuid) {
         VisitDefinition foundVisitDefinition = repository.findById(uuid)
-                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
 
         return ResponseEntity.ok(foundVisitDefinition.toDetailPayload());
     }
 
-    public ResponseEntity<VisitDefinition>saveNewVisit(VisitDefinitionPostDTO VisitDefinitionRequest) {
-        VisitType visitType=visitTypeRepository.findById(VisitDefinitionRequest.getTypeUUID())
-                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
-
+    public ResponseEntity<VisitDefinition> saveNewVisit(VisitDefinitionPostDTO VisitDefinitionRequest) {
+        VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeUUID())
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
 
         Timestamp timestamp = Timestamp.from(Instant.now());
 
@@ -75,26 +72,33 @@ public class VisitDefinitionService {
                     .build();
 
         }
+
         VisitDefinitionToSave.setCreatedTime(timestamp);
         VisitDefinitionToSave.setLastModifiedTime(timestamp);
-        VisitDefinitionToSave.setVisitAssignments(new ArrayList<>());
-        VisitDefinitionToSave= repository.save(VisitDefinitionToSave);
+
+        VisitDefinitionToSave = repository.save(VisitDefinitionToSave);
+
         return ResponseEntity.ok(VisitDefinitionToSave);
     }
 
-    public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(UUID id , VisitDefinitionPutDTO updatedDTO) {
+    public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(UUID id, VisitDefinitionPutDTO updatedDTO) {
 
-        VisitDefinition VisitDefinitionToUpdate = repository.findById(id)
-                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
-        VisitType updatedVisitType=visitTypeRepository.findById(updatedDTO.getTypeUUID())
-                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
+        VisitDefinition foundDefinition = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
 
-        VisitDefinitionToUpdate.setName(updatedDTO.getName());
-        VisitDefinitionToUpdate.setType(updatedVisitType);
-        VisitDefinitionToUpdate.setDescription(updatedDTO.getDescription());
-        VisitDefinitionToUpdate.setAllowRecurring(updatedDTO.getAllowRecurring());
-        VisitDefinitionToUpdate =repository.save(VisitDefinitionToUpdate);
-        return ResponseEntity.ok(VisitDefinitionToUpdate.toDetailPayload());
+        VisitType foundVisitType = visitTypeRepository.findById(updatedDTO.getTypeUUID())
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
+
+        foundDefinition.setName(updatedDTO.getName());
+        foundDefinition.setType(foundVisitType);
+        foundDefinition.setDescription(updatedDTO.getDescription());
+        foundDefinition.setAllowRecurring(updatedDTO.getAllowRecurring());
+
+        foundDefinition.setLastModifiedTime(Timestamp.from(Instant.now()));
+
+        foundDefinition = repository.save(foundDefinition);
+
+        return ResponseEntity.ok(foundDefinition.toDetailPayload());
     }
 
     public VisitDefinition enableVisitDefinition(VisitDefinition visitDefinition) {
@@ -104,39 +108,40 @@ public class VisitDefinitionService {
     }
 
 
-    //TODO FIX SEARCH BY TYPE
-//    public List<VisitDefinition> searchByType(int type) {
-//        return repository.searchVisitDefinitionsByType(type);
-//    }
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByFrequency(int frequency) {
+        List<VisitDefinition> visitDefinitionList = repository.searchVisitDefinitionsByFrequency(frequency);
 
-    public ResponseEntity<List<VisitDefinitionListPayload>>searchByFrequency(int frequency) {
-        return ResponseEntity.ok(toDefinitionPayloadList(repository.searchVisitDefinitionsByFrequency(frequency)));
+        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionList));
     }
 
 
-    public  ResponseEntity<List<VisitDefinitionListPayload>>searchByAllowRecurring(boolean allowRecurring){
-        return ResponseEntity.ok(toDefinitionPayloadList(repository.searchVisitDefinitionsByAllowRecurring(allowRecurring)));
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByAllowRecurring(boolean allowRecurring) {
+        List<VisitDefinition> visitDefinitionList = repository.searchVisitDefinitionsByAllowRecurring(allowRecurring);
+
+        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionList));
+    }
+
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByName(String name) {
+        List<VisitDefinition> visitDefinitionList = repository.searchVisitDefinitionsByNameContaining(name);
+
+        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionList));
 
     }
 
-    public  ResponseEntity<List<VisitDefinitionListPayload>> searchByName(String name) {
-        return ResponseEntity.ok(toDefinitionPayloadList(repository.searchVisitDefinitionsByNameContaining(name)));
+    public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(UUID id, VisitAssignmentPostDTO visitAssignmentRequest) {
+        VisitDefinition visitDefinition = repository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
 
-    }
-    private static List<VisitDefinitionListPayload> toDefinitionPayloadList(List<VisitDefinition> visitDefinitionList) {
-        return visitDefinitionList.stream().map(VisitDefinition::toListPayload).toList();
-    }
-
-    public ResponseEntity<VisitAssignmentDetailPayload> saveNewVisitAssignmentToDefinition(UUID id, VisitAssignmentPostDTO visitAssignmentRequest) {
-        VisitDefinition visitDefinition= repository.findById(id)
-                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
         VisitAssignment visitAssignment = VisitAssignment.builder()
                 .comment(visitAssignmentRequest.getComment())
                 .date(visitAssignmentRequest.getDate())
                 .enabled(1)
                 .build();
+
         visitDefinition.getVisitAssignments().add(visitAssignment);
 
-        return ResponseEntity.ok(visitAssignment.toDetailPayload());
+        visitDefinition = repository.save(visitDefinition);
+
+        return ResponseEntity.ok(visitDefinition.toDetailPayload());
     }
 }

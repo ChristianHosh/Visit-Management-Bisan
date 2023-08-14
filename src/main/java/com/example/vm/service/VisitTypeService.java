@@ -1,15 +1,8 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.dto.post.VisitDefinitionPostDTO;
 import com.example.vm.dto.post.VisitTypePostDTO;
-import com.example.vm.dto.put.AddressPutDTO;
-import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.dto.put.VisitTypePutDTO;
-import com.example.vm.model.Address;
-import com.example.vm.model.Customer;
-import com.example.vm.model.User;
-import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.VisitTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +21,6 @@ public class VisitTypeService {
 
     @Autowired
     public VisitTypeService(VisitTypeRepository repository) {
-
         this.repository = repository;
     }
 
@@ -42,25 +34,29 @@ public class VisitTypeService {
 
 
     public ResponseEntity<VisitType> saveNewVisitType(VisitTypePostDTO VisitTypeRequest) {
-
         Timestamp timestamp = Timestamp.from(Instant.now());
-        VisitType VisitTypeToSave;
 
-        VisitTypeToSave = VisitType.builder()
+        VisitType VisitTypeToSave = VisitType.builder()
                 .name(VisitTypeRequest.getName())
                 .build();
+
         VisitTypeToSave.setCreatedTime(timestamp);
         VisitTypeToSave.setLastModifiedTime(timestamp);
-        VisitTypeToSave=repository.save(VisitTypeToSave);
+
+        VisitTypeToSave = repository.save(VisitTypeToSave);
+
         return ResponseEntity.ok(VisitTypeToSave);
     }
 
-    public ResponseEntity<VisitType>updateVisitType(UUID uuid, VisitTypePutDTO updatedDTO) {
-        VisitType visitTypeToUpdate = repository.findById(uuid)
+    public ResponseEntity<VisitType> updateVisitType(UUID uuid, VisitTypePutDTO updatedDTO) {
+        VisitType foundVisitType = repository.findById(uuid)
                 .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
-        Timestamp timestamp = Timestamp.from(Instant.now());
-        visitTypeToUpdate.setName(updatedDTO.getName());
-        visitTypeToUpdate=repository.save(visitTypeToUpdate);
-        return ResponseEntity.ok(visitTypeToUpdate);
+
+        foundVisitType.setName(updatedDTO.getName());
+        foundVisitType.setLastModifiedTime(Timestamp.from(Instant.now()));
+
+        foundVisitType = repository.save(foundVisitType);
+
+        return ResponseEntity.ok(foundVisitType);
     }
 }

@@ -4,13 +4,11 @@ import com.example.vm.controller.error.exception.ConflictException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.UserDTO;
-import com.example.vm.dto.post.VisitAssignmentPostDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.User;
 import com.example.vm.model.visit.VisitAssignment;
-import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
@@ -44,7 +42,7 @@ public class VisitAssignmentService {
     public ResponseEntity<List<VisitAssignmentListPayload>> findAllVisitAssignments() {
         List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findAll();
 
-        return ResponseEntity.ok(toVisitAssignmentListPayload(visitAssignmentList));
+        return ResponseEntity.ok(VisitAssignmentListPayload.toPayload(visitAssignmentList));
     }
 
     public ResponseEntity<VisitAssignmentDetailPayload> findVisitAssignmentByUUID(UUID id) {
@@ -69,23 +67,8 @@ public class VisitAssignmentService {
         List<Contact> contactList = contactRepository
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
 
-        return ResponseEntity.ok(toContactPayloadList(contactList));
+        return ResponseEntity.ok(ContactListPayload.toPayload(contactList));
 
-    }
-
-    public VisitAssignment saveNewVisitAssignmentToDefinition(VisitDefinition visitDefinition, VisitAssignmentPostDTO visitAssignmentRequest) {
-        Timestamp timestamp = Timestamp.from(Instant.now());
-
-        VisitAssignment visitAssignmentToSave = VisitAssignment.builder()
-                .comment(visitAssignmentRequest.getComment())
-                .date(visitAssignmentRequest.getDate())
-                .enabled(1)
-                .build();
-
-        visitAssignmentToSave.setCreatedTime(timestamp);
-        visitAssignmentToSave.setLastModifiedTime(timestamp);
-
-        return visitAssignmentRepository.save(visitAssignmentToSave);
     }
 
     public ResponseEntity<VisitAssignmentDetailPayload> updateVisitAssignment(UUID id, VisitAssignmentPutDTO assignmentRequest) {
@@ -153,12 +136,5 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
 
-    private static List<VisitAssignmentListPayload> toVisitAssignmentListPayload(List<VisitAssignment> assignmentList) {
-        return assignmentList.stream().map(VisitAssignment::toListPayload).toList();
-    }
-
-    private static List<ContactListPayload> toContactPayloadList(List<Contact> contactList) {
-        return contactList.stream().map(Contact::toListPayload).toList();
-    }
 }
 

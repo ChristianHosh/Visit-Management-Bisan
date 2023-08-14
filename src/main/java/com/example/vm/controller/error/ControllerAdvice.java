@@ -1,4 +1,4 @@
-package com.example.vm.controller;
+package com.example.vm.controller.error;
 
 import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;

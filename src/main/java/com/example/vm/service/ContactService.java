@@ -4,10 +4,10 @@ import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
-import com.example.vm.model.Customer;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.ContactRepository;
 import com.example.vm.repository.VisitTypeRepository;
+import com.example.vm.service.formatter.PhoneNumberFormatter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +47,10 @@ public class ContactService {
             visitTypes.add(visitType);
         }
 
+        String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
+
+        contactRequest.setPhoneNumber(formattedNumber);
+
         contactToUpdate.setFirstName(contactRequest.getFirstName());
         contactToUpdate.setLastName(contactRequest.getLastName());
         contactToUpdate.setPhoneNumber(contactRequest.getPhoneNumber());
@@ -70,10 +74,5 @@ public class ContactService {
 
         return ResponseEntity.ok(contact);
     }
-
-    public List<Contact> findContactsByCustomerAndVisitTypes(Customer customer, VisitType visitType) {
-        return contactRepository.findContactsByCustomerAndVisitTypesContaining(customer, visitType);
-    }
-
 
 }

@@ -39,5 +39,5 @@ public class User extends ModelAuditSuperclass {
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     @JsonBackReference
-    private List<VisitAssignment> visitassignments;
+    private List<VisitAssignment> visitAssignments;
 }

@@ -14,6 +14,7 @@ import com.example.vm.payload.detail.CustomerDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
 import com.example.vm.repository.CustomerRepository;
+import com.example.vm.service.formatter.PhoneNumberFormatter;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
@@ -40,7 +41,7 @@ public class CustomerService {
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomers() {
-        return ResponseEntity.ok(toCustomerPayloadList(repository.findAll()));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(repository.findAll()));
     }
 
     public ResponseEntity<CustomerDetailPayload> findCustomerByUUID(UUID id) {
@@ -53,19 +54,19 @@ public class CustomerService {
     public ResponseEntity<List<CustomerListPayload>> searchByName(String name) {
         List<Customer> customerList = repository.searchCustomersByNameContaining(name);
 
-        return ResponseEntity.ok(toCustomerPayloadList(customerList));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
     }
 
     public ResponseEntity<List<CustomerListPayload>> searchByAddressCity(String city) {
         List<Customer> customerList = repository.searchCustomersByAddress_CityContaining(city);
 
-        return ResponseEntity.ok(toCustomerPayloadList(customerList));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
     }
 
     public ResponseEntity<List<CustomerListPayload>> searchByAddressLine(String addressLine) {
         List<Customer> customerList = repository.searchCustomersByAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(addressLine, addressLine);
 
-        return ResponseEntity.ok(toCustomerPayloadList(customerList));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
     }
 
     public ResponseEntity<List<ContactListPayload>> getCustomerContacts(UUID id) {
@@ -74,7 +75,7 @@ public class CustomerService {
 
         List<Contact> contactList = foundCustomer.getContacts();
 
-        return ResponseEntity.ok(toContactPayloadList(contactList));
+        return ResponseEntity.ok(ContactListPayload.toPayload(contactList));
     }
 
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerPostDTO customerRequest) {
@@ -118,7 +119,7 @@ public class CustomerService {
         Customer foundCustomer = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND));
 
-        String formattedNumber = contactRequest.getPhoneNumber();
+        String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 
         contactRequest.setPhoneNumber(formattedNumber);
 
@@ -200,15 +201,6 @@ public class CustomerService {
         customerToUpdate.getAddress().setLongitude(results[0].geometry.location.lng);
 
         context.shutdown();
-    }
-
-
-    private static List<CustomerListPayload> toCustomerPayloadList(List<Customer> customerList) {
-        return customerList.stream().map(Customer::toListPayload).toList();
-    }
-
-    private static List<ContactListPayload> toContactPayloadList(List<Contact> contactList) {
-        return contactList.stream().map(Contact::toListPayload).toList();
     }
 
 }

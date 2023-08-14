@@ -1,22 +1,14 @@
 package com.example.vm.controller;
 
-import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.VisitAssignmentPostDTO;
 import com.example.vm.dto.post.VisitDefinitionPostDTO;
 import com.example.vm.dto.put.VisitDefinitionPutDTO;
-import com.example.vm.model.visit.VisitDefinition;
-import com.example.vm.model.visit.VisitType;
-import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
-import com.example.vm.service.VisitAssignmentService;
 import com.example.vm.service.VisitDefinitionService;
-import com.example.vm.service.VisitTypeService;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.UUID;
 
 @CrossOrigin
@@ -24,14 +16,9 @@ import java.util.UUID;
 @RequestMapping("/visit_definitions")
 public class VisitDefinitionController {
     private final VisitDefinitionService visitDefinitionService;
-    private final VisitAssignmentService visitAssignmentService;
-    private final VisitTypeService visitTypeService;
 
-
-    public VisitDefinitionController(VisitDefinitionService visitDefinitionService, VisitAssignmentService visitAssignmentService, VisitTypeService visitTypeService) {
+    public VisitDefinitionController(VisitDefinitionService visitDefinitionService) {
         this.visitDefinitionService = visitDefinitionService;
-        this.visitAssignmentService = visitAssignmentService;
-        this.visitTypeService = visitTypeService;
     }
 
     @GetMapping("")
@@ -58,7 +45,7 @@ public class VisitDefinitionController {
 //    public ResponseEntity<List<VisitDefinitionListPayload>> searchByType(@RequestParam("type") int type) {
 //        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByType(type);
 //
-//        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
+//        return new ResponseEntity<>(toPayload(visitDefinitionList), HttpStatus.OK);
 //    }
 
     @GetMapping(value = "/search", params = "frequency")
