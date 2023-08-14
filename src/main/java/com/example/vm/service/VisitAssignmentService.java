@@ -73,7 +73,7 @@ public class VisitAssignmentService {
 
     }
 
-    public VisitAssignment saveNewVisitAssignment(VisitDefinition visitDefinition, VisitAssignmentPostDTO visitAssignmentRequest) {
+    public VisitAssignment saveNewVisitAssignmentToDefinition(VisitDefinition visitDefinition, VisitAssignmentPostDTO visitAssignmentRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
         VisitAssignment visitAssignmentToSave = VisitAssignment.builder()
@@ -84,8 +84,6 @@ public class VisitAssignmentService {
 
         visitAssignmentToSave.setCreatedTime(timestamp);
         visitAssignmentToSave.setLastModifiedTime(timestamp);
-
-        visitAssignmentToSave.setVisitDefinition(visitDefinition);
 
         return visitAssignmentRepository.save(visitAssignmentToSave);
     }
