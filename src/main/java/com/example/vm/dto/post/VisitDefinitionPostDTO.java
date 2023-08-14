@@ -16,10 +16,9 @@ public class VisitDefinitionPostDTO {
     @Null(message = "Invalid lastModifiedTime : Automatically generated")
     Timestamp lastModifiedTime;
 
-
     @NotBlank(message = "Invalid Name: Empty Name ")
     @NotNull(message = "Invalid Name: Name is NULL")
-    @Size(min = 8, max = 30, message = "Invalid Name: Must be of 8 - 30 characters")
+    @Size(min = 3, max = 30, message = "Invalid Name: Must be of 3 - 30 characters")
     String name;
 
     @NotBlank(message = "Invalid Description: Empty Description ")

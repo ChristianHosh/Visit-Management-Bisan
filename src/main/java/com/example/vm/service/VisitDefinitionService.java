@@ -101,10 +101,14 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(foundDefinition.toDetailPayload());
     }
 
-    public  ResponseEntity<VisitDefinitionDetailPayload>  enableVisitDefinition(UUID id) {
+    public ResponseEntity<VisitDefinitionDetailPayload> enableVisitDefinition(UUID id) {
         VisitDefinition foundDefinition = repository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
+
         foundDefinition.setEnabled(foundDefinition.getEnabled() == 0 ? 1 : 0);
+
+        foundDefinition = repository.save(foundDefinition);
+
         return ResponseEntity.ok(foundDefinition.toDetailPayload());
 
     }

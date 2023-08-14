@@ -83,7 +83,7 @@ public class VisitDefinitionController {
 
     @PutMapping("/{id}/endis")
     public ResponseEntity<?> enableVisitDefinition(@PathVariable UUID id) {
-        return  visitDefinitionService.findVisitDefinitionByUUID(id);
+        return  visitDefinitionService.enableVisitDefinition(id);
 
     }
 
