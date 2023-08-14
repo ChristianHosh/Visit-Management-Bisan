@@ -38,36 +38,23 @@ public class VisitDefinitionController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<VisitDefinitionListPayload>> getAllVisitDefinition() {
-        List<VisitDefinition> visitDefinitionsList = visitDefinitionService.findAllVisitDefinition();
-
-        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionsList), HttpStatus.OK);
+    public ResponseEntity<?> getAllVisitDefinition() {
+       return visitDefinitionService.findAllVisitDefinition();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<VisitDefinitionDetailPayload> getVisitDefinitionById(@PathVariable UUID id) {
-        VisitDefinition user = visitDefinitionService.findVisitDefinitionByUUID(id);
+      return visitDefinitionService.findVisitDefinitionByUUID(id);
 
-        if (user == null)
-            throw new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND);
-
-        return new ResponseEntity<>(user.toDetailPayload(), HttpStatus.OK);
     }
 
 
     @GetMapping(value = "/search", params = "name")
-    public ResponseEntity<List<VisitDefinitionListPayload>> searchByName(@RequestParam("name") String name) {
-        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByName(name);
-
-        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
+    public ResponseEntity<?> searchByName(@RequestParam("name") String name) {
+        return  visitDefinitionService.searchByName(name);
     }
 
-    @GetMapping(value = "/search", params = "description")
-    public ResponseEntity<List<VisitDefinitionListPayload>> searchByDescription(@RequestParam("description") String description) {
-        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByDescription(description);
 
-        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
-    }
 
     //TODO FIX SEARCH BY TYPE
 //    @GetMapping(value = "/search", params = "type")
@@ -78,30 +65,25 @@ public class VisitDefinitionController {
 //    }
 
     @GetMapping(value = "/search", params = "frequency")
-    public ResponseEntity<List<VisitDefinitionListPayload>> searchByFrequency(@RequestParam("frequency") int frequency) {
-        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByFrequency(frequency);
-
-        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
+    public ResponseEntity<?> searchByFrequency(@RequestParam("frequency") int frequency) {
+        return visitDefinitionService.searchByFrequency(frequency);
     }
 
     @GetMapping(value = "/recurring/true")
-    public ResponseEntity<List<VisitDefinitionListPayload>> getAllRecurringDefinitions() {
-        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByAllowRecurring(true);
-
-        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
+    public ResponseEntity<?> getAllRecurringDefinitions() {
+      return visitDefinitionService.searchByAllowRecurring(true);
     }
 
     @GetMapping(value = "/recurring/false")
-    public ResponseEntity<List<VisitDefinitionListPayload>> getAllNotRecurringDefinitions() {
-        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByAllowRecurring(false);
+    public ResponseEntity<?> getAllNotRecurringDefinitions() {
+       return visitDefinitionService.searchByAllowRecurring(false);
 
-        return new ResponseEntity<>(toDefinitionPayloadList(visitDefinitionList), HttpStatus.OK);
     }
 
 
     @PostMapping("")
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {
-        VisitType visitType = visitTypeService.findById(visitDefinitionRequest.getTypeUUID());
+       return visitTypeService.findById(visitDefinitionRequest.getTypeUUID());
 
         if (visitType == null){
             throw new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND);
@@ -157,7 +139,5 @@ public class VisitDefinitionController {
         return new ResponseEntity<>(VisitDefinitionToEnable.toDetailPayload(), HttpStatus.OK);
     }
 
-    private static List<VisitDefinitionListPayload> toDefinitionPayloadList(List<VisitDefinition> visitDefinitionList) {
-        return visitDefinitionList.stream().map(VisitDefinition::toListPayload).toList();
-    }
+
 }

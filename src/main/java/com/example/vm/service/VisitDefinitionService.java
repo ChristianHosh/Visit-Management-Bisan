@@ -1,11 +1,16 @@
 package com.example.vm.service;
 
+import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.post.VisitDefinitionPostDTO;
 import com.example.vm.dto.put.VisitDefinitionPutDTO;
+import com.example.vm.model.User;
 import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.model.visit.VisitType;
+import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
+import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.repository.VisitDefinitionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -23,14 +28,17 @@ public class VisitDefinitionService {
         this.repository = repository;
     }
 
-    public List<VisitDefinition> findAllVisitDefinition() {
-        return repository.findAll();
+    public ResponseEntity<List<VisitDefinitionListPayload>> findAllVisitDefinition() {
+
+        return ResponseEntity.ok(toDefinitionPayloadList(repository.findAll()));
+
     }
 
-    public VisitDefinition findVisitDefinitionByUUID(UUID uuid) {
-        Optional<VisitDefinition> VisitDefinitionOptional = repository.findById(uuid);
+    public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByUUID(UUID uuid) {
+        VisitDefinition foundVisitDefinition = repository.findById(uuid)
+                .orElseThrow( () -> new UserNotFoundException(UserNotFoundException.DEFINITION_NOT_FOUND));
 
-        return VisitDefinitionOptional.orElse(null);
+        return ResponseEntity.ok(foundVisitDefinition.toDetailPayload());
     }
 
     public VisitDefinition saveNewVisit(VisitDefinitionPostDTO VisitDefinitionRequest, VisitType visitType) {
@@ -81,26 +89,28 @@ public class VisitDefinitionService {
         return repository.save(visitDefinition);
     }
 
-    public List<VisitDefinition> searchByDescription(String description) {
-        return repository.searchVisitDefinitionsByDescriptionContaining(description);
-    }
 
     //TODO FIX SEARCH BY TYPE
 //    public List<VisitDefinition> searchByType(int type) {
 //        return repository.searchVisitDefinitionsByType(type);
 //    }
 
-    public List<VisitDefinition> searchByFrequency(int frequency) {
-        return repository.searchVisitDefinitionsByFrequency(frequency);
+    public ResponseEntity<List<VisitDefinitionListPayload>>searchByFrequency(int frequency) {
+        return ResponseEntity.ok(toDefinitionPayloadList(repository.searchVisitDefinitionsByFrequency(frequency)));
     }
 
-    public List<VisitDefinition> searchByAllowRecurring(boolean allowRecurring) {
-        return repository.searchVisitDefinitionsByAllowRecurring(allowRecurring);
+
+    public  ResponseEntity<List<VisitDefinitionListPayload>>searchByAllowRecurring(boolean allowRecurring){
+        return ResponseEntity.ok(toDefinitionPayloadList(repository.searchVisitDefinitionsByAllowRecurring(allowRecurring)));
+
     }
 
-    public List<VisitDefinition> searchByName(String name) {
-        return repository.searchVisitDefinitionsByNameContaining(name);
-    }
+    public  ResponseEntity<List<VisitDefinitionListPayload>> searchByName(String name) {
+        return ResponseEntity.ok(toDefinitionPayloadList(repository.searchVisitDefinitionsByNameContaining(name)));
 
+    }
+    private static List<VisitDefinitionListPayload> toDefinitionPayloadList(List<VisitDefinition> visitDefinitionList) {
+        return visitDefinitionList.stream().map(VisitDefinition::toListPayload).toList();
+    }
 
 }
