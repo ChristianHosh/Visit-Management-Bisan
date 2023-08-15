@@ -6,6 +6,7 @@ import com.example.vm.model.Customer;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitForm;
+import com.example.vm.payload.list.VisitFormListPayload;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
 import com.example.vm.repository.VisitFormRepository;
@@ -30,7 +31,7 @@ public class VisitFormService {
         this.customerRepository = customerRepository;
     }
 
-    public ResponseEntity<VisitForm> createNewForm(AssignmentCustomerDTO assignmentCustomerRequest) {
+    public ResponseEntity<VisitFormListPayload> createNewForm(AssignmentCustomerDTO assignmentCustomerRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentCustomerRequest.getAssignmentId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
@@ -55,7 +56,7 @@ public class VisitFormService {
         System.out.println(newVisitForm.getStartTime() + " " + newVisitForm.getCustomer().getName());
         newVisitForm = visitFormRepository.save(newVisitForm);
 
-        return ResponseEntity.ok(newVisitForm);
+        return ResponseEntity.ok(newVisitForm.toListPayload());
 
     }
 }

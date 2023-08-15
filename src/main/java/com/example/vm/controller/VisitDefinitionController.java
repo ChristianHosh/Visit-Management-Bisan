@@ -40,7 +40,6 @@ public class VisitDefinitionController {
     @GetMapping(value = "/search", params = "type")
     public ResponseEntity<?> searchByType(@RequestParam("type") UUID uuid){
         return visitDefinitionService.searchByType(uuid);
-
     }
     @PostMapping("")
     public ResponseEntity<?> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {

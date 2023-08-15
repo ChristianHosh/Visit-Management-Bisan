@@ -3,6 +3,9 @@ package com.example.vm.model.visit;
 import com.example.vm.model.Customer;
 import com.example.vm.model.ModelAuditSuperclass;
 import com.example.vm.model.enums.VisitStatus;
+import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
+import com.example.vm.payload.list.VisitDefinitionListPayload;
+import com.example.vm.payload.list.VisitFormListPayload;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -50,4 +53,10 @@ public class VisitForm extends ModelAuditSuperclass {
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "visit_assignment_id")
     private VisitAssignment visitAssignment;
+
+    public VisitFormListPayload toListPayload() {
+      return new VisitFormListPayload(
+              this.getUuid(),this.getStartTime(),this.getEndTime(),this.getStatus(),this.getNote(),
+              this.getLongitude(),this.getLatitude(), this.getCustomer().toListPayload(),this.getVisitAssignment().toListPayload());
+    }
 }
