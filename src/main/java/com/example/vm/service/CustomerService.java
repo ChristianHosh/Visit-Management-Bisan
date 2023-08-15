@@ -2,6 +2,7 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
@@ -10,10 +11,12 @@ import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
+import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.CustomerDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
 import com.example.vm.repository.CustomerRepository;
+import com.example.vm.repository.VisitTypeRepository;
 import com.example.vm.service.formatter.PhoneNumberFormatter;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -34,35 +37,35 @@ public class CustomerService {
 
     private static final String GEOLOCATION_KEY = "AIzaSyC1rCFrBqu32lHImkYyDBSyfmaxp5YCPao";
 
-    private final CustomerRepository repository;
+    private final CustomerRepository customerRepository;
+    private final VisitTypeRepository visitTypeRepository;
 
     @Autowired
-    public CustomerService(CustomerRepository repository) {
-        this.repository = repository;
+    public CustomerService(CustomerRepository customerRepository, VisitTypeRepository visitTypeRepository) {
+        this.customerRepository = customerRepository;
+        this.visitTypeRepository = visitTypeRepository;
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomers() {
-        return ResponseEntity.ok(CustomerListPayload.toPayload(repository.findAll()));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAll()));
     }
 
     public ResponseEntity<CustomerDetailPayload> findCustomerByUUID(UUID id) {
-        Customer foundCustomer = repository.findById(id)
+        Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
 
 
+    public ResponseEntity<List<CustomerListPayload>> searchByQuery(String query) {
 
-
-    public ResponseEntity<List<CustomerListPayload>> searchByQuery(String query ) {
-
-        List<Customer> customerList = repository.searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing( query ,query,query,query);
+        List<Customer> customerList = customerRepository.searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(query, query, query, query);
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
     }
 
     public ResponseEntity<List<ContactListPayload>> getCustomerContacts(UUID id) {
-        Customer foundCustomer = repository.findById(id)
+        Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         List<Contact> contactList = foundCustomer.getContacts();
@@ -72,47 +75,81 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerPostDTO customerRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
-
+        Customer customerToSave;
         AddressPostDTO addressRequest = customerRequest.getAddress();
+        if (!addressRequest.getPrecise()) {
+            customerToSave = Customer.builder()
+                    .name(customerRequest.getName())
+                    .address(Address.builder()
+                            .addressLine1(addressRequest.getAddressLine1())
+                            .addressLine2(addressRequest.getAddressLine2())
+                            .isPrecise(addressRequest.getPrecise())
+                            .zipcode(addressRequest.getZipcode())
+                            .city(addressRequest.getCity())
+                            .build())
+                    .visitAssignments(new ArrayList<>())
+                    .enabled(1)
+                    .build();
 
-        Customer customerToSave = Customer.builder()
-                .name(customerRequest.getName())
-                .address(Address.builder()
-                        .addressLine1(addressRequest.getAddressLine1())
-                        .addressLine2(addressRequest.getAddressLine2())
-                        .zipcode(addressRequest.getZipcode())
-                        .city(addressRequest.getCity())
-                        .build())
-                .visitAssignments(new ArrayList<>())
-                .enabled(1)
-                .build();
+            try {
+                setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), addressRequest.getCity(), addressRequest.getZipcode());
 
-        try {
-            setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), addressRequest.getCity(), addressRequest.getZipcode());
+                customerToSave.getAddress().setCreatedTime(timestamp);
+                customerToSave.getAddress().setLastModifiedTime(timestamp);
 
+                customerToSave.setCreatedTime(timestamp);
+                customerToSave.setLastModifiedTime(timestamp);
+
+                customerToSave = customerRepository.save(customerToSave);
+
+                return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
+
+            } catch (Exception e) {
+                System.out.println("ERROR " + e.getMessage());
+            }
+
+            throw new LocationNotFoundException();
+        } else {
+             customerToSave = Customer.builder()
+                    .name(customerRequest.getName())
+                    .address(Address.builder()
+                            .addressLine1(addressRequest.getAddressLine1())
+                            .addressLine2(addressRequest.getAddressLine2())
+                            .zipcode(addressRequest.getZipcode())
+                            .city(addressRequest.getCity())
+                            .longitude(addressRequest.getLongitude())
+                            .latitude(addressRequest.getLatitude())
+                            .build())
+                    .visitAssignments(new ArrayList<>())
+                    .enabled(1)
+                    .build();
             customerToSave.getAddress().setCreatedTime(timestamp);
             customerToSave.getAddress().setLastModifiedTime(timestamp);
 
             customerToSave.setCreatedTime(timestamp);
             customerToSave.setLastModifiedTime(timestamp);
+            customerToSave = customerRepository.save(customerToSave);
 
-            customerToSave = repository.save(customerToSave);
-
-            return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
-
-        } catch (Exception e) {
-            System.out.println("ERROR " + e.getMessage());
         }
-
-        throw new LocationNotFoundException();
+        return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
     }
+
 
 
     public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(UUID id, ContactPostDTO contactRequest) {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
-        Customer foundCustomer = repository.findById(id)
+        Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+
+        List<VisitType> visitTypes = new ArrayList<>();
+
+        for (UUIDDTO uuiddto: contactRequest.getTypes()){
+            VisitType visitType = visitTypeRepository.findById(uuiddto.getUuid())
+                    .orElseThrow( () -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
+
+            visitTypes.add(visitType);
+        }
 
         String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 
@@ -123,19 +160,23 @@ public class CustomerService {
                 .lastName(contactRequest.getLastName())
                 .email(contactRequest.getEmail())
                 .phoneNumber(contactRequest.getPhoneNumber())
+                .visitTypes(visitTypes)
                 .enabled(1)
                 .build();
 
         newContact.setCreatedTime(timestamp);
         newContact.setLastModifiedTime(timestamp);
+
         foundCustomer.getContacts().add(newContact);
         newContact.setCustomer(foundCustomer);
-        foundCustomer = repository.save(foundCustomer);
+
+        foundCustomer = customerRepository.save(foundCustomer);
+
         return ResponseEntity.status(HttpStatus.CREATED).body(foundCustomer.toDetailPayload());
     }
 
     public ResponseEntity<CustomerDetailPayload> updateCustomer(UUID id, CustomerPutDTO customerRequest) {
-        Customer customerToUpdate = repository.findById(id)
+        Customer customerToUpdate = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         Timestamp timestamp = Timestamp.from(Instant.now());
@@ -160,7 +201,7 @@ public class CustomerService {
             customerToUpdate.getAddress().setLastModifiedTime(timestamp);
             customerToUpdate.getAddress().setCreatedTime(oldAddress.getCreatedTime());
 
-            customerToUpdate = repository.save(customerToUpdate);
+            customerToUpdate = customerRepository.save(customerToUpdate);
 
             return ResponseEntity.ok(customerToUpdate.toDetailPayload());
         } catch (Exception e) {
@@ -171,12 +212,12 @@ public class CustomerService {
     }
 
     public ResponseEntity<CustomerDetailPayload> enableCustomer(UUID id) {
-        Customer foundCustomer = repository.findById(id)
+        Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         foundCustomer.setEnabled(foundCustomer.getEnabled() == 0 ? 1 : 0);
 
-        foundCustomer = repository.save(foundCustomer);
+        foundCustomer = customerRepository.save(foundCustomer);
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }

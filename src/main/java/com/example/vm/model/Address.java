@@ -32,6 +32,9 @@ public class Address extends ModelAuditSuperclass {
     @Column(name = "latitude")
     private Double latitude;
 
+    @Column(name = "is_precise")
+    private Boolean isPrecise;
+
     @Column(name = "zipcode", length = 5)
     private String zipcode;
 

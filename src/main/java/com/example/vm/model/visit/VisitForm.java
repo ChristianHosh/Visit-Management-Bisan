@@ -64,7 +64,7 @@ public class VisitForm extends ModelAuditSuperclass {
     private List<Contact> contacts;
 
 
-    public VisitFormDetailPayload toListPayload() {
+    public VisitFormDetailPayload toDetailPayload() {
         return new VisitFormDetailPayload(
                 this.getUuid(), this.getStartTime(), this.getEndTime(), this.getStatus(), this.getNote(),
                 this.getLongitude(), this.getLatitude(),
