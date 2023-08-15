@@ -47,7 +47,6 @@ public class UserService {
             list2 = repository.searchUsersByAccessLevel(Integer.parseInt(query));
         } catch (NumberFormatException ignored) {
         }
-
         result.addAll(list1);
         result.addAll(list2);
 

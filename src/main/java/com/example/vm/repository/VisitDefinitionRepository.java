@@ -12,5 +12,5 @@ public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition
     List<VisitDefinition> searchVisitDefinitionsByNameContaining(String name);
 
     List<VisitDefinition> searchVisitDefinitionsByFrequency(int frequency);
-
+    List<VisitDefinition> searchVisitDefinitionByType(UUID id);
 }

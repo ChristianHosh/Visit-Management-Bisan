@@ -133,6 +133,10 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(result);
 
     }
+    public ResponseEntity<List<VisitDefinitionListPayload>> searchByType(UUID uuid) {
+        List<VisitDefinitionListPayload> visittype= VisitDefinitionListPayload.toPayload(repository.searchVisitDefinitionByType(uuid));
+        return ResponseEntity.ok(visittype);
+    }
 
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(UUID id, VisitAssignmentPostDTO visitAssignmentRequest) {
@@ -149,7 +153,6 @@ public class VisitDefinitionService {
 
         visitAssignment.setCreatedTime(timestamp);
         visitAssignment.setLastModifiedTime(timestamp);
-
         visitDefinition.getVisitAssignments().add(visitAssignment);
 
         visitDefinition = repository.save(visitDefinition);
