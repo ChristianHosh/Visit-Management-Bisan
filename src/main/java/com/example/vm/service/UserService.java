@@ -1,8 +1,9 @@
 package com.example.vm.service;
 
 
+import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.controller.error.exception.ValidationException;
+import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
 import com.example.vm.dto.post.UserPostDTO;
 import com.example.vm.dto.put.UserPutDTO;
 import com.example.vm.model.User;
@@ -37,7 +38,6 @@ public class UserService {
         return ResponseEntity.ok(foundUser);
     }
 
-
     public ResponseEntity<List<User>> searchUsersByQuery(String query) {
         List<User> result = new ArrayList<>();
 
@@ -55,10 +55,13 @@ public class UserService {
     }
 
     public ResponseEntity<User> saveNewUser(UserPostDTO userRequest) {
-//        VALIDATE PASSWORD
-        if (!userRequest.getConfirmPassword().equals(userRequest.getPassword())) {
-            throw new ValidationException(ValidationException.PASSWORD_DOES_NOT_MATCH);
-        }
+        if (!userRequest.getConfirmPassword().equals(userRequest.getPassword()))
+            throw new PasswordDoesntMatchException(PasswordDoesntMatchException.PASSWORD_DOES_NOT_MATCH);
+
+
+        if (repository.findById(userRequest.getUsername()).isPresent())
+            throw new UserAlreadyExistsException();
+
 
         Timestamp timestamp = Timestamp.from(Instant.now());
 

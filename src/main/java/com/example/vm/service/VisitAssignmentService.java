@@ -1,6 +1,7 @@
 package com.example.vm.service;
 
-import com.example.vm.controller.error.exception.ConflictException;
+import com.example.vm.controller.error.exception.CustomerAlreadyAssignedException;
+import com.example.vm.controller.error.exception.NoContactTypeException;
 import com.example.vm.controller.error.exception.UserNotFoundException;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.UserDTO;
@@ -109,10 +110,10 @@ public class VisitAssignmentService {
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
 
         if (contactList.isEmpty())
-            throw new UserNotFoundException(UserNotFoundException.ASSIGNMENT_INVALID_CONTACT_TYPES);
+            throw new NoContactTypeException();
 
         if (foundAssignment.getCustomers().contains(foundCustomer))
-            throw new ConflictException();
+            throw new CustomerAlreadyAssignedException();
 
 
         foundAssignment.getCustomers().add(foundCustomer);

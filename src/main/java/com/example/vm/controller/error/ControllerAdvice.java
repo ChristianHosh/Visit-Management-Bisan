@@ -1,9 +1,6 @@
 package com.example.vm.controller.error;
 
-import com.example.vm.controller.error.exception.LocationNotFoundException;
-import com.example.vm.controller.error.exception.UserAlreadyExistsException;
-import com.example.vm.controller.error.exception.UserNotFoundException;
-import com.example.vm.controller.error.exception.ValidationException;
+import com.example.vm.controller.error.exception.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +33,15 @@ public class ControllerAdvice {
         return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
     }
     @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(ValidationException exception) {
+    public ResponseEntity<Map<String, List<String>>> handleException(PasswordDoesntMatchException exception) {
+        List<String> errors = new ArrayList<>();
+        errors.add(exception.getMessage());
+
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, List<String>>> handleException(NoContactTypeException exception) {
         List<String> errors = new ArrayList<>();
         errors.add(exception.getMessage());
 
@@ -45,6 +50,14 @@ public class ControllerAdvice {
 
     @ExceptionHandler
     public ResponseEntity<Map<String, List<String>>> handleException(LocationNotFoundException exception) {
+        List<String> errors = new ArrayList<>();
+        errors.add(exception.getMessage());
+
+        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<Map<String, List<String>>> handleException(CustomerAlreadyAssignedException exception) {
         List<String> errors = new ArrayList<>();
         errors.add(exception.getMessage());
 
