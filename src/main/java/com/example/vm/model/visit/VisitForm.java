@@ -1,15 +1,16 @@
 package com.example.vm.model.visit;
 
+import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.ModelAuditSuperclass;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
-import com.example.vm.payload.list.VisitDefinitionListPayload;
-import com.example.vm.payload.list.VisitFormListPayload;
+import com.example.vm.payload.detail.VisitFormDetailPayload;
+import com.example.vm.payload.list.ContactListPayload;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.UUID;
 
 
@@ -54,9 +55,21 @@ public class VisitForm extends ModelAuditSuperclass {
     @JoinColumn(name = "visit_assignment_id")
     private VisitAssignment visitAssignment;
 
-    public VisitFormListPayload toListPayload() {
-      return new VisitFormListPayload(
-              this.getUuid(),this.getStartTime(),this.getEndTime(),this.getStatus(),this.getNote(),
-              this.getLongitude(),this.getLatitude(), this.getCustomer().toListPayload(),this.getVisitAssignment().toListPayload());
+    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinTable(
+            name = "form_contact_model",
+            joinColumns = @JoinColumn(name = "form_id"),
+            inverseJoinColumns = @JoinColumn(name = "contact_id")
+    )
+    private List<Contact> contacts;
+
+
+    public VisitFormDetailPayload toListPayload() {
+        return new VisitFormDetailPayload(
+                this.getUuid(), this.getStartTime(), this.getEndTime(), this.getStatus(), this.getNote(),
+                this.getLongitude(), this.getLatitude(),
+                this.getCustomer().toListPayload(),
+                this.getVisitAssignment().toListPayload(),
+                ContactListPayload.toPayload(this.getContacts()));
     }
 }

@@ -12,6 +12,7 @@ import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.repository.VisitDefinitionRepository;
 import com.example.vm.repository.VisitTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -51,10 +52,10 @@ public class VisitDefinitionService {
 
         Timestamp timestamp = Timestamp.from(Instant.now());
 
-        VisitDefinition VisitDefinitionToSave;
+        VisitDefinition visitDefinitionToSave;
 
         if (VisitDefinitionRequest.getAllowRecurring()) {
-            VisitDefinitionToSave = VisitDefinition.builder()
+            visitDefinitionToSave = VisitDefinition.builder()
                     .name(VisitDefinitionRequest.getName())
                     .description(VisitDefinitionRequest.getDescription())
                     .allowRecurring(VisitDefinitionRequest.getAllowRecurring())
@@ -63,7 +64,7 @@ public class VisitDefinitionService {
                     .enabled(1)
                     .build();
         } else {
-            VisitDefinitionToSave = VisitDefinition.builder()
+            visitDefinitionToSave = VisitDefinition.builder()
                     .name(VisitDefinitionRequest.getName())
                     .description(VisitDefinitionRequest.getDescription())
                     .allowRecurring(VisitDefinitionRequest.getAllowRecurring())
@@ -74,12 +75,13 @@ public class VisitDefinitionService {
 
         }
 
-        VisitDefinitionToSave.setCreatedTime(timestamp);
-        VisitDefinitionToSave.setLastModifiedTime(timestamp);
+        visitDefinitionToSave.setCreatedTime(timestamp);
+        visitDefinitionToSave.setLastModifiedTime(timestamp);
+        visitDefinitionToSave.setVisitAssignments(new ArrayList<>());
 
-        VisitDefinitionToSave = visitDefinitionRepository.save(VisitDefinitionToSave);
+        visitDefinitionToSave = visitDefinitionRepository.save(visitDefinitionToSave);
 
-        return ResponseEntity.ok(VisitDefinitionToSave.toDetailPayload());
+        return ResponseEntity.ok(visitDefinitionToSave.toDetailPayload());
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(UUID id, VisitDefinitionPutDTO updatedDTO) {
@@ -156,12 +158,18 @@ public class VisitDefinitionService {
                 .enabled(1)
                 .build();
 
+        System.out.println("COMMENT : " + visitAssignment.getComment());
+
         visitAssignment.setCreatedTime(timestamp);
         visitAssignment.setLastModifiedTime(timestamp);
+
+        visitAssignment.setVisitDefinition(visitDefinition);
         visitDefinition.getVisitAssignments().add(visitAssignment);
 
         visitDefinition = visitDefinitionRepository.save(visitDefinition);
 
-        return ResponseEntity.ok(visitDefinition.toDetailPayload());
+        System.out.println("VISIT DEFINITION : " + visitDefinition.toDetailPayload());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(visitDefinition.toDetailPayload());
     }
 }
