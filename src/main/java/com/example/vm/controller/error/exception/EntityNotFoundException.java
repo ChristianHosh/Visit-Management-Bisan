@@ -1,6 +1,6 @@
 package com.example.vm.controller.error.exception;
 
-public class UserNotFoundException extends RuntimeException {
+public class EntityNotFoundException extends RuntimeException {
 
     public static final String CUSTOMER_NOT_FOUND = "Invalid ID: Customer Not Found";
     public static final String CUSTOMER_NOT_ASSIGNED = "Invalid ID: Customer Not Found In Assignment";
@@ -10,7 +10,7 @@ public class UserNotFoundException extends RuntimeException {
     public static final String ASSIGNMENT_NOT_FOUND = "Invalid ID: Visit Assignment Not Found";
     public static final String TYPE_NOT_FOUND = "Invalid ID: Visit Type Not Found";
 
-    public UserNotFoundException(String errorMessage) {
+    public EntityNotFoundException(String errorMessage) {
         super(errorMessage);
     }
 }

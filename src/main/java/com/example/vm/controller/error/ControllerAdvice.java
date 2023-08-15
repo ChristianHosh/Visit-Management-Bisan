@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class ControllerAdvice {
 
     @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(UserNotFoundException exception) {
+    public ResponseEntity<Map<String, List<String>>> handleException(EntityNotFoundException exception) {
         List<String> errors = new ArrayList<>();
         errors.add(exception.getMessage());
 

@@ -2,7 +2,7 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.CustomerAlreadyAssignedException;
 import com.example.vm.controller.error.exception.NoContactTypeException;
-import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.UserDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
@@ -48,20 +48,20 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> findVisitAssignmentByUUID(UUID id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
 
     public ResponseEntity<List<ContactListPayload>> findCustomerContactsByAssignmentType(UUID id, UUIDDTO customerUUID) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
         Customer foundCustomer = customerRepository.findById(customerUUID.getUuid())
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         if (!foundAssignment.getCustomers().contains(foundCustomer))
-            throw new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_ASSIGNED);
+            throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_ASSIGNED);
 
         VisitType assignmentVisitType = foundAssignment.getVisitDefinition().getType();
 
@@ -74,7 +74,7 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> updateVisitAssignment(UUID id, VisitAssignmentPutDTO assignmentRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
         foundAssignment.setComment(assignmentRequest.getComment());
         foundAssignment.setDate(assignmentRequest.getDate());
@@ -88,7 +88,7 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> enableVisitAssignment(UUID id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
         foundAssignment.setEnabled(foundAssignment.getEnabled() == 0 ? 1 : 0);
 
@@ -99,10 +99,10 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(UUID id, UUIDDTO customerUUID) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
         Customer foundCustomer = customerRepository.findById(customerUUID.getUuid())
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         VisitType assignmentVisitType = foundAssignment.getVisitDefinition().getType();
 
@@ -125,10 +125,10 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToUser(UUID id, UserDTO userDTO) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
         User foundUser = userRepository.findById(userDTO.getUsername())
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         foundAssignment.setUser(foundUser);
 

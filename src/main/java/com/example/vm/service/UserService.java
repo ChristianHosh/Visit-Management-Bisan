@@ -2,7 +2,7 @@ package com.example.vm.service;
 
 
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
-import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
 import com.example.vm.dto.post.UserPostDTO;
 import com.example.vm.dto.put.UserPutDTO;
@@ -33,7 +33,7 @@ public class UserService {
 
     public ResponseEntity<User> findUserByUsername(String username) {
         User foundUser = repository.findById(username)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundUser);
     }
@@ -85,7 +85,7 @@ public class UserService {
     public ResponseEntity<User> updateUser(String username, UserPutDTO updatedDTO) {
 
         User userToUpdate = repository.findById(username)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         userToUpdate.setFirstName(updatedDTO.getFirstName());
         userToUpdate.setLastName(updatedDTO.getLastName());
@@ -98,7 +98,7 @@ public class UserService {
 
     public ResponseEntity<User> enableUser(String username) {
         User user = repository.findById(username)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         user.setEnabled(user.getEnabled() == 0 ? 1 : 0);
 

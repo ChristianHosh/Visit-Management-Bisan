@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/visit_definitions")
@@ -33,13 +31,6 @@ public class VisitDefinitionController {
       return visitDefinitionService.findVisitDefinitionByUUID(id);
 
     }
-    //TODO FIX SEARCH BY TYPE
-//    @GetMapping(value = "/search", params = "type")
-//    public ResponseEntity<List<VisitDefinitionListPayload>> searchByType(@RequestParam("type") int type) {
-//        List<VisitDefinition> visitDefinitionList = visitDefinitionService.searchByType(type);
-//
-//        return new ResponseEntity<>(toPayload(visitDefinitionList), HttpStatus.OK);
-//    }
 
     @GetMapping(value = "/search", params = "query")
     public ResponseEntity<?> searchByQuery(@RequestParam("query") String query) {

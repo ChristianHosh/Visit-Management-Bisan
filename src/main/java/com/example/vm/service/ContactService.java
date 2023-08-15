@@ -1,6 +1,6 @@
 package com.example.vm.service;
 
-import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
@@ -29,20 +29,20 @@ public class ContactService {
 
     public ResponseEntity<Contact> findContactByUUID(UUID id) {
         Contact foundContact = contactRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CONTACT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CONTACT_NOT_FOUND));
 
         return ResponseEntity.ok(foundContact);
     }
 
     public ResponseEntity<Contact> updateContact(UUID id, ContactPutDTO contactRequest) {
         Contact contactToUpdate = contactRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CONTACT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CONTACT_NOT_FOUND));
 
         List<VisitType> visitTypes = new ArrayList<>();
 
         for (UUIDDTO uuiddto : contactRequest.getTypes()) {
             VisitType visitType = visitTypeRepository.findById(uuiddto.getUuid())
-                    .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.TYPE_NOT_FOUND));
+                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
             visitTypes.add(visitType);
         }
@@ -66,7 +66,7 @@ public class ContactService {
 
     public ResponseEntity<Contact> enableContact(UUID id) {
         Contact contact = contactRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         contact.setEnabled(contact.getEnabled() == 0 ? 1 : 0);
 

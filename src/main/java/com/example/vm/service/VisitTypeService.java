@@ -1,6 +1,6 @@
 package com.example.vm.service;
 
-import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.post.VisitTypePostDTO;
 import com.example.vm.dto.put.VisitTypePutDTO;
 import com.example.vm.model.visit.VisitType;
@@ -22,10 +22,6 @@ public class VisitTypeService {
     @Autowired
     public VisitTypeService(VisitTypeRepository repository) {
         this.repository = repository;
-    }
-
-    public VisitType findById(UUID uuid) {
-        return repository.findById(uuid).orElse(null);
     }
 
     public ResponseEntity<List<VisitType>> findAll() {
@@ -50,7 +46,7 @@ public class VisitTypeService {
 
     public ResponseEntity<VisitType> updateVisitType(UUID uuid, VisitTypePutDTO updatedDTO) {
         VisitType foundVisitType = repository.findById(uuid)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         foundVisitType.setName(updatedDTO.getName());
         foundVisitType.setLastModifiedTime(Timestamp.from(Instant.now()));

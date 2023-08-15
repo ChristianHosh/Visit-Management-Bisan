@@ -1,7 +1,7 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.LocationNotFoundException;
-import com.example.vm.controller.error.exception.UserNotFoundException;
+import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
@@ -47,7 +47,7 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> findCustomerByUUID(UUID id) {
         Customer foundCustomer = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
@@ -63,7 +63,7 @@ public class CustomerService {
 
     public ResponseEntity<List<ContactListPayload>> getCustomerContacts(UUID id) {
         Customer foundCustomer = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         List<Contact> contactList = foundCustomer.getContacts();
 
@@ -112,7 +112,7 @@ public class CustomerService {
         Timestamp timestamp = Timestamp.from(Instant.now());
 
         Customer foundCustomer = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 
@@ -136,7 +136,7 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> updateCustomer(UUID id, CustomerPutDTO customerRequest) {
         Customer customerToUpdate = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         Timestamp timestamp = Timestamp.from(Instant.now());
 
@@ -172,7 +172,7 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> enableCustomer(UUID id) {
         Customer foundCustomer = repository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException(UserNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         foundCustomer.setEnabled(foundCustomer.getEnabled() == 0 ? 1 : 0);
 
