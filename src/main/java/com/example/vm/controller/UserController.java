@@ -26,6 +26,10 @@ public class UserController {
 
         return userService.findAllUsers();
     }
+    @GetMapping("/accessLevel")
+    public ResponseEntity<?> getAllUsersBAccessLevel (){
+        return userService.findUserByAccesslevel();
+    }
 
     @GetMapping(value = "/search", params = "query")
     public ResponseEntity<?> searchUsersByQuery(@RequestParam("query") String query) {

@@ -121,10 +121,6 @@ public class VisitFormService {
     }
 
 
-    public ResponseEntity<VisitFormDetailPayload> updateFormStatusCancel(UUID id) {
-        return null;
-    }
-
     private static double distanceBetweenTwoPoints(double lat1, double lng1, double lat2, double lng2) {
         return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)) * 111 * 1000;
     }

@@ -23,26 +23,19 @@ public class VisitFormController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createNewForm(@RequestBody @Valid AssignmentCustomerDTO assignmentCustomerDTO){
+    public ResponseEntity<?> createNewForm(@RequestBody @Valid AssignmentCustomerDTO assignmentCustomerDTO) {
         return visitFormService.createNewForm(assignmentCustomerDTO);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFormById(@PathVariable UUID id){
+    public ResponseEntity<?> getFormById(@PathVariable UUID id) {
         return visitFormService.findVisitFormById(id);
     }
 
     @PutMapping("/{id}/complete")
-    public ResponseEntity<?> updateFormStatusComplete(@PathVariable UUID id, @RequestBody @Valid FormCompleteDTO geolocationDTO){
+    public ResponseEntity<?> updateFormStatusComplete(@PathVariable UUID id, @RequestBody @Valid FormCompleteDTO geolocationDTO) {
         return visitFormService.updateFormStatusComplete(id, geolocationDTO);
     }
-
-    @PutMapping("/{id}/cancel")
-    public ResponseEntity<?> updateFormStatusCancel(@PathVariable UUID id){
-        return visitFormService.updateFormStatusCancel(id);
-    }
-
-
 
 
 }

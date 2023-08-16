@@ -35,6 +35,10 @@ public class UserService {
 
         return ResponseEntity.ok(foundUser);
     }
+    public ResponseEntity<List<User>> findUserByAccesslevel() {
+        List <User> foundUser =  repository.searchUsersByAccessLevel(0);
+        return ResponseEntity.ok(foundUser);
+    }
 
     public ResponseEntity<List<User>> searchUsersByQuery(String query) {
         List<User> result = new ArrayList<>();
