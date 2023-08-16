@@ -41,17 +41,16 @@ public class VisitFormService {
         if (!foundAssignment.getCustomers().contains(foundCustomer))
             throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_ASSIGNED);
 
-        Timestamp timestamp = Timestamp.from(Instant.now());
+
 
         VisitForm newVisitForm = VisitForm.builder()
-                .startTime(timestamp)
+                .startTime(Timestamp.from(Instant.now()))
                 .status(VisitStatus.UNDERGOING)
                 .customer(foundCustomer)
                 .visitAssignment(foundAssignment)
                 .build();
 
-        newVisitForm.setCreatedTime(timestamp);
-        newVisitForm.setLastModifiedTime(timestamp);
+
 
         System.out.println(newVisitForm.getStartTime() + " " + newVisitForm.getCustomer().getName());
         newVisitForm = visitFormRepository.save(newVisitForm);

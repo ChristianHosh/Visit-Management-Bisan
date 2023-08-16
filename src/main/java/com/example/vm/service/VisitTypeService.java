@@ -30,14 +30,11 @@ public class VisitTypeService {
 
 
     public ResponseEntity<VisitType> saveNewVisitType(VisitTypePostDTO VisitTypeRequest) {
-        Timestamp timestamp = Timestamp.from(Instant.now());
 
         VisitType VisitTypeToSave = VisitType.builder()
                 .name(VisitTypeRequest.getName())
                 .build();
 
-        VisitTypeToSave.setCreatedTime(timestamp);
-        VisitTypeToSave.setLastModifiedTime(timestamp);
 
         VisitTypeToSave = repository.save(VisitTypeToSave);
 
@@ -49,7 +46,6 @@ public class VisitTypeService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         foundVisitType.setName(updatedDTO.getName());
-        foundVisitType.setLastModifiedTime(Timestamp.from(Instant.now()));
 
         foundVisitType = repository.save(foundVisitType);
 

@@ -49,8 +49,6 @@ public class VisitDefinitionService {
         VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeUUID())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
-        Timestamp timestamp = Timestamp.from(Instant.now());
-
         VisitDefinition VisitDefinitionToSave;
 
         if (VisitDefinitionRequest.getAllowRecurring()) {
@@ -74,8 +72,7 @@ public class VisitDefinitionService {
 
         }
 
-        VisitDefinitionToSave.setCreatedTime(timestamp);
-        VisitDefinitionToSave.setLastModifiedTime(timestamp);
+
 
         VisitDefinitionToSave = visitDefinitionRepository.save(VisitDefinitionToSave);
 
@@ -96,7 +93,7 @@ public class VisitDefinitionService {
         foundDefinition.setAllowRecurring(updatedDTO.getAllowRecurring());
         foundDefinition.setFrequency(updatedDTO.getFrequency());
 
-        foundDefinition.setLastModifiedTime(Timestamp.from(Instant.now()));
+
 
         foundDefinition = visitDefinitionRepository.save(foundDefinition);
 
@@ -145,7 +142,7 @@ public class VisitDefinitionService {
 
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(UUID id, VisitAssignmentPostDTO visitAssignmentRequest) {
-        Timestamp timestamp = Timestamp.from(Instant.now());
+
 
         VisitDefinition visitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
@@ -156,8 +153,6 @@ public class VisitDefinitionService {
                 .enabled(1)
                 .build();
 
-        visitAssignment.setCreatedTime(timestamp);
-        visitAssignment.setLastModifiedTime(timestamp);
         visitDefinition.getVisitAssignments().add(visitAssignment);
 
         visitDefinition = visitDefinitionRepository.save(visitDefinition);
