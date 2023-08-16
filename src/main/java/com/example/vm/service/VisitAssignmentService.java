@@ -16,6 +16,7 @@ import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
+import com.example.vm.payload.list.VisitFormListPayload;
 import com.example.vm.repository.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -69,6 +70,16 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(ContactListPayload.toPayload(contactList));
 
     }
+    public ResponseEntity<List<VisitFormListPayload>> getFormsForAssignment(UUID id) {
+        VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+
+
+        List<VisitForm> formList = visitFormRepository.findVisitFormByVisitAssignment(foundAssignment);
+
+        return ResponseEntity.ok(VisitFormListPayload.toPayload(formList));
+
+    }
 
     public ResponseEntity<VisitAssignmentDetailPayload> updateVisitAssignment(UUID id, VisitAssignmentPutDTO assignmentRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
@@ -92,6 +103,7 @@ public class VisitAssignmentService {
 
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
+
 
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(UUID id, UUIDDTO customerUUID) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)

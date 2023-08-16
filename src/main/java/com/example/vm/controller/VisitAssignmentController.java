@@ -34,6 +34,10 @@ public class VisitAssignmentController {
     public ResponseEntity<?> getContactsByAssignmentType(@PathVariable UUID assignmentId, @RequestBody @Valid UUIDDTO customerUUIDDTO) {
         return visitAssignmentService.findCustomerContactsByAssignmentType(assignmentId, customerUUIDDTO);
     }
+    @GetMapping("/{assignmentId}/forms")
+    public ResponseEntity<?> getFormForAnAssignment(@PathVariable UUID assignmentId){
+        return visitAssignmentService.getFormsForAssignment(assignmentId);
+    }
 
 
     @PutMapping("/{id}")

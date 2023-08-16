@@ -6,6 +6,7 @@ import com.example.vm.model.ModelAuditSuperclass;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.payload.detail.VisitFormDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
+import com.example.vm.payload.list.VisitFormListPayload;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -64,5 +65,11 @@ public class VisitForm extends ModelAuditSuperclass {
                 this.getCustomer().toListPayload(),
                 this.getVisitAssignment().toListPayload(),
                 ContactListPayload.toPayload(this.getContacts()));
+    }
+    public VisitFormListPayload toListPayload(){
+        return new VisitFormListPayload(this.getUuid(),
+                this.getStatus(),
+                this.getCustomer().toListPayload()
+        );
     }
 }

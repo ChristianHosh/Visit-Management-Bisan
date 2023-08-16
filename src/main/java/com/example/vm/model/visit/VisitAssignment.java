@@ -57,7 +57,6 @@ public class VisitAssignment extends ModelAuditSuperclass {
     public VisitAssignmentListPayload toListPayload() {
         return new VisitAssignmentListPayload(this.getUuid(), this.getDate(), this.getComment(), this.getEnabled());
     }
-
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "username")
     @JsonManagedReference
