@@ -1,7 +1,7 @@
 package com.example.vm.controller;
 
 import com.example.vm.dto.AssignmentCustomerDTO;
-import com.example.vm.dto.FormCompleteDTO;
+import com.example.vm.dto.FormGeolocationDTO;
 import com.example.vm.service.VisitFormService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +32,14 @@ public class VisitFormController {
         return visitFormService.findVisitFormById(id);
     }
 
+    @PutMapping("/{id}/start")
+    public ResponseEntity<?> updateFormStatusUndergoing(@PathVariable UUID id, @RequestBody @Valid FormGeolocationDTO geolocationDTO) {
+        return visitFormService.startForm(id, geolocationDTO);
+    }
+
     @PutMapping("/{id}/complete")
-    public ResponseEntity<?> updateFormStatusComplete(@PathVariable UUID id, @RequestBody @Valid FormCompleteDTO geolocationDTO) {
-        return visitFormService.updateFormStatusComplete(id, geolocationDTO);
+    public ResponseEntity<?> updateFormStatusComplete(@PathVariable UUID id, @RequestBody @Valid FormGeolocationDTO geolocationDTO) {
+        return visitFormService.completeForm(id, geolocationDTO);
     }
 
 

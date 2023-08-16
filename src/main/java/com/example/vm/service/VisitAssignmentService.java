@@ -9,15 +9,14 @@ import com.example.vm.dto.put.VisitAssignmentPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.User;
+import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.visit.VisitAssignment;
+import com.example.vm.model.visit.VisitForm;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
-import com.example.vm.repository.ContactRepository;
-import com.example.vm.repository.CustomerRepository;
-import com.example.vm.repository.UserRepository;
-import com.example.vm.repository.VisitAssignmentRepository;
+import com.example.vm.repository.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -29,12 +28,14 @@ public class VisitAssignmentService {
     private final CustomerRepository customerRepository;
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
+    private final VisitFormRepository visitFormRepository;
 
-    public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository) {
+    public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository, VisitFormRepository visitFormRepository) {
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
         this.userRepository = userRepository;
+        this.visitFormRepository = visitFormRepository;
     }
 
     public ResponseEntity<List<VisitAssignmentListPayload>> findAllVisitAssignments() {
@@ -110,9 +111,15 @@ public class VisitAssignmentService {
         if (foundAssignment.getCustomers().contains(foundCustomer))
             throw new CustomerAlreadyAssignedException();
 
+        VisitForm newVisitForm = VisitForm.builder()
+                .status(VisitStatus.NOT_STARTED)
+                .customer(foundCustomer)
+                .visitAssignment(foundAssignment)
+                .build();
 
         foundAssignment.getCustomers().add(foundCustomer);
 
+        visitFormRepository.save(newVisitForm);
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
