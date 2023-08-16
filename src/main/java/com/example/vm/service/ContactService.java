@@ -11,8 +11,6 @@ import com.example.vm.service.formatter.PhoneNumberFormatter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -56,8 +54,6 @@ public class ContactService {
         contactToUpdate.setPhoneNumber(contactRequest.getPhoneNumber());
         contactToUpdate.setEmail(contactRequest.getEmail());
         contactToUpdate.setVisitTypes(visitTypes);
-
-        contactToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 
         contactToUpdate = contactRepository.save(contactToUpdate);
 

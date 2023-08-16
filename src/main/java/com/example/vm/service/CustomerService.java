@@ -1,7 +1,7 @@
 package com.example.vm.service;
 
-import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.ContactPostDTO;
@@ -26,8 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -74,8 +72,8 @@ public class CustomerService {
     }
 
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerPostDTO customerRequest) {
-        Timestamp timestamp = Timestamp.from(Instant.now());
         Customer customerToSave;
+
         AddressPostDTO addressRequest = customerRequest.getAddress();
         if (!addressRequest.getPrecise()) {
             customerToSave = Customer.builder()
@@ -93,12 +91,6 @@ public class CustomerService {
 
             try {
                 setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), addressRequest.getCity(), addressRequest.getZipcode());
-
-                customerToSave.getAddress().setCreatedTime(timestamp);
-                customerToSave.getAddress().setLastModifiedTime(timestamp);
-
-                customerToSave.setCreatedTime(timestamp);
-                customerToSave.setLastModifiedTime(timestamp);
 
                 customerToSave = customerRepository.save(customerToSave);
 
@@ -123,11 +115,7 @@ public class CustomerService {
                     .visitAssignments(new ArrayList<>())
                     .enabled(1)
                     .build();
-            customerToSave.getAddress().setCreatedTime(timestamp);
-            customerToSave.getAddress().setLastModifiedTime(timestamp);
 
-            customerToSave.setCreatedTime(timestamp);
-            customerToSave.setLastModifiedTime(timestamp);
             customerToSave = customerRepository.save(customerToSave);
 
         }
@@ -137,8 +125,6 @@ public class CustomerService {
 
 
     public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(UUID id, ContactPostDTO contactRequest) {
-        Timestamp timestamp = Timestamp.from(Instant.now());
-
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
@@ -164,9 +150,6 @@ public class CustomerService {
                 .enabled(1)
                 .build();
 
-        newContact.setCreatedTime(timestamp);
-        newContact.setLastModifiedTime(timestamp);
-
         foundCustomer.getContacts().add(newContact);
         newContact.setCustomer(foundCustomer);
 
@@ -179,27 +162,16 @@ public class CustomerService {
         Customer customerToUpdate = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
-        Timestamp timestamp = Timestamp.from(Instant.now());
-
         AddressPutDTO addressRequest = customerRequest.getAddress();
 
-        Address oldAddress = customerToUpdate.getAddress();
-
         customerToUpdate.setName(customerRequest.getName());
-        customerToUpdate.setAddress(Address.builder()
-                .addressLine1(addressRequest.getAddressLine1())
-                .addressLine2(addressRequest.getAddressLine2())
-                .city(addressRequest.getCity())
-                .zipcode(addressRequest.getZipcode())
-                .build());
+        customerToUpdate.getAddress().setAddressLine1(addressRequest.getAddressLine1());
+        customerToUpdate.getAddress().setAddressLine2(addressRequest.getAddressLine2());
+        customerToUpdate.getAddress().setCity(addressRequest.getCity());
+        customerToUpdate.getAddress().setZipcode(addressRequest.getZipcode());
 
         try {
             setLngLat(customerToUpdate, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), addressRequest.getCity(), addressRequest.getZipcode());
-
-            customerToUpdate.setLastModifiedTime(timestamp);
-
-            customerToUpdate.getAddress().setLastModifiedTime(timestamp);
-            customerToUpdate.getAddress().setCreatedTime(oldAddress.getCreatedTime());
 
             customerToUpdate = customerRepository.save(customerToUpdate);
 

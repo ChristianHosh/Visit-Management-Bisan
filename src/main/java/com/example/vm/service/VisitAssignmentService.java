@@ -1,8 +1,8 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.CustomerAlreadyAssignedException;
-import com.example.vm.controller.error.exception.NoContactTypeException;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.controller.error.exception.NoContactTypeException;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.UserDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
@@ -21,8 +21,6 @@ import com.example.vm.repository.VisitAssignmentRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,8 +76,6 @@ public class VisitAssignmentService {
 
         foundAssignment.setComment(assignmentRequest.getComment());
         foundAssignment.setDate(assignmentRequest.getDate());
-
-        foundAssignment.setLastModifiedTime(Timestamp.from(Instant.now()));
 
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 

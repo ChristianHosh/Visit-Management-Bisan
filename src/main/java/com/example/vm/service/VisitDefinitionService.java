@@ -16,8 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,8 +48,6 @@ public class VisitDefinitionService {
         VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeUUID())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
-        Timestamp timestamp = Timestamp.from(Instant.now());
-
         VisitDefinition visitDefinitionToSave;
 
         if (VisitDefinitionRequest.getAllowRecurring()) {
@@ -75,8 +71,6 @@ public class VisitDefinitionService {
 
         }
 
-        visitDefinitionToSave.setCreatedTime(timestamp);
-        visitDefinitionToSave.setLastModifiedTime(timestamp);
         visitDefinitionToSave.setVisitAssignments(new ArrayList<>());
 
         visitDefinitionToSave = visitDefinitionRepository.save(visitDefinitionToSave);
@@ -97,8 +91,6 @@ public class VisitDefinitionService {
         foundDefinition.setDescription(updatedDTO.getDescription());
         foundDefinition.setAllowRecurring(updatedDTO.getAllowRecurring());
         foundDefinition.setFrequency(updatedDTO.getFrequency());
-
-        foundDefinition.setLastModifiedTime(Timestamp.from(Instant.now()));
 
         foundDefinition = visitDefinitionRepository.save(foundDefinition);
 
@@ -138,7 +130,7 @@ public class VisitDefinitionService {
 
     public ResponseEntity<List<VisitDefinitionListPayload>> searchByType(UUID uuid) {
         VisitType foundType = visitTypeRepository.findById(uuid)
-                .orElseThrow( () -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
         List<VisitDefinition> visitDefinitionList = visitDefinitionRepository.searchVisitDefinitionsByType(foundType);
 
@@ -147,7 +139,6 @@ public class VisitDefinitionService {
 
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(UUID id, VisitAssignmentPostDTO visitAssignmentRequest) {
-        Timestamp timestamp = Timestamp.from(Instant.now());
 
         VisitDefinition visitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
@@ -159,9 +150,6 @@ public class VisitDefinitionService {
                 .build();
 
         System.out.println("COMMENT : " + visitAssignment.getComment());
-
-        visitAssignment.setCreatedTime(timestamp);
-        visitAssignment.setLastModifiedTime(timestamp);
 
         visitAssignment.setVisitDefinition(visitDefinition);
         visitDefinition.getVisitAssignments().add(visitAssignment);

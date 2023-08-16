@@ -1,9 +1,9 @@
 package com.example.vm.service;
 
 
-import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
+import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.dto.post.UserPostDTO;
 import com.example.vm.dto.put.UserPutDTO;
 import com.example.vm.model.User;
@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,8 +60,6 @@ public class UserService {
             throw new UserAlreadyExistsException();
 
 
-        Timestamp timestamp = Timestamp.from(Instant.now());
-
         User userToSave = User.builder()
                 .username(userRequest.getUsername())
                 .password(userRequest.getConfirmPassword())
@@ -72,9 +68,6 @@ public class UserService {
                 .accessLevel(userRequest.getAccessLevel())
                 .enabled(1)
                 .build();
-
-        userToSave.setCreatedTime(timestamp);
-        userToSave.setLastModifiedTime(timestamp);
 
         userToSave = repository.save(userToSave);
 
@@ -90,7 +83,6 @@ public class UserService {
         userToUpdate.setFirstName(updatedDTO.getFirstName());
         userToUpdate.setLastName(updatedDTO.getLastName());
         userToUpdate.setAccessLevel(updatedDTO.getAccessLevel());
-        userToUpdate.setLastModifiedTime(Timestamp.from(Instant.now()));
 
         return ResponseEntity.ok(userToUpdate);
     }
