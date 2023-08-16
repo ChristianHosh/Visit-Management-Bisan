@@ -50,6 +50,10 @@ public class VisitAssignment extends ModelAuditSuperclass {
     )
     private List<Customer> customers;
 
+    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "next_assignment_id")
+    private VisitAssignment nextVisitAssignment;
+
     public VisitAssignmentListPayload toListPayload() {
         return new VisitAssignmentListPayload(this.getUuid(), this.getDate(), this.getComment(), this.getEnabled());
     }

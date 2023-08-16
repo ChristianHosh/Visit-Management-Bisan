@@ -4,7 +4,7 @@ import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.InvalidStatusUpdateException;
 import com.example.vm.controller.error.exception.LocationTooFarException;
 import com.example.vm.dto.AssignmentCustomerDTO;
-import com.example.vm.dto.LngLatDTO;
+import com.example.vm.dto.FormCompleteDTO;
 import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
@@ -33,13 +33,15 @@ public class VisitFormService {
     private final VisitAssignmentRepository visitAssignmentRepository;
     private final CustomerRepository customerRepository;
     private final ContactRepository contactRepository;
+    private final VisitAssignmentService visitAssignmentService;
 
     @Autowired
-    public VisitFormService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository) {
+    public VisitFormService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, VisitAssignmentService visitAssignmentService) {
         this.visitFormRepository = visitFormRepository;
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
+        this.visitAssignmentService = visitAssignmentService;
     }
 
     public ResponseEntity<VisitFormDetailPayload> findVisitFormById(UUID id) {
@@ -60,14 +62,12 @@ public class VisitFormService {
             throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_ASSIGNED);
 
 
-
         VisitForm newVisitForm = VisitForm.builder()
                 .startTime(Timestamp.from(Instant.now()))
                 .status(VisitStatus.UNDERGOING)
                 .customer(foundCustomer)
                 .visitAssignment(foundAssignment)
                 .build();
-
 
 
         VisitType visitType = foundAssignment.getVisitDefinition().getType();
@@ -81,7 +81,7 @@ public class VisitFormService {
 
     }
 
-    public ResponseEntity<VisitFormDetailPayload> updateFormStatusComplete(UUID id, LngLatDTO geolocation) {
+    public ResponseEntity<VisitFormDetailPayload> updateFormStatusComplete(UUID id, FormCompleteDTO formCompleteDTO) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
 
@@ -90,8 +90,8 @@ public class VisitFormService {
         double customerLat = customerAddress.getLatitude();
         double customerLng = customerAddress.getLongitude();
 
-        double userLat = geolocation.getLatitude();
-        double userLng = geolocation.getLongitude();
+        double userLat = formCompleteDTO.getLatitude();
+        double userLng = formCompleteDTO.getLongitude();
 
         double distance = distanceBetweenTwoPoints(customerLat, customerLng, userLat, userLng);
 
@@ -111,8 +111,11 @@ public class VisitFormService {
 
         foundForm.setStatus(VisitStatus.COMPLETED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
+        foundForm.setNote(formCompleteDTO.getNote());
 
         foundForm = visitFormRepository.save(foundForm);
+
+        visitAssignmentService.createNextVisitAssignment(foundForm.getVisitAssignment(), foundForm.getCustomer());
 
         return ResponseEntity.ok(foundForm.toDetailPayload());
     }

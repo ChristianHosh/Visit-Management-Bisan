@@ -21,8 +21,7 @@ import com.example.vm.repository.VisitAssignmentRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class VisitAssignmentService {
@@ -132,6 +131,58 @@ public class VisitAssignmentService {
 
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
+
+    public void createNextVisitAssignment(VisitAssignment currentAssignment, Customer currentCustomer){
+        System.out.println("CUSTOMER :" + currentCustomer.getName());
+
+        if (!currentAssignment.getVisitDefinition().isAllowRecurring())
+            return;
+
+        if (currentAssignment.getNextVisitAssignment() == null){
+            System.out.println("CURRENT ASSIGNMENT DOES NOT HAVE A NEXT");
+
+            int frequency = currentAssignment.getVisitDefinition().getFrequency();
+
+            Date currentDate = currentAssignment.getDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(currentDate);
+            calendar.add(Calendar.DATE, frequency);
+
+            Date nextAssignmentDate = calendar.getTime();
+
+            VisitAssignment nextAssignment = VisitAssignment.builder()
+                    .visitDefinition(currentAssignment.getVisitDefinition())
+                    .comment(currentAssignment.getComment())
+                    .user(currentAssignment.getUser())
+                    .customers(new ArrayList<>())
+                    .date(new java.sql.Date(nextAssignmentDate.getTime()))
+                    .enabled(1)
+                    .build();
+
+            if (!nextAssignment.getCustomers().contains(currentCustomer))
+                nextAssignment.getCustomers().add(currentCustomer);
+            else
+                throw new CustomerAlreadyAssignedException();
+
+            currentAssignment.setNextVisitAssignment(nextAssignment);
+
+            visitAssignmentRepository.save(currentAssignment);
+
+        }else {
+            System.out.println("CURRENT ASSIGNMENT DOES HAVE A NEXT");
+
+            VisitAssignment nextAssignment = currentAssignment.getNextVisitAssignment();
+
+            if (!nextAssignment.getCustomers().contains(currentCustomer))
+                nextAssignment.getCustomers().add(currentCustomer);
+            else
+                throw new CustomerAlreadyAssignedException();
+
+            visitAssignmentRepository.save(nextAssignment);
+        }
+
+    }
+
 
 }
 

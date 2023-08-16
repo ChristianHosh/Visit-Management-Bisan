@@ -3,9 +3,11 @@ package com.example.vm.dto;
 import lombok.Data;
 
 @Data
-public class LngLatDTO {
+public class FormCompleteDTO {
 
     private Double longitude;
 
     private Double latitude;
+
+    private String note;
 }
