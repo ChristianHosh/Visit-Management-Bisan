@@ -12,6 +12,7 @@ import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.repository.VisitDefinitionRepository;
 import com.example.vm.repository.VisitTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -49,10 +50,12 @@ public class VisitDefinitionService {
         VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeUUID())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
-        VisitDefinition VisitDefinitionToSave;
+        Timestamp timestamp = Timestamp.from(Instant.now());
+
+        VisitDefinition visitDefinitionToSave;
 
         if (VisitDefinitionRequest.getAllowRecurring()) {
-            VisitDefinitionToSave = VisitDefinition.builder()
+            visitDefinitionToSave = VisitDefinition.builder()
                     .name(VisitDefinitionRequest.getName())
                     .description(VisitDefinitionRequest.getDescription())
                     .allowRecurring(VisitDefinitionRequest.getAllowRecurring())
@@ -61,7 +64,7 @@ public class VisitDefinitionService {
                     .enabled(1)
                     .build();
         } else {
-            VisitDefinitionToSave = VisitDefinition.builder()
+            visitDefinitionToSave = VisitDefinition.builder()
                     .name(VisitDefinitionRequest.getName())
                     .description(VisitDefinitionRequest.getDescription())
                     .allowRecurring(VisitDefinitionRequest.getAllowRecurring())
@@ -72,11 +75,13 @@ public class VisitDefinitionService {
 
         }
 
+        visitDefinitionToSave.setCreatedTime(timestamp);
+        visitDefinitionToSave.setLastModifiedTime(timestamp);
+        visitDefinitionToSave.setVisitAssignments(new ArrayList<>());
 
+        visitDefinitionToSave = visitDefinitionRepository.save(visitDefinitionToSave);
 
-        VisitDefinitionToSave = visitDefinitionRepository.save(VisitDefinitionToSave);
-
-        return ResponseEntity.ok(VisitDefinitionToSave.toDetailPayload());
+        return ResponseEntity.ok(visitDefinitionToSave.toDetailPayload());
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(UUID id, VisitDefinitionPutDTO updatedDTO) {
@@ -93,7 +98,7 @@ public class VisitDefinitionService {
         foundDefinition.setAllowRecurring(updatedDTO.getAllowRecurring());
         foundDefinition.setFrequency(updatedDTO.getFrequency());
 
-
+        foundDefinition.setLastModifiedTime(Timestamp.from(Instant.now()));
 
         foundDefinition = visitDefinitionRepository.save(foundDefinition);
 
@@ -142,7 +147,7 @@ public class VisitDefinitionService {
 
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(UUID id, VisitAssignmentPostDTO visitAssignmentRequest) {
-
+        Timestamp timestamp = Timestamp.from(Instant.now());
 
         VisitDefinition visitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
@@ -153,10 +158,18 @@ public class VisitDefinitionService {
                 .enabled(1)
                 .build();
 
+        System.out.println("COMMENT : " + visitAssignment.getComment());
+
+        visitAssignment.setCreatedTime(timestamp);
+        visitAssignment.setLastModifiedTime(timestamp);
+
+        visitAssignment.setVisitDefinition(visitDefinition);
         visitDefinition.getVisitAssignments().add(visitAssignment);
 
         visitDefinition = visitDefinitionRepository.save(visitDefinition);
 
-        return ResponseEntity.ok(visitDefinition.toDetailPayload());
+        System.out.println("VISIT DEFINITION : " + visitDefinition.toDetailPayload());
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(visitDefinition.toDetailPayload());
     }
 }

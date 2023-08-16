@@ -29,7 +29,6 @@ public class VisitDefinitionPostDTO {
     @NotNull(message = "Invalid TypeUUID: TypeUUID is NULL")
     UUID typeUUID;
 
-
     @NotNull(message = "Invalid Frequency: Frequency is NULL")
     @Min(value = 1, message = "Invalid Frequency: Equals to one")
     @Max(value = 365, message = "Invalid Frequency: Exceeds one year")
