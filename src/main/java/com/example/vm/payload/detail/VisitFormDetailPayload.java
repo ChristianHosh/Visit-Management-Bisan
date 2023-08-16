@@ -24,10 +24,6 @@ public class VisitFormDetailPayload {
 
     private String note;
 
-    private Double longitude;
-
-    private Double latitude;
-
     private CustomerListPayload customer;
 
     private VisitAssignmentListPayload visitAssignment;

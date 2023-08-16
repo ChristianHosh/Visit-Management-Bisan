@@ -1,8 +1,11 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.controller.error.exception.InvalidStatusUpdateException;
+import com.example.vm.controller.error.exception.LocationTooFarException;
 import com.example.vm.dto.AssignmentCustomerDTO;
 import com.example.vm.dto.LngLatDTO;
+import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.enums.VisitStatus;
@@ -83,21 +86,36 @@ public class VisitFormService {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
 
-        System.out.println(foundForm.getCustomer().getName());
+        Address customerAddress = foundForm.getCustomer().getAddress();
 
-        double customerLng = foundForm.getCustomer().getAddress().getLongitude();
-        double customerLat = foundForm.getCustomer().getAddress().getLatitude();
-        System.out.println("CUSTOMER: " + customerLat + " | " + customerLng);
+        double customerLat = customerAddress.getLatitude();
+        double customerLng = customerAddress.getLongitude();
 
-        double userLng = foundForm.getCustomer().getAddress().getLongitude();
-        double userLat = foundForm.getCustomer().getAddress().getLatitude();
-        System.out.println("USER: " + userLat + " | " + userLng);
+        double userLat = geolocation.getLatitude();
+        double userLng = geolocation.getLongitude();
 
         double distance = distanceBetweenTwoPoints(customerLat, customerLng, userLat, userLng);
 
+        double maxDistance = 250;
+
         System.out.println("DISTANCE : " + distance);
 
-        return null;
+        if (customerAddress.getIsPrecise())
+            maxDistance = 25;
+
+        if (distance > maxDistance)
+            throw new LocationTooFarException();
+
+        if (!foundForm.getStatus().equals(VisitStatus.UNDERGOING))
+            throw new InvalidStatusUpdateException();
+
+
+        foundForm.setStatus(VisitStatus.COMPLETED);
+        foundForm.setEndTime(Timestamp.from(Instant.now()));
+
+        foundForm = visitFormRepository.save(foundForm);
+
+        return ResponseEntity.ok(foundForm.toDetailPayload());
     }
 
 
@@ -106,21 +124,7 @@ public class VisitFormService {
     }
 
     private static double distanceBetweenTwoPoints(double lat1, double lng1, double lat2, double lng2) {
-       /* double earthRadiusInMeters = 6371000;
-
-        double dLat = Math.toRadians(lat2 - lat1);
-        double dLng = Math.toRadians(lng2 - lng1);
-
-        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                        Math.sin(dLng / 2) * Math.sin(dLng / 2);
-
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-        double distance = earthRadiusInMeters * c;*/
-        //     return Math.acos(Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng2 - lng1)) * 6371 *1000;
         return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)) * 111 * 1000;
-
     }
 
 }

@@ -41,12 +41,6 @@ public class VisitForm extends ModelAuditSuperclass {
     @Column(name = "note")
     private String note;
 
-    @Column(name = "longitude")
-    private Double longitude;
-
-    @Column(name = "latitude")
-    private Double latitude;
-
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -67,7 +61,6 @@ public class VisitForm extends ModelAuditSuperclass {
     public VisitFormDetailPayload toDetailPayload() {
         return new VisitFormDetailPayload(
                 this.getUuid(), this.getStartTime(), this.getEndTime(), this.getStatus(), this.getNote(),
-                this.getLongitude(), this.getLatitude(),
                 this.getCustomer().toListPayload(),
                 this.getVisitAssignment().toListPayload(),
                 ContactListPayload.toPayload(this.getContacts()));

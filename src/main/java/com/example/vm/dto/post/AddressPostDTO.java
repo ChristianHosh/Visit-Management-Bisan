@@ -25,11 +25,16 @@ public class AddressPostDTO {
     String AddressLine2;
 
     @NotNull(message = "Invalid Checked :precise is NULL")
-    Boolean precise ;
+    Boolean precise;
 
+    @Min(-90)
+    @Max(90)
+    Double latitude;
+
+    @Min(-180)
+    @Max(180)
     Double longitude;
 
-    Double latitude;
 
     @NotBlank(message = "Invalid Zipcode : Empty Zipcode")
     @NotNull(message = "Invalid Zipcode : Zipcode is NULL")
