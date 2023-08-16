@@ -84,6 +84,8 @@ public class UserService {
         userToUpdate.setLastName(updatedDTO.getLastName());
         userToUpdate.setAccessLevel(updatedDTO.getAccessLevel());
 
+        userToUpdate = repository.save(userToUpdate);
+
         return ResponseEntity.ok(userToUpdate);
     }
 
