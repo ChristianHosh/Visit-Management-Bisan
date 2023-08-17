@@ -28,13 +28,15 @@ public class CustomerController {
     public ResponseEntity<?> getAllCustomers() {
         return customerService.findAllCustomers();
     }
+    @GetMapping("/enable")
+    public ResponseEntity<?> getAllEnabledCustomers() {
+        return customerService.findAllenableCustomers();
+    }
 
     @GetMapping(value = "/search",params = "query")
     public ResponseEntity<?> searchByQuery(@RequestParam("query") String name) {
         return customerService.searchByQuery(name);
     }
-
-
 
 
 

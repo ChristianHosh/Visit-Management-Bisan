@@ -4,6 +4,7 @@ import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.payload.detail.CustomerDetailPayload;
 import com.example.vm.payload.list.AddressListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
+import com.example.vm.payload.report.CustomerReportListPayload;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -60,6 +61,10 @@ public class Customer extends ModelAuditSuperclass {
         return new CustomerDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getUuid(),
                 this.getName(), this.getEnabled(), this.getAddress(), this.getContacts(),
                 this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());
+    }
+
+    public CustomerReportListPayload toListPayloadReport() {
+        return new CustomerReportListPayload (this.getUuid(), this.getName());
     }
 
 

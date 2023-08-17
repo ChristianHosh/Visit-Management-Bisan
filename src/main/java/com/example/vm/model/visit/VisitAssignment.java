@@ -4,6 +4,8 @@ import com.example.vm.model.Customer;
 import com.example.vm.model.ModelAuditSuperclass;
 import com.example.vm.model.User;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
+import com.example.vm.payload.report.AssignmentCustomerReportListPayload;
+import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -70,6 +72,22 @@ public class VisitAssignment extends ModelAuditSuperclass {
                 this.getDate(), this.getComment(), this.getEnabled(),
                 this.getCustomers().stream().map(Customer::toListPayload).toList(),this.getUser()
         );
+    }
+
+    public AssignmentReportListPayload toListPayloadReport() {
+        return new AssignmentReportListPayload(this.getUuid(), this.getComment(), this.getDate(),
+                this.getUser().getUsername(), this.getUser().getFirstName()
+                , this.getUser().getLastName(), this.getCustomers().stream().map(Customer::toListPayloadReport).toList()
+        );
+    }
+        public AssignmentCustomerReportListPayload toListPayloadReportCustomer() {
+            return new AssignmentCustomerReportListPayload (this.getUuid(),
+                    this.getDate(),
+                    this.getUser().getUsername(),
+                    this.getUser().getFirstName()
+                    ,this.getUser().getLastName(), this.getVisitDefinition().getType().getName()
+            );
+
     }
 
 }

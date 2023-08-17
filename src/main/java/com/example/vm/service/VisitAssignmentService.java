@@ -14,6 +14,7 @@ import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitForm;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
+import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
 import com.example.vm.payload.list.VisitFormListPayload;
@@ -102,6 +103,10 @@ public class VisitAssignmentService {
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
+    }
+
+    public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date date) {
+        return ResponseEntity.ok(AssignmentReportListPayload.toPayload(visitAssignmentRepository.findVisitAssignmentByDate(date)));
     }
 
 

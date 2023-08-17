@@ -15,6 +15,7 @@ import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.CustomerDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
+import com.example.vm.payload.report.AssignmentCustomerReportListPayload;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.VisitTypeRepository;
 import com.example.vm.service.formatter.PhoneNumberFormatter;
@@ -47,12 +48,22 @@ public class CustomerService {
     public ResponseEntity<List<CustomerListPayload>> findAllCustomers() {
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAll()));
     }
+    public ResponseEntity<List<CustomerListPayload>> findAllenableCustomers() {
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomerByEnabled(1)));
+    }
 
     public ResponseEntity<CustomerDetailPayload> findCustomerByUUID(UUID id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
+    }
+
+    public ResponseEntity<List<AssignmentCustomerReportListPayload>>findCustomer(UUID id) {
+        Customer foundCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+        return ResponseEntity.ok(AssignmentCustomerReportListPayload.topayLoad(foundCustomer));
+
     }
 
 
