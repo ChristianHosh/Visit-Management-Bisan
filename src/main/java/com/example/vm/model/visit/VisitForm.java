@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.UUID;
 
 
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @Table(name = "visit_form_model")
@@ -46,7 +47,7 @@ public class VisitForm extends ModelAuditSuperclass {
     @JoinColumn(name = "customer_id")
     private Customer customer;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE})
     @JoinColumn(name = "visit_assignment_id")
     private VisitAssignment visitAssignment;
 

@@ -123,16 +123,19 @@ public class VisitAssignmentService {
         if (foundAssignment.getCustomers().contains(foundCustomer))
             throw new CustomerAlreadyAssignedException();
 
+
+
         VisitForm newVisitForm = VisitForm.builder()
                 .status(VisitStatus.NOT_STARTED)
                 .customer(foundCustomer)
+                .contacts(contactList)
                 .visitAssignment(foundAssignment)
                 .build();
 
         foundAssignment.getCustomers().add(foundCustomer);
 
-        visitFormRepository.save(newVisitForm);
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
+        visitFormRepository.save(newVisitForm);
 
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
@@ -152,13 +155,10 @@ public class VisitAssignmentService {
     }
 
     public void createNextVisitAssignment(VisitAssignment currentAssignment, Customer currentCustomer){
-        System.out.println("CUSTOMER :" + currentCustomer.getName());
-
         if (!currentAssignment.getVisitDefinition().isAllowRecurring())
             return;
 
         if (currentAssignment.getNextVisitAssignment() == null){
-            System.out.println("CURRENT ASSIGNMENT DOES NOT HAVE A NEXT");
 
             int frequency = currentAssignment.getVisitDefinition().getFrequency();
 
@@ -175,31 +175,46 @@ public class VisitAssignmentService {
                     .user(currentAssignment.getUser())
                     .customers(new ArrayList<>())
                     .date(new java.sql.Date(nextAssignmentDate.getTime()))
+                    .nextVisitAssignment(null)
                     .enabled(1)
                     .build();
 
-            if (!nextAssignment.getCustomers().contains(currentCustomer))
-                nextAssignment.getCustomers().add(currentCustomer);
-            else
-                throw new CustomerAlreadyAssignedException();
-
             currentAssignment.setNextVisitAssignment(nextAssignment);
 
+            visitAssignmentRepository.save(nextAssignment);
             visitAssignmentRepository.save(currentAssignment);
 
-        }else {
-            System.out.println("CURRENT ASSIGNMENT DOES HAVE A NEXT");
+            createNextAssignmentForm(currentCustomer, nextAssignment);
 
+        }else {
             VisitAssignment nextAssignment = currentAssignment.getNextVisitAssignment();
 
-            if (!nextAssignment.getCustomers().contains(currentCustomer))
-                nextAssignment.getCustomers().add(currentCustomer);
-            else
-                throw new CustomerAlreadyAssignedException();
+            createNextAssignmentForm(currentCustomer, nextAssignment);
 
             visitAssignmentRepository.save(nextAssignment);
         }
 
+    }
+
+    private void createNextAssignmentForm(Customer currentCustomer, VisitAssignment currentAssignment) {
+        if (!currentAssignment.getCustomers().contains(currentCustomer)){
+            currentAssignment.getCustomers().add(currentCustomer);
+
+            VisitType visitType = currentAssignment.getVisitDefinition().getType();
+
+            List<Contact> contactList = contactRepository.findContactsByCustomerAndVisitTypesContaining(currentCustomer, visitType);
+
+            VisitForm newVisitForm = VisitForm.builder()
+                    .status(VisitStatus.NOT_STARTED)
+                    .customer(currentCustomer)
+                    .visitAssignment(currentAssignment)
+                    .contacts(contactList)
+                    .build();
+
+            visitFormRepository.save(newVisitForm);
+        }
+        else
+            throw new CustomerAlreadyAssignedException();
     }
 
 }

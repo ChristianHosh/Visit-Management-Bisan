@@ -14,7 +14,8 @@ import java.sql.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @Table(name = "visit_assignment_model")
@@ -52,6 +53,8 @@ public class VisitAssignment extends ModelAuditSuperclass {
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "next_assignment_id")
+    @ToString.Exclude
+    @JsonBackReference
     private VisitAssignment nextVisitAssignment;
 
     public VisitAssignmentListPayload toListPayload() {

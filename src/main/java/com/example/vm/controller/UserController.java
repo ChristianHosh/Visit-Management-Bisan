@@ -26,9 +26,9 @@ public class UserController {
 
         return userService.findAllUsers();
     }
-    @GetMapping("/accessLevel")
-    public ResponseEntity<?> getAllUsersBAccessLevel (){
-        return userService.findUserByAccesslevel();
+    @GetMapping("/employees")
+    public ResponseEntity<?> findEmployeeUsers(){
+        return userService.findEmployeeUsers();
     }
 
     @GetMapping(value = "/search", params = "query")

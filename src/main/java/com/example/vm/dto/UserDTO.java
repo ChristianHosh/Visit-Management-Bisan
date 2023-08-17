@@ -6,6 +6,6 @@ import lombok.Data;
 
 public class UserDTO {
 
-    @NotNull(message = "Invalid UserName : UserName is NULL")
+    @NotNull(message = "Invalid Username : Username is NULL")
     private String username;
 }

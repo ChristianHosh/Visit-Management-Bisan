@@ -6,7 +6,8 @@ import lombok.*;
 
 import java.util.UUID;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Builder
 @Table(name = "address_model")
