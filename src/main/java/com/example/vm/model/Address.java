@@ -42,6 +42,10 @@ public class Address extends ModelAuditSuperclass {
     @Column(name = "city")
     private String city;
 
+   /*@OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn( name = "city_id")
+    private City city;*/
+
     @OneToOne(mappedBy = "address", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JsonBackReference
     private Customer customer;

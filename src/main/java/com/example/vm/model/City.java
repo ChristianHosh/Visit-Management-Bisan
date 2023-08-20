@@ -1,28 +1,25 @@
-package com.example.vm.model.visit;
+package com.example.vm.model;
 
-import com.example.vm.model.ModelAuditSuperclass;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.UUID;
-
 @Getter
 @Setter
 @Entity
 @Builder
-@Table(name = "visit_type_model")
+@Table(name = "City_model")
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class VisitType extends ModelAuditSuperclass {
+public class City extends ModelAuditSuperclass {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
 
 
     @Column(name = "name", nullable = false)
     private String name;
+
 
 }

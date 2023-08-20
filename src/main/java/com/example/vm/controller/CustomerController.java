@@ -28,17 +28,22 @@ public class CustomerController {
     public ResponseEntity<?> getAllCustomers() {
         return customerService.findAllCustomers();
     }
+
+   @GetMapping("/assignment")
+    public ResponseEntity<?> getAllCustomersWhoHasAssignment() {
+        return customerService.findAllCustomersWhoHasAssignment();
+    }
+
     @GetMapping("/enable")
     public ResponseEntity<?> getAllEnabledCustomers() {
         return customerService.findAllenableCustomers();
     }
 
+
     @GetMapping(value = "/search",params = "query")
     public ResponseEntity<?> searchByQuery(@RequestParam("query") String name) {
         return customerService.searchByQuery(name);
     }
-
-
 
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDetailPayload> getCustomerById(@PathVariable UUID id) {
@@ -69,6 +74,7 @@ public class CustomerController {
     public ResponseEntity<?> enableCustomer(@PathVariable UUID id) {
         return customerService.enableCustomer(id);
     }
+
 
 
 }

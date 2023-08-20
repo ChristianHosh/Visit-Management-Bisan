@@ -43,14 +43,25 @@ public class ReportController {
     public ResponseEntity<?> findAllCompleted (){
         return reportservice.reportForCompleted();
     }
-    @GetMapping("/visit_assignments/{date}")
-    public ResponseEntity<?> findAllAssignmentByDate (@PathVariable String date){
-        return  visitAssignmentService.reportAssignmentByDate(Date.valueOf(date));
-    }
+
     @GetMapping("/customers/{id}")
     public ResponseEntity<?> findAllCustomerById(@PathVariable UUID id){
         return customerService.findCustomer(id);
     }
+    @GetMapping("/customers/countByType")
+    public ResponseEntity<?>countAllCustomer(){
+        return customerService.countAllCustomer();
+    }
+
+    @GetMapping("/visit_assignments")
+    public ResponseEntity<?> searchUsersByDateRange(@RequestParam(name = "from", required = false) String date1,
+                                                    @RequestParam(name = "to", required = false) String date2) {
+            return visitAssignmentService.reportAssignmentByDate(Date.valueOf(date1), Date.valueOf(date2));
+    }
+
+
+
+
 
 
 }

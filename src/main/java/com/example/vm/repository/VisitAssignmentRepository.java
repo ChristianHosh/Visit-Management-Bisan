@@ -10,4 +10,6 @@ import java.util.UUID;
 @Repository
 public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment, UUID> {
  List<VisitAssignment> findVisitAssignmentByDate(Date date);
+ List<VisitAssignment> findVisitAssignmentByDateAfterAndDateBefore(Date date1 ,Date date2);
+
 }

@@ -21,4 +21,5 @@ public interface ContactRepository extends JpaRepository<Contact, UUID> {
 
     List<Contact> findContactsByCustomerAndVisitTypesContaining(Customer customer, VisitType visitType);
 
+    double countContactsByVisitTypesContaining(VisitType visitType);
 }

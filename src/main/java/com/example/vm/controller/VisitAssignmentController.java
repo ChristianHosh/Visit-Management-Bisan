@@ -22,8 +22,14 @@ public class VisitAssignmentController {
 
     @GetMapping("")
     public ResponseEntity<?> getAllVisitAssignment() {
+
         return visitAssignmentService.findAllVisitAssignments();
     }
+ /*   @GetMapping("/AllDistinctAssignment")
+    public ResponseEntity<?> getAllDistinctVisitAssignment() {
+        return visitAssignmentService.findAllDistinctVisitAssignments();
+    }*/
+
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getVisitAssignmentById(@PathVariable UUID id) {

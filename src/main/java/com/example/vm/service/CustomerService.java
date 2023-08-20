@@ -11,11 +11,14 @@ import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
+import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.CustomerDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
 import com.example.vm.payload.report.AssignmentCustomerReportListPayload;
+import com.example.vm.payload.report.CountByTypeListPayload;
+import com.example.vm.repository.ContactRepository;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.VisitTypeRepository;
 import com.example.vm.service.formatter.PhoneNumberFormatter;
@@ -28,8 +31,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import static java.awt.AWTEventMulticaster.add;
 
 @Service
 public class CustomerService {
@@ -39,15 +45,25 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final VisitTypeRepository visitTypeRepository;
 
+    private final ContactRepository contactRepository;
+
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, VisitTypeRepository visitTypeRepository) {
+    public CustomerService(CustomerRepository customerRepository, VisitTypeRepository visitTypeRepository, ContactRepository contactRepository) {
         this.customerRepository = customerRepository;
         this.visitTypeRepository = visitTypeRepository;
+        this.contactRepository = contactRepository;
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomers() {
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAll()));
     }
+
+    public ResponseEntity<List<CustomerListPayload>> findAllCustomersWhoHasAssignment() {
+
+   return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAllCustomer()));
+    }
+
+
     public ResponseEntity<List<CustomerListPayload>> findAllenableCustomers() {
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomerByEnabled(1)));
     }
@@ -204,6 +220,20 @@ public class CustomerService {
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
+        public ResponseEntity <List<CountByTypeListPayload>> countAllCustomer(){
+        ArrayList<CountByTypeListPayload>countbyType=new ArrayList<>();
+        List<VisitType>visitTypeList=visitTypeRepository.findAll();
+        double count=contactRepository.count();
+             for(int i = 0; i<visitTypeList.size() ;++i){
+             double countOfContact= contactRepository.countContactsByVisitTypesContaining(visitTypeList.get(i));
+             System.out.println(visitTypeList.get(i).getName());
+             System.out.println(countOfContact);
+             double percentage =countOfContact/count;
+             System.out.println(count);
+             countbyType.add(new CountByTypeListPayload(visitTypeList.get(i).getName(),percentage))   ;
+        }
+       return  ResponseEntity.ok(countbyType);
+    }
 
     private static void setLngLat(Customer customerToUpdate, String addressLine1, String addressLine2, String city, String zipcode) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException {
         GeoApiContext context = new GeoApiContext.Builder()
@@ -222,5 +252,6 @@ public class CustomerService {
 
         context.shutdown();
     }
+
 
 }

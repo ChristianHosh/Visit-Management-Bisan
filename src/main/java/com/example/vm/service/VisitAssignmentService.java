@@ -105,8 +105,18 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
 
-    public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date date) {
-        return ResponseEntity.ok(AssignmentReportListPayload.toPayload(visitAssignmentRepository.findVisitAssignmentByDate(date)));
+    public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date before,Date after) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(before);
+        calendar.add(Calendar.DATE, -1);
+        Date date1= calendar.getTime();
+        Calendar calendarr = Calendar.getInstance();
+        calendarr.setTime(after);
+        calendarr.add((Calendar.DATE), 1);
+        Date date2= calendarr.getTime();
+
+        return ResponseEntity.ok(AssignmentReportListPayload.toPayload(
+                visitAssignmentRepository.findVisitAssignmentByDateAfterAndDateBefore(date1,date2)));
     }
 
 
@@ -166,14 +176,11 @@ public class VisitAssignmentService {
         if (currentAssignment.getNextVisitAssignment() == null){
 
             int frequency = currentAssignment.getVisitDefinition().getFrequency();
-
             Date currentDate = currentAssignment.getDate();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(currentDate);
             calendar.add(Calendar.DATE, frequency);
-
             Date nextAssignmentDate = calendar.getTime();
-
             VisitAssignment nextAssignment = VisitAssignment.builder()
                     .visitDefinition(currentAssignment.getVisitDefinition())
                     .comment(currentAssignment.getComment())
