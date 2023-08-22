@@ -1,7 +1,6 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
-import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.visit.VisitType;
@@ -37,8 +36,8 @@ public class ContactService {
 
         List<VisitType> visitTypes = new ArrayList<>();
 
-        for (UUIDDTO uuiddto : contactRequest.getTypes()) {
-            VisitType visitType = visitTypeRepository.findById(uuiddto.getUuid())
+        for (Long typeId : contactRequest.getTypes()) {
+            VisitType visitType = visitTypeRepository.findById(typeId)
                     .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
             visitTypes.add(visitType);

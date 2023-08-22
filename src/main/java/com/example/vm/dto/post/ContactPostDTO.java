@@ -1,6 +1,5 @@
 package com.example.vm.dto.post;
 
-import com.example.vm.dto.UUIDDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
@@ -43,6 +42,6 @@ public class ContactPostDTO {
     Integer enabled;
 
     @NotNull(message = "Invalid Types: Types is null")
-    List<@Valid UUIDDTO> types;
+    List<@Valid Long> types;
 
 }
