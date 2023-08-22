@@ -32,7 +32,7 @@ public class CityService {
     public ResponseEntity<City> saveNewCity(City city) {
         City cityToSave = City.builder()
                 .id(city.getId())
-                .name(city.getName())
+                .name(city.getName().toLowerCase())
                 .enabled(1)
                 .build();
 

@@ -38,10 +38,10 @@ public class ContactService {
 
         contactRequest.setPhoneNumber(formattedNumber);
 
-        contactToUpdate.setFirstName(contactRequest.getFirstName());
-        contactToUpdate.setLastName(contactRequest.getLastName());
+        contactToUpdate.setFirstName(contactRequest.getFirstName().toLowerCase());
+        contactToUpdate.setLastName(contactRequest.getLastName().toLowerCase());
         contactToUpdate.setPhoneNumber(contactRequest.getPhoneNumber());
-        contactToUpdate.setEmail(contactRequest.getEmail());
+        contactToUpdate.setEmail(contactRequest.getEmail().toLowerCase());
         contactToUpdate.setVisitTypes(visitTypes);
 
         contactToUpdate = contactRepository.save(contactToUpdate);
