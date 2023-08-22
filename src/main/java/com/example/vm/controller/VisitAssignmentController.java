@@ -19,17 +19,11 @@ public class VisitAssignmentController {
     public VisitAssignmentController(VisitAssignmentService visitAssignmentService) {
         this.visitAssignmentService = visitAssignmentService;
     }
-
     @GetMapping("")
     public ResponseEntity<?> getAllVisitAssignment() {
 
         return visitAssignmentService.findAllVisitAssignments();
     }
- /*   @GetMapping("/AllDistinctAssignment")
-    public ResponseEntity<?> getAllDistinctVisitAssignment() {
-        return visitAssignmentService.findAllDistinctVisitAssignments();
-    }*/
-
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getVisitAssignmentById(@PathVariable UUID id) {
@@ -44,24 +38,19 @@ public class VisitAssignmentController {
     public ResponseEntity<?> getFormForAnAssignment(@PathVariable UUID assignmentId){
         return visitAssignmentService.getFormsForAssignment(assignmentId);
     }
-
-
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAssignment(@PathVariable UUID id,
                                               @RequestBody @Valid VisitAssignmentPutDTO visitAssignmentUpdate) {
         return visitAssignmentService.updateVisitAssignment(id, visitAssignmentUpdate);
     }
-
     @PutMapping("/{id}/endis")
     public ResponseEntity<?> enableCustomer(@PathVariable UUID id) {
         return visitAssignmentService.enableVisitAssignment(id);
     }
-
     @PostMapping("/{id}/customers")
     public ResponseEntity<?> assignVisitToCustomer(@PathVariable UUID id, @RequestBody @Valid UUIDDTO customerUUID) {
         return visitAssignmentService.assignVisitToCustomer(id, customerUUID);
     }
-
     @PostMapping("/{id}/users")
     public ResponseEntity<?> assignVisitToUser(@PathVariable UUID id, @RequestBody @Valid UserDTO userDTO) {
         return visitAssignmentService.assignVisitToUser(id, userDTO);

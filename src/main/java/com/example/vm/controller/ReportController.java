@@ -31,37 +31,40 @@ public class ReportController {
         return reportservice.reportForAllForms();
 
     }
+
     @GetMapping("/forms/not_started")
-    public ResponseEntity<?> findAllNotStartedStatus (){
+    public ResponseEntity<?> findAllNotStartedStatus() {
         return reportservice.reportForNotStartedStatus();
     }
+
     @GetMapping("/forms/under_going")
-    public ResponseEntity<?> findAllUndergoingStatus (){
+    public ResponseEntity<?> findAllUndergoingStatus() {
         return reportservice.reportForUnderGoingStatus();
     }
+
     @GetMapping("/forms/completed")
-    public ResponseEntity<?> findAllCompleted (){
+    public ResponseEntity<?> findAllCompleted() {
         return reportservice.reportForCompleted();
     }
 
     @GetMapping("/customers/{id}")
-    public ResponseEntity<?> findAllCustomerById(@PathVariable UUID id){
+    public ResponseEntity<?> findAllCustomerById(@PathVariable UUID id) {
         return customerService.findCustomer(id);
     }
+
     @GetMapping("/customers/countByType")
-    public ResponseEntity<?>countAllCustomer(){
+    public ResponseEntity<?> countAllCustomerForaType() {
         return customerService.countAllCustomer();
+    }
+
+    @GetMapping("/customers/countByArea")
+    public ResponseEntity<?> countCustomersInAnArea() {
+        return customerService.CustomersInSpecificArea();
     }
 
     @GetMapping("/visit_assignments")
     public ResponseEntity<?> searchUsersByDateRange(@RequestParam(name = "from", required = false) String date1,
                                                     @RequestParam(name = "to", required = false) String date2) {
-            return visitAssignmentService.reportAssignmentByDate(Date.valueOf(date1), Date.valueOf(date2));
+        return visitAssignmentService.reportAssignmentByDate(Date.valueOf(date1), Date.valueOf(date2));
     }
-
-
-
-
-
-
 }

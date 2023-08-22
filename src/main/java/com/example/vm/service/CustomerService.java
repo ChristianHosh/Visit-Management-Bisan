@@ -2,6 +2,7 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.LocationNotFoundException;
+import com.example.vm.dto.IDDTO;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.ContactPostDTO;
@@ -9,15 +10,17 @@ import com.example.vm.dto.post.CustomerPostDTO;
 import com.example.vm.dto.put.AddressPutDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.model.Address;
+import com.example.vm.model.City;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
-import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.CustomerDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
 import com.example.vm.payload.report.AssignmentCustomerReportListPayload;
 import com.example.vm.payload.report.CountByTypeListPayload;
+import com.example.vm.payload.report.CustomersInAnAreaListPayload;
+import com.example.vm.repository.CityRepository;
 import com.example.vm.repository.ContactRepository;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.VisitTypeRepository;
@@ -31,11 +34,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import static java.awt.AWTEventMulticaster.add;
 
 @Service
 public class CustomerService {
@@ -46,12 +46,14 @@ public class CustomerService {
     private final VisitTypeRepository visitTypeRepository;
 
     private final ContactRepository contactRepository;
+    private final CityRepository cityRepository;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, VisitTypeRepository visitTypeRepository, ContactRepository contactRepository) {
+    public CustomerService(CustomerRepository customerRepository, VisitTypeRepository visitTypeRepository, ContactRepository contactRepository, CityRepository cityRepository) {
         this.customerRepository = customerRepository;
         this.visitTypeRepository = visitTypeRepository;
         this.contactRepository = contactRepository;
+        this.cityRepository = cityRepository;
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomers() {
@@ -60,7 +62,7 @@ public class CustomerService {
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomersWhoHasAssignment() {
 
-   return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAllCustomer()));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAllCustomer()));
     }
 
 
@@ -75,11 +77,10 @@ public class CustomerService {
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
 
-    public ResponseEntity<List<AssignmentCustomerReportListPayload>>findCustomer(UUID id) {
+    public ResponseEntity<List<AssignmentCustomerReportListPayload>> findCustomer(UUID id) {
         Customer foundCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
         return ResponseEntity.ok(AssignmentCustomerReportListPayload.topayLoad(foundCustomer));
-
     }
 
 
@@ -100,8 +101,11 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerPostDTO customerRequest) {
         Customer customerToSave;
-
         AddressPostDTO addressRequest = customerRequest.getAddress();
+        IDDTO iddto = addressRequest.getCity();
+        City city = cityRepository.findById(iddto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.City_NOT_FOUND));
+
         if (!addressRequest.getPrecise()) {
             customerToSave = Customer.builder()
                     .name(customerRequest.getName())
@@ -110,14 +114,14 @@ public class CustomerService {
                             .addressLine2(addressRequest.getAddressLine2())
                             .isPrecise(addressRequest.getPrecise())
                             .zipcode(addressRequest.getZipcode())
-                            .city(addressRequest.getCity())
+                            .city(city)
                             .build())
                     .visitAssignments(new ArrayList<>())
                     .enabled(1)
                     .build();
 
             try {
-                setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), addressRequest.getCity(), addressRequest.getZipcode());
+                setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), city.getName(), addressRequest.getZipcode());
 
                 customerToSave = customerRepository.save(customerToSave);
 
@@ -129,13 +133,14 @@ public class CustomerService {
 
             throw new LocationNotFoundException();
         } else {
-             customerToSave = Customer.builder()
+            customerToSave = Customer.builder()
                     .name(customerRequest.getName())
                     .address(Address.builder()
                             .addressLine1(addressRequest.getAddressLine1())
                             .addressLine2(addressRequest.getAddressLine2())
                             .zipcode(addressRequest.getZipcode())
-                            .city(addressRequest.getCity())
+                            .isPrecise(addressRequest.getPrecise())
+                            .city(city)
                             .longitude(addressRequest.getLongitude())
                             .latitude(addressRequest.getLatitude())
                             .build())
@@ -149,17 +154,15 @@ public class CustomerService {
         return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
     }
 
-
-
     public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(UUID id, ContactPostDTO contactRequest) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         List<VisitType> visitTypes = new ArrayList<>();
 
-        for (UUIDDTO uuiddto: contactRequest.getTypes()){
+        for (UUIDDTO uuiddto : contactRequest.getTypes()) {
             VisitType visitType = visitTypeRepository.findById(uuiddto.getUuid())
-                    .orElseThrow( () -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
+                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
             visitTypes.add(visitType);
         }
@@ -190,15 +193,17 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         AddressPutDTO addressRequest = customerRequest.getAddress();
-
+        IDDTO iddto = addressRequest.getCity();
+        City city = cityRepository.findById(iddto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.City_NOT_FOUND));
         customerToUpdate.setName(customerRequest.getName());
         customerToUpdate.getAddress().setAddressLine1(addressRequest.getAddressLine1());
         customerToUpdate.getAddress().setAddressLine2(addressRequest.getAddressLine2());
-        customerToUpdate.getAddress().setCity(addressRequest.getCity());
+        customerToUpdate.getAddress().setCity(city);
         customerToUpdate.getAddress().setZipcode(addressRequest.getZipcode());
 
         try {
-            setLngLat(customerToUpdate, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), addressRequest.getCity(), addressRequest.getZipcode());
+            setLngLat(customerToUpdate, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), city.getName(), addressRequest.getZipcode());
 
             customerToUpdate = customerRepository.save(customerToUpdate);
 
@@ -220,19 +225,36 @@ public class CustomerService {
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
-        public ResponseEntity <List<CountByTypeListPayload>> countAllCustomer(){
-        ArrayList<CountByTypeListPayload>countbyType=new ArrayList<>();
-        List<VisitType>visitTypeList=visitTypeRepository.findAll();
-        double count=contactRepository.count();
-             for(int i = 0; i<visitTypeList.size() ;++i){
-             double countOfContact= contactRepository.countContactsByVisitTypesContaining(visitTypeList.get(i));
-             System.out.println(visitTypeList.get(i).getName());
-             System.out.println(countOfContact);
-             double percentage =countOfContact/count;
-             System.out.println(count);
-             countbyType.add(new CountByTypeListPayload(visitTypeList.get(i).getName(),percentage))   ;
+
+    public ResponseEntity<List<CountByTypeListPayload>> countAllCustomer() {
+        ArrayList<CountByTypeListPayload> customerCountList = new ArrayList<>();
+        List<VisitType> visitTypeList = visitTypeRepository.findAll();
+        double count = contactRepository.count();
+        for (VisitType visitType : visitTypeList) {
+            double countOfContact = contactRepository.countContactsByVisitTypesContaining(visitType);
+            System.out.println(visitType.getName());
+            System.out.println(countOfContact);
+            double percentage = countOfContact / count;
+            System.out.println(count);
+
+            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage));
         }
-       return  ResponseEntity.ok(countbyType);
+        return ResponseEntity.ok(customerCountList);
+    }
+
+    public ResponseEntity<List<CustomersInAnAreaListPayload>> CustomersInSpecificArea() {
+        ArrayList<CustomersInAnAreaListPayload> area = new ArrayList<>();
+        List<City> cityList = cityRepository.findAll();
+        double count = customerRepository.count();
+        for (City city : cityList) {
+            double countOfCustomer = customerRepository.countCustomerByAddress_City(city);
+            System.out.println(city.getName());
+            System.out.println(countOfCustomer);
+            double percentage = countOfCustomer / count;
+            System.out.println(count);
+            area.add(new CustomersInAnAreaListPayload(city.getName(), percentage));
+        }
+        return ResponseEntity.ok(area);
     }
 
     private static void setLngLat(Customer customerToUpdate, String addressLine1, String addressLine2, String city, String zipcode) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException {
@@ -252,6 +274,5 @@ public class CustomerService {
 
         context.shutdown();
     }
-
 
 }

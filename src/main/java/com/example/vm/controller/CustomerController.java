@@ -29,7 +29,7 @@ public class CustomerController {
         return customerService.findAllCustomers();
     }
 
-   @GetMapping("/assignment")
+    @GetMapping("/assignment")
     public ResponseEntity<?> getAllCustomersWhoHasAssignment() {
         return customerService.findAllCustomersWhoHasAssignment();
     }
@@ -40,7 +40,7 @@ public class CustomerController {
     }
 
 
-    @GetMapping(value = "/search",params = "query")
+    @GetMapping(value = "/search", params = "query")
     public ResponseEntity<?> searchByQuery(@RequestParam("query") String name) {
         return customerService.searchByQuery(name);
     }
@@ -74,7 +74,6 @@ public class CustomerController {
     public ResponseEntity<?> enableCustomer(@PathVariable UUID id) {
         return customerService.enableCustomer(id);
     }
-
 
 
 }

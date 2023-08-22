@@ -2,11 +2,12 @@ package com.example.vm.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 @Getter
 @Setter
 @Entity
 @Builder
-@Table(name = "City_model")
+@Table(name = "city_model")
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
@@ -18,8 +19,10 @@ public class City extends ModelAuditSuperclass {
     private int id;
 
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true)
     private String name;
 
+    @Column(name = "enabled", nullable = false, length = 1)
+    private int enabled;
 
 }

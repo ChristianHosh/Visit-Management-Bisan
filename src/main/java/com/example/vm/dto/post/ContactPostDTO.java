@@ -45,5 +45,4 @@ public class ContactPostDTO {
     @NotNull(message = "Invalid Types: Types is null")
     List<@Valid UUIDDTO> types;
 
-
 }

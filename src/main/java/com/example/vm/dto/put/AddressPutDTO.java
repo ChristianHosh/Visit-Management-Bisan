@@ -1,5 +1,8 @@
 package com.example.vm.dto.put;
 
+import com.example.vm.dto.IDDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
@@ -23,6 +26,6 @@ public class AddressPutDTO {
     @Size(min = 3, max = 5, message = "Invalid Zipcode: Must be of 3 - 5 characters")
     String zipcode;
 
-    @Size(min = 3, max = 30, message = "Invalid City: Must be of 3 - 30 characters")
-    String city;
+    @NotNull(message = "Invalid City : City is NULL")
+    @Valid IDDTO city;
 }

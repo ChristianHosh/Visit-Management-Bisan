@@ -1,5 +1,6 @@
 package com.example.vm.repository;
 
+import com.example.vm.model.City;
 import com.example.vm.model.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,5 +17,7 @@ public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     List<Customer> findAllCustomer();
 
     List<Customer> findCustomerByEnabled(int enable);
+
+    double countCustomerByAddress_City(City city);
 
 }

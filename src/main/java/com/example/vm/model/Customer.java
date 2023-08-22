@@ -50,10 +50,9 @@ public class Customer extends ModelAuditSuperclass {
             inverseJoinColumns = @JoinColumn(name = "assignment_id")
     )
     private List<VisitAssignment> visitAssignments;
-
-    public CustomerListPayload toListPayload() {
+     public CustomerListPayload toListPayload() {
         return new CustomerListPayload(this.getUuid(), this.getName(), this.getEnabled(),
-                new AddressListPayload(this.getAddress().getCity(), this.getAddress().getAddressLine1(),
+                new AddressListPayload(this.getAddress().getCity().getName(), this.getAddress().getAddressLine1(),
                         this.getAddress().getAddressLine2()));
     }
 
