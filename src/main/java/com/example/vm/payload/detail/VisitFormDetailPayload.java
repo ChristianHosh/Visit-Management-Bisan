@@ -9,13 +9,12 @@ import lombok.Data;
 
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 public class VisitFormDetailPayload {
 
-    private UUID uuid;
+    private Long id;
 
     private Timestamp startTime;
 

@@ -6,13 +6,12 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 public class AssignmentReportListPayload {
 
-    private UUID uuid;
+    private Long id;
 
     private String comment;
 

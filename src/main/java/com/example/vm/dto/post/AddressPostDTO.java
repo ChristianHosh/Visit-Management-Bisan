@@ -1,7 +1,5 @@
 package com.example.vm.dto.post;
 
-import com.example.vm.dto.IDDTO;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
@@ -43,7 +41,6 @@ public class AddressPostDTO {
     @Size(min = 3, max = 5, message = "Invalid Zipcode: Must be of 3 - 5 characters")
     String zipcode;
 
-
-    @NotNull(message = "Invalid City : City is NULL")
-    @Valid IDDTO city;
+   @NotNull(message = "Invalid City : City is NULL")
+   Long cityId;
 }

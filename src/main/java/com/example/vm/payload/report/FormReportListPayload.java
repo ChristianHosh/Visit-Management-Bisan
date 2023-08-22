@@ -8,13 +8,12 @@ import lombok.Data;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 public class FormReportListPayload {
 
-    private UUID uuid;
+    private Long id;
 
     private VisitStatus status;
 

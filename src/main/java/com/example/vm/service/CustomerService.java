@@ -102,8 +102,8 @@ public class CustomerService {
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerPostDTO customerRequest) {
         Customer customerToSave;
         AddressPostDTO addressRequest = customerRequest.getAddress();
-        IDDTO iddto = addressRequest.getCity();
-        City city = cityRepository.findById(iddto.getId())
+        IDDTO ID = addressRequest.getCity();
+        City city = cityRepository.findById()
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
 
         if (!addressRequest.getPrecise()) {

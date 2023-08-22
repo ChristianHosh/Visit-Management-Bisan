@@ -6,12 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.List;
-import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class VisitFormListPayload {
 
-    private UUID uuid;
+    private Long id;
 
     private VisitStatus status;
 

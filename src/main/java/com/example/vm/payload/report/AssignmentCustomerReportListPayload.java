@@ -7,13 +7,12 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 public class AssignmentCustomerReportListPayload {
 
-    private UUID id;
+    private Long id;
 
     private Date date;
 

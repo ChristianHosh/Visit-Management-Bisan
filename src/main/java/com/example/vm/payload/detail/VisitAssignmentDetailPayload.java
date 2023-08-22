@@ -8,7 +8,6 @@ import lombok.Data;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.List;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -18,7 +17,7 @@ public class VisitAssignmentDetailPayload {
 
         private Timestamp lastModifiedTime;
 
-        private UUID uuid;
+        private Long id;
 
         private Date date;
 

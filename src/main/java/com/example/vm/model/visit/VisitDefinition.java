@@ -9,7 +9,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -23,8 +22,8 @@ public class VisitDefinition extends ModelAuditSuperclass {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name", length = 30)
     private String name;
@@ -50,12 +49,12 @@ public class VisitDefinition extends ModelAuditSuperclass {
     private List<VisitAssignment> visitAssignments;
 
     public VisitDefinitionListPayload toListPayload() {
-        return new VisitDefinitionListPayload(this.getUuid(), this.getName(), this.getDescription(),
+        return new VisitDefinitionListPayload(this.getId(), this.getName(), this.getDescription(),
                 this.getType(), this.getFrequency(), this.isAllowRecurring(), this.getEnabled());
     }
 
     public VisitDefinitionDetailPayload toDetailPayload() {
-        return new VisitDefinitionDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getUuid(),
+        return new VisitDefinitionDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getId(),
                 this.getName(), this.getDescription(),
                 this.getType(), this.getFrequency(), this.isAllowRecurring(), this.getEnabled(),
                 this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());
