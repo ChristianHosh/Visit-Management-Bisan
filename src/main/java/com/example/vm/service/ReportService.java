@@ -23,20 +23,20 @@ public class ReportService {
     private final VisitFormRepository visitFormRepository;
     private final VisitAssignmentRepository visitAssignmentRepository;
     private final VisitTypeRepository visitTypeRepository;
-    private final ContactRepository contactRepository;
     private final CustomerRepository customerRepository;
     private final CityRepository cityRepository;
     private final UserRepository userRepository;
+    private final VisitDefinitionRepository visitDefinitionRepository;
 
     @Autowired
-    public ReportService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, VisitTypeRepository visitTypeRepository, ContactRepository contactRepository, CustomerRepository customerRepository, CityRepository cityRepository, UserRepository userRepository) {
+    public ReportService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, VisitTypeRepository visitTypeRepository, CustomerRepository customerRepository, CityRepository cityRepository, UserRepository userRepository, VisitDefinitionRepository visitDefinitionRepository) {
         this.visitFormRepository = visitFormRepository;
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.visitTypeRepository = visitTypeRepository;
-        this.contactRepository = contactRepository;
         this.customerRepository = customerRepository;
         this.cityRepository = cityRepository;
         this.userRepository = userRepository;
+        this.visitDefinitionRepository = visitDefinitionRepository;
     }
 
     public ResponseEntity<List<FormReportListPayload>> getAllForms() {
@@ -52,18 +52,18 @@ public class ReportService {
 
         List<VisitType> visitTypeList = visitTypeRepository.findAll();
 
-        long count = contactRepository.count();
+        long definitionsCount = visitDefinitionRepository.count();
 
         for (VisitType visitType : visitTypeList) {
-            double countOfContact = contactRepository.countContactsByVisitTypesContaining(visitType);
+            double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByType(visitType);
 
             System.out.println(visitType.getName());
 
-            System.out.println(countOfContact);
+            System.out.println(definitionByTypeCount);
 
-            double percentage = countOfContact / count;
+            double percentage = definitionByTypeCount / definitionsCount;
 
-            System.out.println(count);
+            System.out.println(definitionsCount);
 
             customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage));
         }
@@ -102,15 +102,18 @@ public class ReportService {
     public ResponseEntity<List<VisitForm>> findAverageForAUser(String id) {
         User founduser = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
-        ArrayList<VisitForm>visitForms=new ArrayList<>();
-        List<VisitAssignment>List=visitAssignmentRepository.findVisitAssignmentByUser(founduser);
-       for(int i=0;i<List.size();++i){
-          List <VisitForm> ListForm=visitFormRepository.findVisitFormByVisitAssignment(List.get(i));
-         for(int j=0;j<ListForm.size();++j){
-             visitForms.add(ListForm.get(j));
-         }
-       }
-       return ResponseEntity.ok(visitForms) ;
+        ArrayList<VisitForm> visitForms = new ArrayList<>();
+        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(founduser);
+
+        for (VisitAssignment visitAssignment : visitAssignmentList) {
+            List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
+
+            for (VisitForm visitForm : visitFormList) {
+                if (visitForm.getStatus().equals(VisitStatus.COMPLETED))
+                    visitForms.add(visitForm);
+            }
+        }
+        return ResponseEntity.ok(visitForms);
     }
 
 }

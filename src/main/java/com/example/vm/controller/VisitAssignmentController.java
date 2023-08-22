@@ -49,6 +49,7 @@ public class VisitAssignmentController {
     }
     @PostMapping("/{id}/users")
     public ResponseEntity<?> assignVisitToUser(@PathVariable Long id, @RequestBody @Valid String username) {
+        System.out.println(username);
         return visitAssignmentService.assignVisitToUser(id, username);
     }
 

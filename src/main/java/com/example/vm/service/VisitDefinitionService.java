@@ -67,7 +67,7 @@ public class VisitDefinitionService {
         VisitDefinition foundDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
-        VisitType foundVisitType = visitTypeRepository.findById(updatedDTO.getTypeID())
+        VisitType foundVisitType = visitTypeRepository.findById(updatedDTO.getTypeId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
         foundDefinition.setName(updatedDTO.getName().toLowerCase());
