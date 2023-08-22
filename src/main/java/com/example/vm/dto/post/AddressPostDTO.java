@@ -42,5 +42,5 @@ public class AddressPostDTO {
     String zipcode;
 
    @NotNull(message = "Invalid City : City is NULL")
-   Long cityId;
+     Long cityId;
 }

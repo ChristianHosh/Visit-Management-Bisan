@@ -28,17 +28,17 @@ public class VisitFormController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getFormById(@PathVariable UUID id) {
+    public ResponseEntity<?> getFormById(@PathVariable Long id) {
         return visitFormService.findVisitFormById(id);
     }
 
     @PutMapping("/{id}/start")
-    public ResponseEntity<?> updateFormStatusUndergoing(@PathVariable UUID id, @RequestBody @Valid FormGeolocationDTO geolocationDTO) {
+    public ResponseEntity<?> updateFormStatusUndergoing(@PathVariable Long id, @RequestBody @Valid FormGeolocationDTO geolocationDTO) {
         return visitFormService.startForm(id, geolocationDTO);
     }
 
     @PutMapping("/{id}/complete")
-    public ResponseEntity<?> updateFormStatusComplete(@PathVariable UUID id, @RequestBody @Valid FormGeolocationDTO geolocationDTO) {
+    public ResponseEntity<?> updateFormStatusComplete(@PathVariable Long id, @RequestBody @Valid FormGeolocationDTO geolocationDTO) {
         return visitFormService.completeForm(id, geolocationDTO);
     }
 

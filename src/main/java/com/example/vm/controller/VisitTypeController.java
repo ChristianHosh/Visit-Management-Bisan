@@ -30,7 +30,7 @@ public class VisitTypeController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVisitType(@PathVariable UUID id, @RequestBody @Valid VisitTypePutDTO visitTypeUpdate) {
+    public ResponseEntity<?> updateVisitType(@PathVariable Long id, @RequestBody @Valid VisitTypePutDTO visitTypeUpdate) {
         return visitTypeService.updateVisitType(id, visitTypeUpdate);
     }
 
