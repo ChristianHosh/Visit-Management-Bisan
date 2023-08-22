@@ -19,10 +19,12 @@ public class CityService {
         this.cityRepository = cityRepository;
     }
     public ResponseEntity<List<City>> findAll(){
+
         return ResponseEntity.ok(cityRepository.findAll());
     }
 
     public ResponseEntity<City> findById (Integer id){
+        System.out.print("hgh");
        City foundCity = cityRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
        return ResponseEntity.ok(foundCity);
