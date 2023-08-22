@@ -65,7 +65,7 @@ public class ReportService {
 
             System.out.println(definitionsCount);
 
-            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage));
+            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage*100));
         }
         return ResponseEntity.ok(customerCountList);
     }
@@ -86,7 +86,7 @@ public class ReportService {
             double percentage = countOfCustomer / count;
 
             System.out.println(count);
-            area.add(new CustomersInAnAreaListPayload(city.getName(), percentage));
+            area.add(new CustomersInAnAreaListPayload(city.getName(), percentage*100));
         }
 
         return ResponseEntity.ok(area);
