@@ -104,7 +104,6 @@ public class VisitFormService {
     }
 
 
-
     public ResponseEntity<VisitFormDetailPayload> startForm(UUID id, FormGeolocationDTO formGeolocationDTO) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
@@ -149,5 +148,5 @@ public class VisitFormService {
         return distanceBetweenTwoPoints(customerLat, customerLng, userLat, userLng);
     }
 
-    
+
 }

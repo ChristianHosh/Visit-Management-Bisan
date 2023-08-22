@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class ContactService {
@@ -25,14 +24,14 @@ public class ContactService {
         this.visitTypeRepository = visitTypeRepository;
     }
 
-    public ResponseEntity<Contact> findContactByUUID(UUID id) {
+    public ResponseEntity<Contact> findContactByUUID(Long id) {
         Contact foundContact = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CONTACT_NOT_FOUND));
 
         return ResponseEntity.ok(foundContact);
     }
 
-    public ResponseEntity<Contact> updateContact(UUID id, ContactPutDTO contactRequest) {
+    public ResponseEntity<Contact> updateContact(Long id, ContactPutDTO contactRequest) {
         Contact contactToUpdate = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CONTACT_NOT_FOUND));
 
@@ -60,7 +59,7 @@ public class ContactService {
         return ResponseEntity.ok(contactToUpdate);
     }
 
-    public ResponseEntity<Contact> enableContact(UUID id) {
+    public ResponseEntity<Contact> enableContact(Long id) {
         Contact contact = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 

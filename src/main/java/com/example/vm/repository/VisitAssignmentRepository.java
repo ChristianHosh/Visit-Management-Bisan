@@ -6,10 +6,11 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
+
 @Repository
-public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment, UUID> {
- List<VisitAssignment> findVisitAssignmentByDate(Date date);
- List<VisitAssignment> findVisitAssignmentByDateAfterAndDateBefore(Date date1 ,Date date2);
+public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment, Long> {
+    List<VisitAssignment> findVisitAssignmentByDate(Date date);
+
+    List<VisitAssignment> findVisitAssignmentByDateAfterAndDateBefore(Date date1, Date date2);
 
 }

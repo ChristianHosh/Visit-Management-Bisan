@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/contacts")
@@ -21,18 +19,18 @@ public class ContactController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getContactById(@PathVariable UUID id) {
+    public ResponseEntity<?> getContactById(@PathVariable Long id) {
         return contactService.findContactByUUID(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateContact(@PathVariable UUID id,
+    public ResponseEntity<?> updateContact(@PathVariable Long id,
                                            @RequestBody @Valid ContactPutDTO contactUpdate) {
         return contactService.updateContact(id, contactUpdate);
     }
 
     @PutMapping("/{id}/endis")
-    public ResponseEntity<?> enableCustomer(@PathVariable UUID id) {
+    public ResponseEntity<?> enableCustomer(@PathVariable Long id) {
         return contactService.enableContact(id);
     }
 

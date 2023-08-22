@@ -1,14 +1,10 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.UUIDDTO;
-import com.example.vm.dto.UserDTO;
 import com.example.vm.dto.put.VisitAssignmentPutDTO;
 import com.example.vm.service.VisitAssignmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @CrossOrigin
 @RestController
@@ -26,34 +22,34 @@ public class VisitAssignmentController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getVisitAssignmentById(@PathVariable UUID id) {
+    public ResponseEntity<?> getVisitAssignmentById(@PathVariable Long id) {
         return visitAssignmentService.findVisitAssignmentByUUID(id);
     }
 
     @GetMapping("/{assignmentId}/customer_contacts")
-    public ResponseEntity<?> getContactsByAssignmentType(@PathVariable UUID assignmentId, @RequestBody @Valid UUIDDTO customerUUIDDTO) {
-        return visitAssignmentService.findCustomerContactsByAssignmentType(assignmentId, customerUUIDDTO);
+    public ResponseEntity<?> getContactsByAssignmentType(@PathVariable Long assignmentId, @RequestBody @Valid Long customerId) {
+        return visitAssignmentService.findCustomerContactsByAssignmentType(assignmentId, customerId);
     }
     @GetMapping("/{assignmentId}/forms")
-    public ResponseEntity<?> getFormForAnAssignment(@PathVariable UUID assignmentId){
-        return visitAssignmentService.getFormsForAssignment(assignmentId);
+    public ResponseEntity<?> getFormForAnAssignment(@PathVariable Long assignmentId){
+        return visitAssignmentService.getFormsByAssignment(assignmentId);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateAssignment(@PathVariable UUID id,
+    public ResponseEntity<?> updateAssignment(@PathVariable Long id,
                                               @RequestBody @Valid VisitAssignmentPutDTO visitAssignmentUpdate) {
         return visitAssignmentService.updateVisitAssignment(id, visitAssignmentUpdate);
     }
     @PutMapping("/{id}/endis")
-    public ResponseEntity<?> enableCustomer(@PathVariable UUID id) {
+    public ResponseEntity<?> enableCustomer(@PathVariable Long id) {
         return visitAssignmentService.enableVisitAssignment(id);
     }
     @PostMapping("/{id}/customers")
-    public ResponseEntity<?> assignVisitToCustomer(@PathVariable UUID id, @RequestBody @Valid UUIDDTO customerUUID) {
-        return visitAssignmentService.assignVisitToCustomer(id, customerUUID);
+    public ResponseEntity<?> assignVisitToCustomer(@PathVariable(name = "id") Long assignmentId, @RequestBody @Valid Long customerId) {
+        return visitAssignmentService.assignVisitToCustomer(assignmentId, customerId);
     }
     @PostMapping("/{id}/users")
-    public ResponseEntity<?> assignVisitToUser(@PathVariable UUID id, @RequestBody @Valid UserDTO userDTO) {
-        return visitAssignmentService.assignVisitToUser(id, userDTO);
+    public ResponseEntity<?> assignVisitToUser(@PathVariable Long id, @RequestBody @Valid String username) {
+        return visitAssignmentService.assignVisitToUser(id, username);
     }
 
 
