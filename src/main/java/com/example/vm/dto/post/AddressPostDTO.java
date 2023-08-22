@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 @Builder
 @Data
 public class AddressPostDTO {
+
     @Null(message = "Invalid createdTime : Automatically generated")
     Timestamp createdTime;
 
@@ -35,12 +36,12 @@ public class AddressPostDTO {
     @Max(180)
     Double longitude;
 
-
     @NotBlank(message = "Invalid Zipcode : Empty Zipcode")
     @NotNull(message = "Invalid Zipcode : Zipcode is NULL")
     @Size(min = 3, max = 5, message = "Invalid Zipcode: Must be of 3 - 5 characters")
     String zipcode;
 
-   @NotNull(message = "Invalid City : City is NULL")
-   Long cityId;
+    @NotNull(message = "Invalid City : City is NULL")
+    Long cityId;
+
 }

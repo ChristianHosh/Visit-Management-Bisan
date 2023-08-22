@@ -72,6 +72,7 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(ContactListPayload.toPayload(contactList));
 
     }
+
     public ResponseEntity<List<VisitFormListPayload>> getFormsByAssignment(Long id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
@@ -105,18 +106,9 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
 
-    public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date before,Date after) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(before);
-        calendar.add(Calendar.DATE, -1);
-        Date date1= calendar.getTime();
-        Calendar calendarr = Calendar.getInstance();
-        calendarr.setTime(after);
-        calendarr.add((Calendar.DATE), 1);
-        Date date2= calendarr.getTime();
-
+    public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date before, Date after) {
         return ResponseEntity.ok(AssignmentReportListPayload.toPayload(
-                visitAssignmentRepository.findVisitAssignmentByDateAfterAndDateBefore(date1,date2)));
+                visitAssignmentRepository.findVisitAssignmentByDateBetween(before, after)));
     }
 
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(Long assignmentId, Long customerId) {
@@ -136,7 +128,6 @@ public class VisitAssignmentService {
 
         if (foundAssignment.getCustomers().contains(foundCustomer))
             throw new CustomerAlreadyAssignedException();
-
 
 
         VisitForm newVisitForm = VisitForm.builder()
@@ -168,18 +159,20 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
 
-    public void createNextVisitAssignment(VisitAssignment currentAssignment, Customer currentCustomer){
+    public void createNextVisitAssignment(VisitAssignment currentAssignment, Customer currentCustomer) {
         if (!currentAssignment.getVisitDefinition().isAllowRecurring())
             return;
 
-        if (currentAssignment.getNextVisitAssignment() == null){
+        if (currentAssignment.getNextVisitAssignment() == null) {
 
             int frequency = currentAssignment.getVisitDefinition().getFrequency();
+
             Date currentDate = currentAssignment.getDate();
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(currentDate);
             calendar.add(Calendar.DATE, frequency);
             Date nextAssignmentDate = calendar.getTime();
+
             VisitAssignment nextAssignment = VisitAssignment.builder()
                     .visitDefinition(currentAssignment.getVisitDefinition())
                     .comment(currentAssignment.getComment())
@@ -197,7 +190,7 @@ public class VisitAssignmentService {
 
             createNextAssignmentForm(currentCustomer, nextAssignment);
 
-        }else {
+        } else {
             VisitAssignment nextAssignment = currentAssignment.getNextVisitAssignment();
 
             createNextAssignmentForm(currentCustomer, nextAssignment);
@@ -208,7 +201,7 @@ public class VisitAssignmentService {
     }
 
     private void createNextAssignmentForm(Customer currentCustomer, VisitAssignment currentAssignment) {
-        if (!currentAssignment.getCustomers().contains(currentCustomer)){
+        if (!currentAssignment.getCustomers().contains(currentCustomer)) {
             currentAssignment.getCustomers().add(currentCustomer);
 
             VisitType visitType = currentAssignment.getVisitDefinition().getType();
@@ -223,8 +216,7 @@ public class VisitAssignmentService {
                     .build();
 
             visitFormRepository.save(newVisitForm);
-        }
-        else
+        } else
             throw new CustomerAlreadyAssignedException();
     }
 

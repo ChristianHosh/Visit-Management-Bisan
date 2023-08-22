@@ -9,8 +9,6 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/visit_definitions")
@@ -27,7 +25,7 @@ public class VisitDefinitionController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<VisitDefinitionDetailPayload> getVisitDefinitionById(@PathVariable UUID id) {
+    public ResponseEntity<VisitDefinitionDetailPayload> getVisitDefinitionById(@PathVariable Long id) {
       return visitDefinitionService.findVisitDefinitionByUUID(id);
 
     }
@@ -38,8 +36,8 @@ public class VisitDefinitionController {
 
     }
     @GetMapping(value = "/search", params = "type")
-    public ResponseEntity<?> searchByType(@RequestParam("type") UUID uuid){
-        return visitDefinitionService.searchByType(uuid);
+    public ResponseEntity<?> searchByType(@RequestParam("id") Long id){
+        return visitDefinitionService.searchByType(id);
     }
     @PostMapping("")
     public ResponseEntity<?> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {
@@ -48,17 +46,17 @@ public class VisitDefinitionController {
 
 
     @PostMapping("/{id}/assignments")
-    public ResponseEntity<?> saveNewVisitAssignmentToDefinition(@PathVariable UUID id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {
+    public ResponseEntity<?> saveNewVisitAssignmentToDefinition(@PathVariable Long id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {
         return visitDefinitionService.saveNewVisitAssignmentToDefinition(id, visitAssignmentRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVisitDefinition(@PathVariable UUID id, @RequestBody @Valid VisitDefinitionPutDTO visitDefinitionRequest) {
+    public ResponseEntity<?> updateVisitDefinition(@PathVariable Long id, @RequestBody @Valid VisitDefinitionPutDTO visitDefinitionRequest) {
         return visitDefinitionService.updateVisitDefinition(id, visitDefinitionRequest);
     }
 
     @PutMapping("/{id}/endis")
-    public ResponseEntity<?> enableVisitDefinition(@PathVariable UUID id) {
+    public ResponseEntity<?> enableVisitDefinition(@PathVariable Long id) {
         return  visitDefinitionService.enableVisitDefinition(id);
 
     }
