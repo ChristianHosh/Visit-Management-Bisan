@@ -17,7 +17,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     List<Customer> findCustomerByEnabled(int enabled);
 
-    Customer findCustomerByAddress_CityAndName(City city,String name);
+    List<Customer> findCustomerByAddress_CityAndName(City city, String name);
 
     int countCustomerByAddress_City(City city);
 
