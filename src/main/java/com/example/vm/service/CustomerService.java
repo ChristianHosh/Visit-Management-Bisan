@@ -15,13 +15,8 @@ import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.CustomerDetailPayload;
 import com.example.vm.payload.list.ContactListPayload;
 import com.example.vm.payload.list.CustomerListPayload;
-import com.example.vm.payload.report.AssignmentCustomerReportListPayload;
-import com.example.vm.payload.report.CountByTypeListPayload;
-import com.example.vm.payload.report.CustomersInAnAreaListPayload;
 import com.example.vm.repository.CityRepository;
-import com.example.vm.repository.ContactRepository;
 import com.example.vm.repository.CustomerRepository;
-import com.example.vm.repository.VisitTypeRepository;
 import com.example.vm.service.formatter.PhoneNumberFormatter;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -40,16 +35,12 @@ public class CustomerService {
     private static final String GEOLOCATION_KEY = "AIzaSyC1rCFrBqu32lHImkYyDBSyfmaxp5YCPao";
 
     private final CustomerRepository customerRepository;
-    private final VisitTypeRepository visitTypeRepository;
-    private final ContactRepository contactRepository;
     private final CityRepository cityRepository;
     private final VisitTypeService visitTypeService;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, VisitTypeRepository visitTypeRepository, ContactRepository contactRepository, CityRepository cityRepository, VisitTypeService visitTypeService) {
+    public CustomerService(CustomerRepository customerRepository, CityRepository cityRepository, VisitTypeService visitTypeService) {
         this.customerRepository = customerRepository;
-        this.visitTypeRepository = visitTypeRepository;
-        this.contactRepository = contactRepository;
         this.cityRepository = cityRepository;
         this.visitTypeService = visitTypeService;
     }
@@ -73,13 +64,6 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
-    }
-
-    public ResponseEntity<List<AssignmentCustomerReportListPayload>> findCustomer(Long id) {
-        Customer foundCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
-
-        return ResponseEntity.ok(AssignmentCustomerReportListPayload.topayLoad(foundCustomer));
     }
 
 
@@ -219,50 +203,6 @@ public class CustomerService {
         foundCustomer = customerRepository.save(foundCustomer);
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
-    }
-
-    //TODO MOVE TO TYPE SERVICE
-    public ResponseEntity<List<CountByTypeListPayload>> getTypesPercentages() {
-        ArrayList<CountByTypeListPayload> customerCountList = new ArrayList<>();
-
-        List<VisitType> visitTypeList = visitTypeRepository.findAll();
-
-        long count = contactRepository.count();
-
-        for (VisitType visitType : visitTypeList) {
-            double countOfContact = contactRepository.countContactsByVisitTypesContaining(visitType);
-
-            System.out.println(visitType.getName());
-            System.out.println(countOfContact);
-
-            double percentage = countOfContact / count;
-
-            System.out.println(count);
-
-            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage));
-        }
-        return ResponseEntity.ok(customerCountList);
-    }
-
-    public ResponseEntity<List<CustomersInAnAreaListPayload>> CustomersInSpecificArea() {
-        ArrayList<CustomersInAnAreaListPayload> area = new ArrayList<>();
-
-        List<City> cityList = cityRepository.findAll();
-
-        long count = customerRepository.count();
-
-        for (City city : cityList) {
-            double countOfCustomer = customerRepository.countCustomerByAddress_City(city);
-
-            System.out.println(city.getName());
-            System.out.println(countOfCustomer);
-
-            double percentage = countOfCustomer / count;
-
-            System.out.println(count);
-            area.add(new CustomersInAnAreaListPayload(city.getName(), percentage));
-        }
-        return ResponseEntity.ok(area);
     }
 
     private static void setLngLat(Customer customerToUpdate, String addressLine1, String addressLine2, String city, String zipcode) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException {

@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class AssignmentCustomerReportListPayload {
+public class UserAssignmentReportPayload {
 
     private Long id;
 
@@ -22,8 +22,9 @@ public class AssignmentCustomerReportListPayload {
 
     private String lastName;
 
-    private String  type;
-    public static List<AssignmentCustomerReportListPayload> topayLoad (Customer customer){
+    private String type;
+
+    public static List<UserAssignmentReportPayload> toPayload(Customer customer) {
         return customer.getVisitAssignments().stream().map(VisitAssignment::toListPayloadReportCustomer).toList();
     }
 

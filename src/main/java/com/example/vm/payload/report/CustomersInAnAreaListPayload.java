@@ -7,8 +7,8 @@ import lombok.Data;
 
 public class CustomersInAnAreaListPayload {
 
-    private String city;
+    private String name;
 
-    private Double percentage;
+    private Double y;
 
 }

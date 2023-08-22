@@ -5,7 +5,7 @@ import com.example.vm.model.ModelAuditSuperclass;
 import com.example.vm.model.User;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
-import com.example.vm.payload.report.AssignmentCustomerReportListPayload;
+import com.example.vm.payload.report.UserAssignmentReportPayload;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -33,10 +33,10 @@ public class VisitAssignment extends ModelAuditSuperclass {
     @Column(name = "date", nullable = false)
     private Date date;
 
-    @Column(name = "comment")
+    @Column(name = "comment", nullable = false)
     private String comment;
 
-    @Column(name = "enabled")
+    @Column(name = "enabled", nullable = false)
     private int enabled;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -79,8 +79,8 @@ public class VisitAssignment extends ModelAuditSuperclass {
                 , this.getUser().getLastName(), this.getCustomers().stream().map(Customer::toListPayloadReport).toList()
         );
     }
-        public AssignmentCustomerReportListPayload toListPayloadReportCustomer() {
-            return new AssignmentCustomerReportListPayload (this.getId(),
+        public UserAssignmentReportPayload toListPayloadReportCustomer() {
+            return new UserAssignmentReportPayload(this.getId(),
                     this.getDate(),
                     this.getUser().getUsername(),
                     this.getUser().getFirstName()

@@ -25,23 +25,23 @@ public class VisitDefinition extends ModelAuditSuperclass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", length = 30)
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "type_id")
     private VisitType type;
 
-    @Column(name = "frequency")
+    @Column(name = "frequency", nullable = false)
     private int frequency;
 
-    @Column(name = "allow_recurring")
+    @Column(name = "allow_recurring", nullable = false)
     private boolean allowRecurring;
 
-    @Column(name = "enabled", length = 1, nullable = false)
+    @Column(name = "enabled", nullable = false, length = 1)
     private int enabled;
 
     @OneToMany(mappedBy = "visitDefinition", cascade = CascadeType.ALL)

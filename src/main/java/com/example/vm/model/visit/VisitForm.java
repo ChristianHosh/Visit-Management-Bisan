@@ -36,7 +36,7 @@ public class VisitForm extends ModelAuditSuperclass {
     @Column(name = "end_time")
     private Timestamp endTime;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private VisitStatus status;
 

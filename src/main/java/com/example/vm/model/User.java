@@ -26,16 +26,16 @@ public class User extends ModelAuditSuperclass {
     @Column(name = "password", nullable = false, length = 30)
     private String password;
 
-    @Column(name = "first_name", length = 30)
+    @Column(name = "first_name", nullable = false, length = 30)
     private String firstName;
 
-    @Column(name = "last_name", length = 30)
+    @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 
-    @Column(name = "access_level", length = 1, nullable = false)
+    @Column(name = "access_level", nullable = false, length = 1)
     private int accessLevel;
 
-    @Column(name = "enabled", length = 1, nullable = false)
+    @Column(name = "enabled", nullable = false, length = 1)
     private int enabled;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
