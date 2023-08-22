@@ -9,9 +9,5 @@ public class UserAverageReportListPayload {
 
     private String username;
 
-    private String firstName;
-
-    private String lastName;
-
     private Double average;
 }

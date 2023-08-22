@@ -66,6 +66,6 @@ public class ReportController {
     }
     @GetMapping("/users/{username}")
     public ResponseEntity<?> AverageTimeForAUsers(@PathVariable String username) {
-        return reportService.findAverageForAUser(username);
+        return reportService.findAverageForAUser();
     }
 }

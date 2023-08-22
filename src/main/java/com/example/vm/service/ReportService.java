@@ -99,21 +99,27 @@ public class ReportService {
         return ResponseEntity.ok(UserAssignmentReportPayload.toPayload(foundCustomer));
     }
 
-    public ResponseEntity<List<VisitForm>> findAverageForAUser(String id) {
-        User founduser = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
-        ArrayList<VisitForm> visitForms = new ArrayList<>();
-        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(founduser);
+    public ResponseEntity<List<UserAverageReportListPayload>> findAverageForAUser() {
+        List<User> users=userRepository.findAll();
 
-        for (VisitAssignment visitAssignment : visitAssignmentList) {
-            List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
-
-            for (VisitForm visitForm : visitFormList) {
-                if (visitForm.getStatus().equals(VisitStatus.COMPLETED))
-                    visitForms.add(visitForm);
+        ArrayList<UserAverageReportListPayload> userAverage = new ArrayList<>();
+        for (User user : users) {
+            int counter=0;
+            double sum=0;
+            List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(user);
+            for (VisitAssignment visitAssignment : visitAssignmentList) {
+                List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
+                for (VisitForm visitForm : visitFormList) {
+                    if (visitForm.getStatus().equals(VisitStatus.COMPLETED))
+                        sum += (visitForm.getEndTime().getTime() - visitForm.getStartTime().getTime());
+                       counter+=counter;
+                }
             }
+            userAverage.add(new UserAverageReportListPayload(user.getUsername(),(sum/counter)));
         }
-        return ResponseEntity.ok(visitForms);
+
+
+        return ResponseEntity.ok(userAverage);
     }
 
 }
