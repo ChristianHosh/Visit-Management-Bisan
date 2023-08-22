@@ -51,14 +51,26 @@ public class Customer extends ModelAuditSuperclass {
     private List<VisitAssignment> visitAssignments;
 
     public CustomerListPayload toListPayload() {
-        return new CustomerListPayload(this.getId(), this.getName(), this.getEnabled(),
-                new AddressListPayload(this.getAddress().getCity().getName(), this.getAddress().getAddressLine1(),
-                        this.getAddress().getAddressLine2()));
+        return new CustomerListPayload(
+                this.getId(),
+                this.getName(),
+                this.getEnabled(),
+                new AddressListPayload(
+                        this.getAddress().getCity().getId(),
+                        this.getAddress().getAddressLine1(),
+                        this.getAddress().getAddressLine2(),
+                        this.getAddress().getZipcode()));
     }
 
     public CustomerDetailPayload toDetailPayload() {
-        return new CustomerDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getId(),
-                this.getName(), this.getEnabled(), this.getAddress(), this.getContacts(),
+        return new CustomerDetailPayload(
+                this.getCreatedTime(),
+                this.getLastModifiedTime(),
+                this.getId(),
+                this.getName(),
+                this.getEnabled(),
+                this.getAddress(),
+                this.getContacts(),
                 this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());
     }
 

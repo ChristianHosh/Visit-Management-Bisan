@@ -7,10 +7,12 @@ import lombok.Data;
 @AllArgsConstructor
 public class AddressListPayload {
 
-    private String city;
+    private Long cityId;
 
     private String addressLine1;
 
     private String addressLine2;
+
+    private String zipcode;
 
 }
