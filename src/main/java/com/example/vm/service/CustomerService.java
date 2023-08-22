@@ -2,7 +2,6 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.LocationNotFoundException;
-import com.example.vm.dto.IDDTO;
 import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.ContactPostDTO;
@@ -102,8 +101,7 @@ public class CustomerService {
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerPostDTO customerRequest) {
         Customer customerToSave;
         AddressPostDTO addressRequest = customerRequest.getAddress();
-        IDDTO ID = addressRequest.getCity();
-        City city = cityRepository.findById()
+        City city = cityRepository.findById(addressRequest.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
 
         if (!addressRequest.getPrecise()) {
@@ -194,9 +192,10 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         AddressPutDTO addressRequest = customerRequest.getAddress();
-        IDDTO iddto = addressRequest.getCity();
-        City city = cityRepository.findById(iddto.getId())
+
+        City city = cityRepository.findById(addressRequest.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
+
         customerToUpdate.setName(customerRequest.getName());
         customerToUpdate.getAddress().setAddressLine1(addressRequest.getAddressLine1());
         customerToUpdate.getAddress().setAddressLine2(addressRequest.getAddressLine2());

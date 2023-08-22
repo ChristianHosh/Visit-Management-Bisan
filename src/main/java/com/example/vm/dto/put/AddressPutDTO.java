@@ -1,6 +1,5 @@
 package com.example.vm.dto.put;
 
-import com.example.vm.dto.IDDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -27,5 +26,5 @@ public class AddressPutDTO {
     String zipcode;
 
     @NotNull(message = "Invalid City : City is NULL")
-    @Valid IDDTO city;
+    @Valid Long cityId;
 }
