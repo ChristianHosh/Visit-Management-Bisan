@@ -1,5 +1,6 @@
 package com.example.vm.repository;
 
+import com.example.vm.model.User;
 import com.example.vm.model.visit.VisitAssignment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -12,5 +13,7 @@ public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment
     List<VisitAssignment> findVisitAssignmentByDate(Date date);
 
     List<VisitAssignment> findVisitAssignmentByDateBetween(Date date1, Date date2);
+
+    List<VisitAssignment> findVisitAssignmentByUser(User user);
 
 }

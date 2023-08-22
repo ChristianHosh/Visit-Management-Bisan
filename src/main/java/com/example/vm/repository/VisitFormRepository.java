@@ -13,4 +13,5 @@ import java.util.UUID;
 public interface VisitFormRepository extends JpaRepository<VisitForm, Long> {
  List<VisitForm> findVisitFormByVisitAssignment (VisitAssignment visitAssignment);
  List<VisitForm> findVisitFormByStatus (VisitStatus status);
+
 }

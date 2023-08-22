@@ -111,6 +111,8 @@ public class VisitAssignmentService {
                 visitAssignmentRepository.findVisitAssignmentByDateBetween(before, after)));
     }
 
+
+
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(Long assignmentId, Long customerId) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));

@@ -64,4 +64,8 @@ public class ReportController {
                                                     @RequestParam(name = "to", required = false) String date2) {
         return visitAssignmentService.reportAssignmentByDate(Date.valueOf(date1), Date.valueOf(date2));
     }
+    @GetMapping("/users/{username}")
+    public ResponseEntity<?> AverageTimeForAUsers(@PathVariable String username) {
+        return reportService.findAverageForAUser(username);
+    }
 }
