@@ -44,7 +44,7 @@ public class VisitFormService {
         this.visitAssignmentService = visitAssignmentService;
     }
 
-    public ResponseEntity<VisitFormDetailPayload> findVisitFormById(UUID id) {
+    public ResponseEntity<VisitFormDetailPayload> findVisitFormById(Long id) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
 
@@ -81,7 +81,7 @@ public class VisitFormService {
 
     }
 
-    public ResponseEntity<VisitFormDetailPayload> completeForm(UUID id, FormGeolocationDTO formGeolocationDTO) {
+    public ResponseEntity<VisitFormDetailPayload> completeForm(Long id, FormGeolocationDTO formGeolocationDTO) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
 
@@ -104,7 +104,7 @@ public class VisitFormService {
     }
 
 
-    public ResponseEntity<VisitFormDetailPayload> startForm(UUID id, FormGeolocationDTO formGeolocationDTO) {
+    public ResponseEntity<VisitFormDetailPayload> startForm(Long id, FormGeolocationDTO formGeolocationDTO) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
 

@@ -22,7 +22,7 @@ public class CityService {
         return ResponseEntity.ok(cityRepository.findCityByEnabled(1));
     }
 
-    public ResponseEntity<City> findById(Integer id) {
+    public ResponseEntity<City> findById(Long id) {
         System.out.print("hgh");
 
         City foundCity = cityRepository.findById(id)

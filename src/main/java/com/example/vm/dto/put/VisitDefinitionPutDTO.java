@@ -16,7 +16,7 @@ public class VisitDefinitionPutDTO {
     @Size(min = 3, max = 255, message = "Invalid Description: Must be of 3 - 255 characters")
     String description;
 
-    UUID typeUUID;
+    Long typeID;
 
     @Min(value = 1, message = "Invalid Frequency: Equals to one")
     @Max(value = 365, message = "Invalid Frequency: Exceeds one year")

@@ -27,7 +27,7 @@ public class VisitDefinitionPostDTO {
     String description;
 
     @NotNull(message = "Invalid TypeUUID: TypeUUID is NULL")
-    UUID typeUUID;
+    Long  typeID;
 
     @NotNull(message = "Invalid Frequency: Frequency is NULL")
     @Min(value = 1, message = "Invalid Frequency: Equals to one")

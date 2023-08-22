@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface VisitFormRepository extends JpaRepository<VisitForm, UUID> {
+public interface VisitFormRepository extends JpaRepository<VisitForm, Long> {
  List<VisitForm> findVisitFormByVisitAssignment (VisitAssignment visitAssignment);
  List<VisitForm> findVisitFormByStatus (VisitStatus status);
 }

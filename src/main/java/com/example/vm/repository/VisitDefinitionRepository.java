@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition, UUID> {
+public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition, Long> {
     List<VisitDefinition> searchVisitDefinitionsByNameContaining(String name);
 
     List<VisitDefinition> searchVisitDefinitionsByFrequency(int frequency);

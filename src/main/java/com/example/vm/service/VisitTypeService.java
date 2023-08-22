@@ -39,8 +39,8 @@ public class VisitTypeService {
         return ResponseEntity.ok(VisitTypeToSave);
     }
 
-    public ResponseEntity<VisitType> updateVisitType(UUID uuid, VisitTypePutDTO updatedDTO) {
-        VisitType foundVisitType = repository.findById(uuid)
+    public ResponseEntity<VisitType> updateVisitType(Long id, VisitTypePutDTO updatedDTO) {
+        VisitType foundVisitType = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         foundVisitType.setName(updatedDTO.getName());
