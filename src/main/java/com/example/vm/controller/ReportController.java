@@ -1,7 +1,6 @@
 package com.example.vm.controller;
 
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.service.CustomerService;
 import com.example.vm.service.ReportService;
 import com.example.vm.service.VisitAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +15,11 @@ import java.sql.Date;
 public class ReportController {
     private final ReportService reportService;
     private final VisitAssignmentService visitAssignmentService;
-    private final CustomerService customerService;
 
     @Autowired
-    public ReportController(ReportService reportService, VisitAssignmentService visitAssignmentService, CustomerService customerService) {
+    public ReportController(ReportService reportService, VisitAssignmentService visitAssignmentService) {
         this.reportService = reportService;
         this.visitAssignmentService = visitAssignmentService;
-        this.customerService = customerService;
     }
 
     @GetMapping("/forms/all")
@@ -48,17 +45,18 @@ public class ReportController {
 
     @GetMapping("/customers/{id}")
     public ResponseEntity<?> findAllCustomerById(@PathVariable Long id) {
-        return customerService.findCustomer(id);
+        return reportService.findUserAssignmentByCustomer(id);
     }
 
     @GetMapping("/customers/countByType")
-    public ResponseEntity<?> countAllCustomerForaType() {
-        return customerService.getTypesPercentages();
+    public ResponseEntity<?> getTypesPercentages() {
+        return reportService.getTypesPercentages();
     }
+
 
     @GetMapping("/customers/countByArea")
     public ResponseEntity<?> countCustomersInAnArea() {
-        return customerService.CustomersInSpecificArea();
+        return reportService.getCityCustomersPercentage();
     }
 
     @GetMapping("/visit_assignments")

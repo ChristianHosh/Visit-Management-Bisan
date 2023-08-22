@@ -5,7 +5,7 @@ import com.example.vm.model.ModelAuditSuperclass;
 import com.example.vm.model.User;
 import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
 import com.example.vm.payload.list.VisitAssignmentListPayload;
-import com.example.vm.payload.report.AssignmentCustomerReportListPayload;
+import com.example.vm.payload.report.UserAssignmentReportPayload;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -33,10 +33,10 @@ public class VisitAssignment extends ModelAuditSuperclass {
     @Column(name = "date", nullable = false)
     private Date date;
 
-    @Column(name = "comment")
+    @Column(name = "comment", nullable = false)
     private String comment;
 
-    @Column(name = "enabled")
+    @Column(name = "enabled", nullable = false)
     private int enabled;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -61,6 +61,7 @@ public class VisitAssignment extends ModelAuditSuperclass {
     public VisitAssignmentListPayload toListPayload() {
         return new VisitAssignmentListPayload(this.getId(), this.getDate(), this.getComment(), this.getEnabled());
     }
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "username")
     @JsonManagedReference
@@ -69,23 +70,30 @@ public class VisitAssignment extends ModelAuditSuperclass {
     public VisitAssignmentDetailPayload toDetailPayload() {
         return new VisitAssignmentDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getId(),
                 this.getDate(), this.getComment(), this.getEnabled(),
-                this.getCustomers().stream().map(Customer::toListPayload).toList(),this.getUser()
+                this.getCustomers().stream().map(Customer::toListPayload).toList(), this.getUser()
         );
     }
 
-    public AssignmentReportListPayload toListPayloadReport() {
-        return new AssignmentReportListPayload(this.getId(), this.getComment(), this.getDate(),
-                this.getUser().getUsername(), this.getUser().getFirstName()
-                , this.getUser().getLastName(), this.getCustomers().stream().map(Customer::toListPayloadReport).toList()
-        );
-    }
-        public AssignmentCustomerReportListPayload toListPayloadReportCustomer() {
-            return new AssignmentCustomerReportListPayload (this.getId(),
-                    this.getDate(),
-                    this.getUser().getUsername(),
-                    this.getUser().getFirstName()
-                    ,this.getUser().getLastName(), this.getVisitDefinition().getType().getName()
+    public AssignmentReportListPayload toReportListPayload() {
+        if (this.getUser() != null) {
+            return new AssignmentReportListPayload(this.getId(), this.getComment(), this.getDate(),
+                    this.getUser().getUsername(), this.getUser().getFirstName(),
+                    this.getUser().getLastName(), this.getCustomers().stream().map(Customer::toListPayloadReport).toList()
             );
+        } else {
+            return new AssignmentReportListPayload(this.getId(), this.getComment(), this.getDate(),
+                    "No User Assigned", "", "",
+                    this.getCustomers().stream().map(Customer::toListPayloadReport).toList());
+        }
+    }
+
+    public UserAssignmentReportPayload toListPayloadReportCustomer() {
+        return new UserAssignmentReportPayload(this.getId(),
+                this.getDate(),
+                this.getUser().getUsername(),
+                this.getUser().getFirstName(),
+                this.getUser().getLastName(), this.getVisitDefinition().getType().getName()
+        );
 
     }
 

@@ -27,7 +27,7 @@ public class Customer extends ModelAuditSuperclass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
     @Column(name = "enabled", length = 1, nullable = false)

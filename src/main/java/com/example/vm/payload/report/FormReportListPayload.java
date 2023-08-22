@@ -19,19 +19,19 @@ public class FormReportListPayload {
 
     private Timestamp startTime;
 
-
     private Timestamp endTime;
 
-   String name;
 
-   String address;
+    String name; //CUSTOMER NAME
 
-   Date date;
+    String address; //CUSTOMER ADDRESS
 
-  String type;
+    Date date; //ASSIGNMENT DATE
+
+    String type; //ASSIGNMENT TYPE
 
 
-    public static List<FormReportListPayload > toPayload(List<VisitForm> visitformList) {
+    public static List<FormReportListPayload> toPayload(List<VisitForm> visitformList) {
         return visitformList.stream().map(VisitForm::toListPayloadReport).toList();
     }
 

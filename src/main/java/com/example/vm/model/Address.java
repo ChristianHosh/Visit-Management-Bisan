@@ -19,22 +19,22 @@ public class Address extends ModelAuditSuperclass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "address_line_1")
+    @Column(name = "address_line_1", nullable = false)
     private String addressLine1;
 
     @Column(name = "address_line_2")
     private String addressLine2;
 
-    @Column(name = "longitude")
+    @Column(name = "longitude", nullable = false)
     private Double longitude;
 
-    @Column(name = "latitude")
+    @Column(name = "latitude", nullable = false)
     private Double latitude;
 
-    @Column(name = "is_precise")
+    @Column(name = "is_precise", nullable = false)
     private Boolean isPrecise;
 
-    @Column(name = "zipcode", length = 5)
+    @Column(name = "zipcode", nullable = false, length = 5)
     private String zipcode;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

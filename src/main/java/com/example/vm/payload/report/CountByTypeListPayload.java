@@ -9,6 +9,6 @@ public class CountByTypeListPayload {
 
     private String name;
 
-    private double percentage;
+    private Double y;
 
 }

@@ -47,7 +47,7 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(VisitAssignmentListPayload.toPayload(visitAssignmentList));
     }
 
-    public ResponseEntity<VisitAssignmentDetailPayload> findVisitAssignmentByUUID(Long id) {
+    public ResponseEntity<VisitAssignmentDetailPayload> findVisitAssignmentById(Long id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
