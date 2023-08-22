@@ -65,7 +65,7 @@ public class ReportService {
 
             System.out.println(definitionsCount);
 
-            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage*100));
+            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage * 100));
         }
         return ResponseEntity.ok(customerCountList);
     }
@@ -86,7 +86,7 @@ public class ReportService {
             double percentage = countOfCustomer / count;
 
             System.out.println(count);
-            area.add(new CustomersInAnAreaListPayload(city.getName(), percentage*100));
+            area.add(new CustomersInAnAreaListPayload(city.getName(), percentage * 100));
         }
 
         return ResponseEntity.ok(area);
@@ -100,22 +100,29 @@ public class ReportService {
     }
 
     public ResponseEntity<List<UserAverageReportListPayload>> findAverageForAUser() {
-        List<User> users=userRepository.findAll();
-
+        List<User> users = userRepository.findAll();
         ArrayList<UserAverageReportListPayload> userAverage = new ArrayList<>();
         for (User user : users) {
-            int counter=0;
-            double sum=0;
+
+            int completedFormsCounter = 0;
+            double sumOfTime = 0;
+
             List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(user);
+
             for (VisitAssignment visitAssignment : visitAssignmentList) {
                 List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
+
                 for (VisitForm visitForm : visitFormList) {
-                    if (visitForm.getStatus().equals(VisitStatus.COMPLETED))
-                        sum += (visitForm.getEndTime().getTime() - visitForm.getStartTime().getTime());
-                       counter+=counter;
+                    if (visitForm.getStatus().equals(VisitStatus.COMPLETED)) {
+                        sumOfTime += (visitForm.getEndTime().getTime() - visitForm.getStartTime().getTime());
+                        completedFormsCounter++;
+
+                    }
+
                 }
             }
-            userAverage.add(new UserAverageReportListPayload(user.getUsername(),(sum/counter)));
+            System.out.println(user.getUsername() + " : " + sumOfTime + " / " + completedFormsCounter + " = " + (sumOfTime / completedFormsCounter));
+            userAverage.add(new UserAverageReportListPayload(user.getUsername(), (sumOfTime / completedFormsCounter) / 1000));
         }
 
 
