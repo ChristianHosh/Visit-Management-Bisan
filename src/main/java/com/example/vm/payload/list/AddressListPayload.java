@@ -17,4 +17,8 @@ public class AddressListPayload {
 
     private String zipcode;
 
+    private double longitude;
+
+    private double latitude;
+
 }
