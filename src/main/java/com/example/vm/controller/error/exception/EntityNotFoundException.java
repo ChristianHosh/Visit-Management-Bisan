@@ -11,6 +11,7 @@ public class EntityNotFoundException extends RuntimeException {
     public static final String TYPE_NOT_FOUND = "Invalid ID: Visit Type Not Found";
     public static final String FORM_NOT_FOUND = "Invalid ID: Visit Form Not Found";
     public static final String CITY_NOT_FOUND = "Invalid ID: City Not Found";
+    public static final String CUSTOMER_ALREADY_EXIST = "Customer is already exist";
 
     public EntityNotFoundException(String errorMessage) {
         super(errorMessage);

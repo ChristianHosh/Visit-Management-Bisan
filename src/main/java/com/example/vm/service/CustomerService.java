@@ -91,7 +91,7 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
 
         if (!customerRepository.findCustomerByAddress_CityAndName(city, customerRequest.getName()).isEmpty())
-            throw new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND);
+            throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_ALREADY_EXIST);
 
         Customer customerToSave = Customer.builder()
                 .name(customerRequest.getName().toLowerCase())
