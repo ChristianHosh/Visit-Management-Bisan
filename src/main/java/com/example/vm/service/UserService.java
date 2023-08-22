@@ -59,16 +59,14 @@ public class UserService {
         if (!userRequest.getConfirmPassword().equals(userRequest.getPassword()))
             throw new PasswordDoesntMatchException(PasswordDoesntMatchException.PASSWORD_DOES_NOT_MATCH);
 
-
-        if (repository.findById(userRequest.getUsername()).isPresent())
+        if (repository.existsById(userRequest.getUsername()))
             throw new UserAlreadyExistsException();
-
 
         User userToSave = User.builder()
                 .username(userRequest.getUsername().toLowerCase())
-                .password(userRequest.getConfirmPassword().toLowerCase())
                 .firstName(userRequest.getFirstName().toLowerCase())
                 .lastName(userRequest.getLastName().toLowerCase())
+                .password(userRequest.getConfirmPassword())
                 .accessLevel(userRequest.getAccessLevel())
                 .enabled(1)
                 .build();

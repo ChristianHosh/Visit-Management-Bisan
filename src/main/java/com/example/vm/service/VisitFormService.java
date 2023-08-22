@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class VisitFormService {
@@ -94,7 +93,7 @@ public class VisitFormService {
 
         foundForm.setStatus(VisitStatus.COMPLETED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
-        foundForm.setNote(formGeolocationDTO.getNote());
+        foundForm.setNote(formGeolocationDTO.getNote().toLowerCase());
 
         foundForm = visitFormRepository.save(foundForm);
 

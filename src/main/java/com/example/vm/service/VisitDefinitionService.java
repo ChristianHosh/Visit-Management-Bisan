@@ -47,30 +47,15 @@ public class VisitDefinitionService {
         VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
-        VisitDefinition visitDefinitionToSave;
-
-        if (VisitDefinitionRequest.getAllowRecurring()) {
-            visitDefinitionToSave = VisitDefinition.builder()
-                    .name(VisitDefinitionRequest.getName())
-                    .description(VisitDefinitionRequest.getDescription())
-                    .allowRecurring(VisitDefinitionRequest.getAllowRecurring())
-                    .frequency(VisitDefinitionRequest.getFrequency())
-                    .type(visitType)
-                    .enabled(1)
-                    .build();
-        } else {
-            visitDefinitionToSave = VisitDefinition.builder()
-                    .name(VisitDefinitionRequest.getName())
-                    .description(VisitDefinitionRequest.getDescription())
-                    .allowRecurring(VisitDefinitionRequest.getAllowRecurring())
-                    .frequency(0)
-                    .type(visitType)
-                    .enabled(1)
-                    .build();
-
-        }
-
-        visitDefinitionToSave.setVisitAssignments(new ArrayList<>());
+        VisitDefinition visitDefinitionToSave = VisitDefinition.builder()
+                .name(VisitDefinitionRequest.getName().toLowerCase())
+                .description(VisitDefinitionRequest.getDescription().toLowerCase())
+                .visitAssignments(new ArrayList<>())
+                .type(visitType)
+                .enabled(1)
+                .allowRecurring(VisitDefinitionRequest.getAllowRecurring())
+                .frequency(VisitDefinitionRequest.getAllowRecurring() ? VisitDefinitionRequest.getFrequency() : 0)
+                .build();
 
         visitDefinitionToSave = visitDefinitionRepository.save(visitDefinitionToSave);
 
@@ -85,11 +70,11 @@ public class VisitDefinitionService {
         VisitType foundVisitType = visitTypeRepository.findById(updatedDTO.getTypeID())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
-        foundDefinition.setName(updatedDTO.getName());
+        foundDefinition.setName(updatedDTO.getName().toLowerCase());
+        foundDefinition.setDescription(updatedDTO.getDescription().toLowerCase());
         foundDefinition.setType(foundVisitType);
-        foundDefinition.setDescription(updatedDTO.getDescription());
         foundDefinition.setAllowRecurring(updatedDTO.getAllowRecurring());
-        foundDefinition.setFrequency(updatedDTO.getFrequency());
+        foundDefinition.setFrequency(updatedDTO.getAllowRecurring() ? updatedDTO.getFrequency() : 0);
 
         foundDefinition = visitDefinitionRepository.save(foundDefinition);
 
@@ -143,7 +128,7 @@ public class VisitDefinitionService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
         VisitAssignment visitAssignment = VisitAssignment.builder()
-                .comment(visitAssignmentRequest.getComment())
+                .comment(visitAssignmentRequest.getComment().toLowerCase())
                 .date(visitAssignmentRequest.getDate())
                 .enabled(1)
                 .build();

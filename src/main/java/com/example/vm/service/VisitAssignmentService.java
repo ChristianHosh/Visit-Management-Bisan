@@ -87,7 +87,7 @@ public class VisitAssignmentService {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
-        foundAssignment.setComment(assignmentRequest.getComment());
+        foundAssignment.setComment(assignmentRequest.getComment().toLowerCase());
         foundAssignment.setDate(assignmentRequest.getDate());
 
         foundAssignment = visitAssignmentRepository.save(foundAssignment);

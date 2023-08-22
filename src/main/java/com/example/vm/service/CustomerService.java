@@ -82,6 +82,8 @@ public class CustomerService {
         return ResponseEntity.ok(ContactListPayload.toPayload(contactList));
     }
 
+    //TODO FIX METHOD CODE
+
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerPostDTO customerRequest) {
         Customer customerToSave;
         AddressPostDTO addressRequest = customerRequest.getAddress();
@@ -92,10 +94,10 @@ public class CustomerService {
             customerToSave = Customer.builder()
                     .name(customerRequest.getName())
                     .address(Address.builder()
-                            .addressLine1(addressRequest.getAddressLine1())
-                            .addressLine2(addressRequest.getAddressLine2())
+                            .addressLine1(addressRequest.getAddressLine1().toLowerCase())
+                            .addressLine2(addressRequest.getAddressLine2().toLowerCase())
                             .isPrecise(addressRequest.getPrecise())
-                            .zipcode(addressRequest.getZipcode())
+                            .zipcode(addressRequest.getZipcode().toLowerCase())
                             .city(city)
                             .build())
                     .visitAssignments(new ArrayList<>())
@@ -118,15 +120,14 @@ public class CustomerService {
             customerToSave = Customer.builder()
                     .name(customerRequest.getName())
                     .address(Address.builder()
-                            .addressLine1(addressRequest.getAddressLine1())
-                            .addressLine2(addressRequest.getAddressLine2())
-                            .zipcode(addressRequest.getZipcode())
+                            .addressLine1(addressRequest.getAddressLine1().toLowerCase())
+                            .addressLine2(addressRequest.getAddressLine2().toLowerCase())
+                            .zipcode(addressRequest.getZipcode().toLowerCase())
                             .isPrecise(addressRequest.getPrecise())
                             .city(city)
                             .longitude(addressRequest.getLongitude())
                             .latitude(addressRequest.getLatitude())
                             .build())
-
                     .visitAssignments(new ArrayList<>())
                     .enabled(1)
                     .build();
@@ -148,10 +149,10 @@ public class CustomerService {
         contactRequest.setPhoneNumber(formattedNumber);
 
         Contact newContact = Contact.builder()
-                .firstName(contactRequest.getFirstName())
-                .lastName(contactRequest.getLastName())
-                .email(contactRequest.getEmail())
-                .phoneNumber(contactRequest.getPhoneNumber())
+                .firstName(contactRequest.getFirstName().toLowerCase())
+                .lastName(contactRequest.getLastName().toLowerCase())
+                .email(contactRequest.getEmail().toLowerCase())
+                .phoneNumber(contactRequest.getPhoneNumber().toLowerCase())
                 .visitTypes(visitTypes)
                 .enabled(1)
                 .build();
@@ -177,10 +178,10 @@ public class CustomerService {
 
         customerToUpdate.setName(customerRequest.getName());
 
-        customerToUpdate.getAddress().setAddressLine1(addressRequest.getAddressLine1());
-        customerToUpdate.getAddress().setAddressLine2(addressRequest.getAddressLine2());
+        customerToUpdate.getAddress().setAddressLine1(addressRequest.getAddressLine1().toLowerCase());
+        customerToUpdate.getAddress().setAddressLine2(addressRequest.getAddressLine2().toLowerCase());
         customerToUpdate.getAddress().setCity(city);
-        customerToUpdate.getAddress().setZipcode(addressRequest.getZipcode());
+        customerToUpdate.getAddress().setZipcode(addressRequest.getZipcode().toLowerCase());
 
         try {
             setLngLat(customerToUpdate, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), city.getName(), addressRequest.getZipcode());
