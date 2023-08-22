@@ -16,8 +16,8 @@ public class Address extends ModelAuditSuperclass {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private Long uuid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "address_line_1")
     private String addressLine1;
