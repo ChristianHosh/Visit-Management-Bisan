@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @Entity
@@ -19,7 +17,7 @@ public class Address extends ModelAuditSuperclass {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+    private Long uuid;
 
     @Column(name = "address_line_1")
     private String addressLine1;
@@ -39,8 +37,8 @@ public class Address extends ModelAuditSuperclass {
     @Column(name = "zipcode", length = 5)
     private String zipcode;
 
-   @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn( name = "city_id")
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "city_id")
     private City city;
 
     @OneToOne(mappedBy = "address", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

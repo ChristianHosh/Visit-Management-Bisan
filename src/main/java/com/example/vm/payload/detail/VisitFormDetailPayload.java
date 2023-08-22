@@ -14,6 +14,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 public class VisitFormDetailPayload {
+
     private UUID uuid;
 
     private Timestamp startTime;
@@ -29,4 +30,5 @@ public class VisitFormDetailPayload {
     private VisitAssignmentListPayload visitAssignment;
 
     private List<ContactListPayload> contactList;
+
 }

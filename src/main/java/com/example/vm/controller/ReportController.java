@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
-import java.util.UUID;
 
 @CrossOrigin
 @RestController
@@ -48,7 +47,7 @@ public class ReportController {
     }
 
     @GetMapping("/customers/{id}")
-    public ResponseEntity<?> findAllCustomerById(@PathVariable UUID id) {
+    public ResponseEntity<?> findAllCustomerById(@PathVariable Long id) {
         return customerService.findCustomer(id);
     }
 

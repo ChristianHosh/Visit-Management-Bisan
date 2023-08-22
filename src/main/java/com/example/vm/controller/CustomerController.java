@@ -10,8 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/customers")
@@ -36,7 +34,7 @@ public class CustomerController {
 
     @GetMapping("/enable")
     public ResponseEntity<?> getAllEnabledCustomers() {
-        return customerService.findAllenableCustomers();
+        return customerService.findAllEnabledCustomers();
     }
 
 
@@ -46,12 +44,12 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDetailPayload> getCustomerById(@PathVariable UUID id) {
-        return customerService.findCustomerByUUID(id);
+    public ResponseEntity<CustomerDetailPayload> getCustomerById(@PathVariable Long id) {
+        return customerService.findCustomerById(id);
     }
 
     @GetMapping("/{id}/contacts")
-    public ResponseEntity<?> getContactsByCustomerUUID(@PathVariable UUID id) {
+    public ResponseEntity<?> getContactsByCustomer(@PathVariable Long id) {
         return customerService.getCustomerContacts(id);
     }
 
@@ -61,17 +59,17 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/contacts")
-    public ResponseEntity<?> SaveContactToCustomerByUUID(@PathVariable UUID id, @RequestBody @Valid ContactPostDTO contactRequest) {
+    public ResponseEntity<?> SaveContactToCustomer(@PathVariable Long id, @RequestBody @Valid ContactPostDTO contactRequest) {
         return customerService.saveContactToCustomer(id, contactRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable UUID id, @RequestBody @Valid CustomerPutDTO customerRequest) {
+    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerPutDTO customerRequest) {
         return customerService.updateCustomer(id, customerRequest);
     }
 
     @PutMapping("/{id}/endis")
-    public ResponseEntity<?> enableCustomer(@PathVariable UUID id) {
+    public ResponseEntity<?> enableCustomer(@PathVariable Long id) {
         return customerService.enableCustomer(id);
     }
 

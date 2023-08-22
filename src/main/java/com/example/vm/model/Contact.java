@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @Getter
 @Setter
@@ -21,8 +20,8 @@ public class Contact extends ModelAuditSuperclass {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "first_name", length = 30)
     private String firstName;
@@ -51,9 +50,10 @@ public class Contact extends ModelAuditSuperclass {
             inverseJoinColumns = @JoinColumn(name = "type_id")
     )
     private List<VisitType> visitTypes;
-    public ContactListPayload toListPayload(){
-        return new ContactListPayload(this.getUuid(),
-                this.getFirstName(),this.getLastName(), this.getEmail(),
-                this.getPhoneNumber(), this.getEnabled(),this.getVisitTypes());
+
+    public ContactListPayload toListPayload() {
+        return new ContactListPayload(this.getId(),
+                this.getFirstName(), this.getLastName(), this.getEmail(),
+                this.getPhoneNumber(), this.getEnabled(), this.getVisitTypes());
     }
 }

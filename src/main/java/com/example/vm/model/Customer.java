@@ -10,7 +10,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.UUID;
 
 
 @Getter
@@ -25,8 +24,8 @@ public class Customer extends ModelAuditSuperclass {
 
     @Id
     @Column(name = "id", nullable = false)
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID uuid;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -50,20 +49,21 @@ public class Customer extends ModelAuditSuperclass {
             inverseJoinColumns = @JoinColumn(name = "assignment_id")
     )
     private List<VisitAssignment> visitAssignments;
-     public CustomerListPayload toListPayload() {
-        return new CustomerListPayload(this.getUuid(), this.getName(), this.getEnabled(),
+
+    public CustomerListPayload toListPayload() {
+        return new CustomerListPayload(this.getId(), this.getName(), this.getEnabled(),
                 new AddressListPayload(this.getAddress().getCity().getName(), this.getAddress().getAddressLine1(),
                         this.getAddress().getAddressLine2()));
     }
 
     public CustomerDetailPayload toDetailPayload() {
-        return new CustomerDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getUuid(),
+        return new CustomerDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getId(),
                 this.getName(), this.getEnabled(), this.getAddress(), this.getContacts(),
                 this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());
     }
 
     public CustomerReportListPayload toListPayloadReport() {
-        return new CustomerReportListPayload (this.getUuid(), this.getName());
+        return new CustomerReportListPayload(this.getId(), this.getName());
     }
 
 

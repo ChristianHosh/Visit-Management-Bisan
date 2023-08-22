@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class CustomerService {
@@ -62,24 +61,25 @@ public class CustomerService {
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomersWhoHasAssignment() {
 
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAllCustomer()));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAllCustomerWhoHaveAssignments()));
     }
 
 
-    public ResponseEntity<List<CustomerListPayload>> findAllenableCustomers() {
+    public ResponseEntity<List<CustomerListPayload>> findAllEnabledCustomers() {
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomerByEnabled(1)));
     }
 
-    public ResponseEntity<CustomerDetailPayload> findCustomerByUUID(UUID id) {
+    public ResponseEntity<CustomerDetailPayload> findCustomerById(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
 
-    public ResponseEntity<List<AssignmentCustomerReportListPayload>> findCustomer(UUID id) {
+    public ResponseEntity<List<AssignmentCustomerReportListPayload>> findCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+
         return ResponseEntity.ok(AssignmentCustomerReportListPayload.topayLoad(foundCustomer));
     }
 
@@ -90,7 +90,7 @@ public class CustomerService {
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
     }
 
-    public ResponseEntity<List<ContactListPayload>> getCustomerContacts(UUID id) {
+    public ResponseEntity<List<ContactListPayload>> getCustomerContacts(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
@@ -104,7 +104,7 @@ public class CustomerService {
         AddressPostDTO addressRequest = customerRequest.getAddress();
         IDDTO iddto = addressRequest.getCity();
         City city = cityRepository.findById(iddto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.City_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
 
         if (!addressRequest.getPrecise()) {
             customerToSave = Customer.builder()
@@ -144,6 +144,7 @@ public class CustomerService {
                             .longitude(addressRequest.getLongitude())
                             .latitude(addressRequest.getLatitude())
                             .build())
+
                     .visitAssignments(new ArrayList<>())
                     .enabled(1)
                     .build();
@@ -154,7 +155,7 @@ public class CustomerService {
         return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
     }
 
-    public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(UUID id, ContactPostDTO contactRequest) {
+    public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(Long id, ContactPostDTO contactRequest) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
@@ -188,14 +189,14 @@ public class CustomerService {
         return ResponseEntity.status(HttpStatus.CREATED).body(foundCustomer.toDetailPayload());
     }
 
-    public ResponseEntity<CustomerDetailPayload> updateCustomer(UUID id, CustomerPutDTO customerRequest) {
+    public ResponseEntity<CustomerDetailPayload> updateCustomer(Long id, CustomerPutDTO customerRequest) {
         Customer customerToUpdate = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         AddressPutDTO addressRequest = customerRequest.getAddress();
         IDDTO iddto = addressRequest.getCity();
         City city = cityRepository.findById(iddto.getId())
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.City_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
         customerToUpdate.setName(customerRequest.getName());
         customerToUpdate.getAddress().setAddressLine1(addressRequest.getAddressLine1());
         customerToUpdate.getAddress().setAddressLine2(addressRequest.getAddressLine2());
@@ -215,7 +216,7 @@ public class CustomerService {
         throw new LocationNotFoundException();
     }
 
-    public ResponseEntity<CustomerDetailPayload> enableCustomer(UUID id) {
+    public ResponseEntity<CustomerDetailPayload> enableCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
