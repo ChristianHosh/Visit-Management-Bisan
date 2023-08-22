@@ -67,16 +67,18 @@ public class VisitForm extends ModelAuditSuperclass {
                 this.getVisitAssignment().toListPayload(),
                 ContactListPayload.toPayload(this.getContacts()));
     }
+
     public FormReportListPayload toListPayloadReport() {
         return new FormReportListPayload(
-                this.getId(),this.getStatus(), this.getStartTime(), this.getEndTime(),
+                this.getId(), this.getStatus(), this.getStartTime(), this.getEndTime(),
                 this.getCustomer().getName(),
                 this.getCustomer().getAddress().getAddressLine1(),
                 this.getVisitAssignment().getDate(),
                 this.getVisitAssignment().getVisitDefinition().getType().getName()
-                 );
+        );
     }
-    public VisitFormListPayload toListPayload(){
+
+    public VisitFormListPayload toListPayload() {
         return new VisitFormListPayload(this.getId(),
                 this.getStatus(),
                 this.getCustomer().toListPayload()

@@ -176,6 +176,7 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
 
         customerToUpdate.setName(customerRequest.getName());
+
         customerToUpdate.getAddress().setAddressLine1(addressRequest.getAddressLine1());
         customerToUpdate.getAddress().setAddressLine2(addressRequest.getAddressLine2());
         customerToUpdate.getAddress().setCity(city);

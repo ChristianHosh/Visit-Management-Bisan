@@ -61,6 +61,7 @@ public class VisitAssignment extends ModelAuditSuperclass {
     public VisitAssignmentListPayload toListPayload() {
         return new VisitAssignmentListPayload(this.getId(), this.getDate(), this.getComment(), this.getEnabled());
     }
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "username")
     @JsonManagedReference
@@ -69,23 +70,30 @@ public class VisitAssignment extends ModelAuditSuperclass {
     public VisitAssignmentDetailPayload toDetailPayload() {
         return new VisitAssignmentDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getId(),
                 this.getDate(), this.getComment(), this.getEnabled(),
-                this.getCustomers().stream().map(Customer::toListPayload).toList(),this.getUser()
+                this.getCustomers().stream().map(Customer::toListPayload).toList(), this.getUser()
         );
     }
 
-    public AssignmentReportListPayload toListPayloadReport() {
-        return new AssignmentReportListPayload(this.getId(), this.getComment(), this.getDate(),
-                this.getUser().getUsername(), this.getUser().getFirstName()
-                , this.getUser().getLastName(), this.getCustomers().stream().map(Customer::toListPayloadReport).toList()
-        );
-    }
-        public UserAssignmentReportPayload toListPayloadReportCustomer() {
-            return new UserAssignmentReportPayload(this.getId(),
-                    this.getDate(),
-                    this.getUser().getUsername(),
-                    this.getUser().getFirstName()
-                    ,this.getUser().getLastName(), this.getVisitDefinition().getType().getName()
+    public AssignmentReportListPayload toReportListPayload() {
+        if (this.getUser() != null) {
+            return new AssignmentReportListPayload(this.getId(), this.getComment(), this.getDate(),
+                    this.getUser().getUsername(), this.getUser().getFirstName(),
+                    this.getUser().getLastName(), this.getCustomers().stream().map(Customer::toListPayloadReport).toList()
             );
+        } else {
+            return new AssignmentReportListPayload(this.getId(), this.getComment(), this.getDate(),
+                    "No User Assigned", "", "",
+                    this.getCustomers().stream().map(Customer::toListPayloadReport).toList());
+        }
+    }
+
+    public UserAssignmentReportPayload toListPayloadReportCustomer() {
+        return new UserAssignmentReportPayload(this.getId(),
+                this.getDate(),
+                this.getUser().getUsername(),
+                this.getUser().getFirstName(),
+                this.getUser().getLastName(), this.getVisitDefinition().getType().getName()
+        );
 
     }
 

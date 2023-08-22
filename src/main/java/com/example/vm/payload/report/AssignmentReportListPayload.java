@@ -24,8 +24,9 @@ public class AssignmentReportListPayload {
     private String lastName;
 
     private List<CustomerReportListPayload> customer;
+
     public static List<AssignmentReportListPayload> toPayload(List<VisitAssignment> visitAssignmentList) {
-        return visitAssignmentList.stream().map(VisitAssignment::toListPayloadReport).toList();
+        return visitAssignmentList.stream().map(VisitAssignment::toReportListPayload).toList();
     }
 
 }

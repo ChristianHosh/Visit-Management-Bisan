@@ -23,7 +23,7 @@ public class VisitAssignmentController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getVisitAssignmentById(@PathVariable Long id) {
-        return visitAssignmentService.findVisitAssignmentByUUID(id);
+        return visitAssignmentService.findVisitAssignmentById(id);
     }
 
     @GetMapping("/{assignmentId}/customer_contacts")

@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class VisitDefinitionService {
@@ -45,7 +44,7 @@ public class VisitDefinitionService {
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisit(VisitDefinitionPostDTO VisitDefinitionRequest) {
-        VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeID())
+        VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
         VisitDefinition visitDefinitionToSave;
