@@ -62,7 +62,9 @@ public class Customer extends ModelAuditSuperclass {
                         this.getAddress().getAddressLine2(),
                         this.getAddress().getZipcode(),
                         this.getAddress().getLongitude(),
-                        this.getAddress().getLatitude()));
+                        this.getAddress().getLatitude(),
+                       this.getAddress().getIsPrecise())
+                        );
     }
 
     public CustomerDetailPayload toDetailPayload() {

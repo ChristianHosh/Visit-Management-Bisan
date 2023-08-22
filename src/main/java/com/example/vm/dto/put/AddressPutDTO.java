@@ -16,10 +16,10 @@ public class AddressPutDTO {
     @Size(max = 30, message = "Invalid Address Line : Must be a maximum of 30 characters")
     String AddressLine2;
 
-    @Null(message = "Invalid Longitude : Longitude is not NULL")
+
     Double longitude;
 
-    @Null(message = "Invalid Latitude : Latitude is not NULL")
+
     Double latitude;
 
     @Size(min = 3, max = 5, message = "Invalid Zipcode: Must be of 3 - 5 characters")
