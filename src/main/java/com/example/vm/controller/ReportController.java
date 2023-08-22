@@ -1,5 +1,6 @@
 package com.example.vm.controller;
 
+import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.service.CustomerService;
 import com.example.vm.service.ReportService;
 import com.example.vm.service.VisitAssignmentService;
@@ -13,37 +14,36 @@ import java.sql.Date;
 @RestController
 @RequestMapping("/reports")
 public class ReportController {
-    private final ReportService reportservice;
+    private final ReportService reportService;
     private final VisitAssignmentService visitAssignmentService;
     private final CustomerService customerService;
 
     @Autowired
-    public ReportController(ReportService reportservice, VisitAssignmentService visitAssignmentService, CustomerService customerService) {
-        this.reportservice = reportservice;
-
+    public ReportController(ReportService reportService, VisitAssignmentService visitAssignmentService, CustomerService customerService) {
+        this.reportService = reportService;
         this.visitAssignmentService = visitAssignmentService;
         this.customerService = customerService;
     }
 
     @GetMapping("/forms/all")
     public ResponseEntity<?> findAllForms() {
-        return reportservice.reportForAllForms();
+        return reportService.getAllForms();
 
     }
 
     @GetMapping("/forms/not_started")
-    public ResponseEntity<?> findAllNotStartedStatus() {
-        return reportservice.reportForNotStartedStatus();
+    public ResponseEntity<?> findAllNotStartedForms() {
+        return reportService.getAllFormsByStatus(VisitStatus.NOT_STARTED);
     }
 
     @GetMapping("/forms/under_going")
-    public ResponseEntity<?> findAllUndergoingStatus() {
-        return reportservice.reportForUnderGoingStatus();
+    public ResponseEntity<?> findAllUndergoingForms() {
+        return reportService.getAllFormsByStatus(VisitStatus.UNDERGOING);
     }
 
     @GetMapping("/forms/completed")
-    public ResponseEntity<?> findAllCompleted() {
-        return reportservice.reportForCompleted();
+    public ResponseEntity<?> findAllCompletedForms() {
+        return reportService.getAllFormsByStatus(VisitStatus.COMPLETED);
     }
 
     @GetMapping("/customers/{id}")
@@ -53,7 +53,7 @@ public class ReportController {
 
     @GetMapping("/customers/countByType")
     public ResponseEntity<?> countAllCustomerForaType() {
-        return customerService.countAllCustomer();
+        return customerService.getTypesPercentages();
     }
 
     @GetMapping("/customers/countByArea")

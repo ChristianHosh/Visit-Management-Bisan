@@ -5,12 +5,13 @@ import com.example.vm.dto.post.VisitTypePostDTO;
 import com.example.vm.dto.put.VisitTypePutDTO;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.VisitTypeRepository;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class VisitTypeService {
@@ -26,7 +27,6 @@ public class VisitTypeService {
         return ResponseEntity.ok(repository.findAll());
     }
 
-
     public ResponseEntity<VisitType> saveNewVisitType(VisitTypePostDTO VisitTypeRequest) {
 
         VisitType VisitTypeToSave = VisitType.builder()
@@ -39,8 +39,8 @@ public class VisitTypeService {
         return ResponseEntity.ok(VisitTypeToSave);
     }
 
-    public ResponseEntity<VisitType> updateVisitType(UUID uuid, VisitTypePutDTO updatedDTO) {
-        VisitType foundVisitType = repository.findById(uuid)
+    public ResponseEntity<VisitType> updateVisitType(Long id, VisitTypePutDTO updatedDTO) {
+        VisitType foundVisitType = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         foundVisitType.setName(updatedDTO.getName());
@@ -48,5 +48,18 @@ public class VisitTypeService {
         foundVisitType = repository.save(foundVisitType);
 
         return ResponseEntity.ok(foundVisitType);
+    }
+
+    @NotNull
+    public List<VisitType> getVisitTypes(List<Long> typeIdList) {
+        List<VisitType> visitTypes = new ArrayList<>();
+
+        for (Long typeId : typeIdList) {
+            VisitType visitType = repository.findById(typeId)
+                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
+
+            visitTypes.add(visitType);
+        }
+        return visitTypes;
     }
 }

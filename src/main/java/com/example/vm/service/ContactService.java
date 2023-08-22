@@ -5,22 +5,20 @@ import com.example.vm.dto.put.ContactPutDTO;
 import com.example.vm.model.Contact;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.ContactRepository;
-import com.example.vm.repository.VisitTypeRepository;
 import com.example.vm.service.formatter.PhoneNumberFormatter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ContactService {
     private final ContactRepository contactRepository;
-    private final VisitTypeRepository visitTypeRepository;
+    private final VisitTypeService visitTypeService;
 
-    public ContactService(ContactRepository contactRepository, VisitTypeRepository visitTypeRepository) {
+    public ContactService(ContactRepository contactRepository, VisitTypeService visitTypeService) {
         this.contactRepository = contactRepository;
-        this.visitTypeRepository = visitTypeRepository;
+        this.visitTypeService = visitTypeService;
     }
 
     public ResponseEntity<Contact> findContactByUUID(Long id) {
@@ -34,14 +32,7 @@ public class ContactService {
         Contact contactToUpdate = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CONTACT_NOT_FOUND));
 
-        List<VisitType> visitTypes = new ArrayList<>();
-
-        for (Long typeId : contactRequest.getTypes()) {
-            VisitType visitType = visitTypeRepository.findById(typeId)
-                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
-
-            visitTypes.add(visitType);
-        }
+        List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getTypes());
 
         String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 

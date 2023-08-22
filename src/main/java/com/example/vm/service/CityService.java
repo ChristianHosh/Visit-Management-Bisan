@@ -22,11 +22,10 @@ public class CityService {
         return ResponseEntity.ok(cityRepository.findCityByEnabled(1));
     }
 
-    public ResponseEntity<City> findById(Integer id) {
-        System.out.print("hgh");
-
+    public ResponseEntity<City> findById(Long id) {
         City foundCity = cityRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+
         return ResponseEntity.ok(foundCity);
     }
 
