@@ -9,6 +9,8 @@ public class AddressListPayload {
 
     private Long cityId;
 
+    private String city;
+
     private String addressLine1;
 
     private String addressLine2;

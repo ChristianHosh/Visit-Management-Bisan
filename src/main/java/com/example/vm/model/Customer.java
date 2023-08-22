@@ -57,6 +57,7 @@ public class Customer extends ModelAuditSuperclass {
                 this.getEnabled(),
                 new AddressListPayload(
                         this.getAddress().getCity().getId(),
+                        this.getAddress().getCity().getName(),
                         this.getAddress().getAddressLine1(),
                         this.getAddress().getAddressLine2(),
                         this.getAddress().getZipcode()));
