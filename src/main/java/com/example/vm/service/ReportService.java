@@ -19,18 +19,11 @@ public class ReportService {
         this.visitFormRepository = visitFormRepository;
     }
 
-
-    public ResponseEntity<List<FormReportListPayload>> reportForAllForms() {
+    public ResponseEntity<List<FormReportListPayload>> getAllForms() {
         return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findAll()));
     }
-    public ResponseEntity<List<FormReportListPayload>> reportForNotStartedStatus() {
-        return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findVisitFormByStatus(VisitStatus.NOT_STARTED)));
-    }
-    public ResponseEntity<List<FormReportListPayload>> reportForUnderGoingStatus() {
-        return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findVisitFormByStatus(VisitStatus.UNDERGOING)));
-    }
-    public ResponseEntity<List<FormReportListPayload>> reportForCompleted() {
-        return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findVisitFormByStatus(VisitStatus.COMPLETED)));
+    public ResponseEntity<List<FormReportListPayload>> getAllFormsByStatus(VisitStatus status) {
+        return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findVisitFormByStatus(status)));
     }
 
 }

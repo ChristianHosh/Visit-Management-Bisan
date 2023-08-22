@@ -4,14 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class CountByTypeListPayload {
+
     private String name;
 
     private double percentage;
 
-
-    public CountByTypeListPayload(String name, double percentage) {
-        this.name=name;
-        this.percentage=percentage;
-    }
 }

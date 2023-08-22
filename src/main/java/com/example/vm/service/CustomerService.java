@@ -2,7 +2,6 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.LocationNotFoundException;
-import com.example.vm.dto.UUIDDTO;
 import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
@@ -42,16 +41,17 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final VisitTypeRepository visitTypeRepository;
-
     private final ContactRepository contactRepository;
     private final CityRepository cityRepository;
+    private final VisitTypeService visitTypeService;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, VisitTypeRepository visitTypeRepository, ContactRepository contactRepository, CityRepository cityRepository) {
+    public CustomerService(CustomerRepository customerRepository, VisitTypeRepository visitTypeRepository, ContactRepository contactRepository, CityRepository cityRepository, VisitTypeService visitTypeService) {
         this.customerRepository = customerRepository;
         this.visitTypeRepository = visitTypeRepository;
         this.contactRepository = contactRepository;
         this.cityRepository = cityRepository;
+        this.visitTypeService = visitTypeService;
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomers() {
@@ -157,14 +157,7 @@ public class CustomerService {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
-        List<VisitType> visitTypes = new ArrayList<>();
-
-        for (UUIDDTO uuiddto : contactRequest.getTypes()) {
-            VisitType visitType = visitTypeRepository.findById(uuiddto.getUuid())
-                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
-
-            visitTypes.add(visitType);
-        }
+        List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getTypes());
 
         String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 
@@ -186,6 +179,8 @@ public class CustomerService {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(foundCustomer.toDetailPayload());
     }
+
+
 
     public ResponseEntity<CustomerDetailPayload> updateCustomer(Long id, CustomerPutDTO customerRequest) {
         Customer customerToUpdate = customerRepository.findById(id)
@@ -226,15 +221,22 @@ public class CustomerService {
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
 
-    public ResponseEntity<List<CountByTypeListPayload>> countAllCustomer() {
+    //TODO MOVE TO TYPE SERVICE
+    public ResponseEntity<List<CountByTypeListPayload>> getTypesPercentages() {
         ArrayList<CountByTypeListPayload> customerCountList = new ArrayList<>();
+
         List<VisitType> visitTypeList = visitTypeRepository.findAll();
-        double count = contactRepository.count();
+
+        long count = contactRepository.count();
+
         for (VisitType visitType : visitTypeList) {
             double countOfContact = contactRepository.countContactsByVisitTypesContaining(visitType);
+
             System.out.println(visitType.getName());
             System.out.println(countOfContact);
+
             double percentage = countOfContact / count;
+
             System.out.println(count);
 
             customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage));
@@ -244,13 +246,19 @@ public class CustomerService {
 
     public ResponseEntity<List<CustomersInAnAreaListPayload>> CustomersInSpecificArea() {
         ArrayList<CustomersInAnAreaListPayload> area = new ArrayList<>();
+
         List<City> cityList = cityRepository.findAll();
-        double count = customerRepository.count();
+
+        long count = customerRepository.count();
+
         for (City city : cityList) {
             double countOfCustomer = customerRepository.countCustomerByAddress_City(city);
+
             System.out.println(city.getName());
             System.out.println(countOfCustomer);
+
             double percentage = countOfCustomer / count;
+
             System.out.println(count);
             area.add(new CustomersInAnAreaListPayload(city.getName(), percentage));
         }

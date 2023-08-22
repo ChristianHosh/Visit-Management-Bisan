@@ -23,10 +23,9 @@ public class CityService {
     }
 
     public ResponseEntity<City> findById(Long id) {
-        System.out.print("hgh");
-
         City foundCity = cityRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+
         return ResponseEntity.ok(foundCity);
     }
 
