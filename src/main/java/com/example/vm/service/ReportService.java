@@ -8,6 +8,7 @@ import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitForm;
 import com.example.vm.model.visit.VisitType;
+import com.example.vm.payload.list.StatusReportListPayload;
 import com.example.vm.payload.report.*;
 import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,8 +101,7 @@ public class ReportService {
     }
 
     public ResponseEntity<List<UserAverageReportListPayload>> findAverageForAUser() {
-        List<User> users=userRepository.findAll();
-
+        List<User> users=userRepository.searchUsersByAccessLevel(0);
         ArrayList<UserAverageReportListPayload> userAverage = new ArrayList<>();
         for (User user : users) {
             int counter=0;
@@ -121,5 +121,33 @@ public class ReportService {
 
         return ResponseEntity.ok(userAverage);
     }
+    public ResponseEntity<List<StatusReportListPayload>> TotalStatusForUser(String username) {
+        User founduser = userRepository.findById(username)
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+        long completed= 0;
+        long  undergoing=0;
+        long not_Started=0;
+        ArrayList<StatusReportListPayload>statusList=new ArrayList<>();
+        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(founduser);
+        for (VisitAssignment visitAssignment : visitAssignmentList) {
+            List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
+            for (VisitForm visitForm : visitFormList) {
+                if (visitForm.getStatus().equals(VisitStatus.COMPLETED)) {
+                    ++completed;
+                } else if (visitForm.getStatus().equals(VisitStatus.UNDERGOING)) {
+                    ++undergoing;
+                }else{
+                    ++not_Started;
+                }
+            }
+
+    }
+        statusList.add(new StatusReportListPayload(String.valueOf(VisitStatus.COMPLETED),completed));
+        statusList.add(new StatusReportListPayload(String.valueOf(VisitStatus.UNDERGOING),undergoing));
+        statusList.add(new StatusReportListPayload(String.valueOf(VisitStatus.NOT_STARTED),not_Started));
+        return ResponseEntity.ok(statusList);
+
+    }
+
 
 }
