@@ -68,7 +68,7 @@ public class ReportController {
     public ResponseEntity<?> AverageTimeForAUsers() {
         return reportService.findAverageForAUser();
     }
-    @GetMapping("/users/{id}")
+    @GetMapping("/users/{username}")
     public ResponseEntity<?> AverageStatusForUser(@PathVariable String username) {
         return reportService.TotalStatusForUser(username);
     }

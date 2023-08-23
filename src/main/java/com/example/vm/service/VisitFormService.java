@@ -93,7 +93,7 @@ public class VisitFormService {
 
         foundForm.setStatus(VisitStatus.COMPLETED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
-        foundForm.setNote(formGeolocationDTO.getNote().toLowerCase());
+        foundForm.setNote(formGeolocationDTO.getNote());
 
         foundForm = visitFormRepository.save(foundForm);
 

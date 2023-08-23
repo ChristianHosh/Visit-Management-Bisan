@@ -19,6 +19,8 @@ public class VisitAssignmentListPayload {
 
     private int enabled;
 
+    private String username;
+
     public static List<VisitAssignmentListPayload> toPayload(List<VisitAssignment> assignmentList) {
         return assignmentList.stream().map(VisitAssignment::toListPayload).toList();
     }

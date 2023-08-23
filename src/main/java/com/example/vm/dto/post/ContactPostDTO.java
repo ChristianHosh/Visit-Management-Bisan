@@ -32,8 +32,9 @@ public class ContactPostDTO {
 
     @NotBlank(message = "Invalid Phone number: Empty number")
     @NotNull(message = "Invalid Phone number: Number is NULL")
-    @Pattern(regexp = "^(\\d{3}[- .]?){2}\\d{4}$", message = "Invalid phone number")
+//    @Pattern(regexp = "^(\\d{3}[- .]?){2}\\d{4}$", message = "Invalid phone number")
     String phoneNumber;
+    
 
     @Email(message = "Invalid email")
     String email;

@@ -64,8 +64,8 @@ public class UserService {
 
         User userToSave = User.builder()
                 .username(userRequest.getUsername().toLowerCase())
-                .firstName(userRequest.getFirstName().toLowerCase())
-                .lastName(userRequest.getLastName().toLowerCase())
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
                 .password(userRequest.getConfirmPassword())
                 .accessLevel(userRequest.getAccessLevel())
                 .enabled(1)
@@ -82,8 +82,8 @@ public class UserService {
         User userToUpdate = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
-        userToUpdate.setFirstName(updatedDTO.getFirstName().toLowerCase());
-        userToUpdate.setLastName(updatedDTO.getLastName().toLowerCase());
+        userToUpdate.setFirstName(updatedDTO.getFirstName());
+        userToUpdate.setLastName(updatedDTO.getLastName());
         userToUpdate.setAccessLevel(updatedDTO.getAccessLevel());
 
         userToUpdate = repository.save(userToUpdate);

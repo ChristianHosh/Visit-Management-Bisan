@@ -58,14 +58,18 @@ public class VisitAssignment extends ModelAuditSuperclass {
     @JsonBackReference
     private VisitAssignment nextVisitAssignment;
 
-    public VisitAssignmentListPayload toListPayload() {
-        return new VisitAssignmentListPayload(this.getId(), this.getDate(), this.getComment(), this.getEnabled());
-    }
-
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "username")
     @JsonManagedReference
     private User user;
+
+    public VisitAssignmentListPayload toListPayload() {
+        return new VisitAssignmentListPayload(this.getId(),
+                this.getDate(),
+                this.getComment(),
+                this.getEnabled(),
+                this.getUser() == null ? null : this.getUser().getUsername());
+    }
 
     public VisitAssignmentDetailPayload toDetailPayload() {
         return new VisitAssignmentDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getId(),

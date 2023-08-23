@@ -30,7 +30,7 @@ public class VisitTypeService {
     public ResponseEntity<VisitType> saveNewVisitType(VisitTypePostDTO VisitTypeRequest) {
 
         VisitType VisitTypeToSave = VisitType.builder()
-                .name(VisitTypeRequest.getName().toLowerCase())
+                .name(VisitTypeRequest.getName())
                 .build();
 
 
@@ -43,7 +43,7 @@ public class VisitTypeService {
         VisitType foundVisitType = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
-        foundVisitType.setName(updatedDTO.getName().toLowerCase());
+        foundVisitType.setName(updatedDTO.getName());
 
         foundVisitType = repository.save(foundVisitType);
 

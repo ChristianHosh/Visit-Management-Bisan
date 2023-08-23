@@ -48,8 +48,8 @@ public class VisitDefinitionService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
         VisitDefinition visitDefinitionToSave = VisitDefinition.builder()
-                .name(VisitDefinitionRequest.getName().toLowerCase())
-                .description(VisitDefinitionRequest.getDescription().toLowerCase())
+                .name(VisitDefinitionRequest.getName())
+                .description(VisitDefinitionRequest.getDescription())
                 .visitAssignments(new ArrayList<>())
                 .type(visitType)
                 .enabled(1)
@@ -70,8 +70,8 @@ public class VisitDefinitionService {
         VisitType foundVisitType = visitTypeRepository.findById(updatedDTO.getTypeId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
-        foundDefinition.setName(updatedDTO.getName().toLowerCase());
-        foundDefinition.setDescription(updatedDTO.getDescription().toLowerCase());
+        foundDefinition.setName(updatedDTO.getName());
+        foundDefinition.setDescription(updatedDTO.getDescription());
         foundDefinition.setType(foundVisitType);
         foundDefinition.setAllowRecurring(updatedDTO.getAllowRecurring());
         foundDefinition.setFrequency(updatedDTO.getAllowRecurring() ? updatedDTO.getFrequency() : 0);
@@ -128,7 +128,7 @@ public class VisitDefinitionService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
         VisitAssignment visitAssignment = VisitAssignment.builder()
-                .comment(visitAssignmentRequest.getComment().toLowerCase())
+                .comment(visitAssignmentRequest.getComment())
                 .date(visitAssignmentRequest.getDate())
                 .enabled(1)
                 .build();
