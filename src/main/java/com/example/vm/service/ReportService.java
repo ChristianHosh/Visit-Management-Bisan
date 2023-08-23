@@ -15,8 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ReportService {
@@ -71,8 +70,8 @@ public class ReportService {
         return ResponseEntity.ok(customerCountList);
     }
 
-    public ResponseEntity<List<CustomersInAnAreaListPayload>> getCityCustomersPercentage() {
-        ArrayList<CustomersInAnAreaListPayload> area = new ArrayList<>();
+    public ResponseEntity<List<NamePercentageMapPayload>> getCityCustomersPercentage() {
+        ArrayList<NamePercentageMapPayload> area = new ArrayList<>();
 
         List<City> cityList = cityRepository.findAll();
 
@@ -87,7 +86,7 @@ public class ReportService {
             double percentage = countOfCustomer / count;
 
             System.out.println(count);
-            area.add(new CustomersInAnAreaListPayload(city.getName(), percentage * 100));
+            area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
         }
 
         return ResponseEntity.ok(area);
@@ -100,7 +99,7 @@ public class ReportService {
         return ResponseEntity.ok(UserAssignmentReportPayload.toPayload(foundCustomer));
     }
 
-    public ResponseEntity<List<UserAverageReportListPayload>> findAverageForAUser() {
+    public ResponseEntity<List<UserAverageReportListPayload>> findAverageTimeForAllUsers() {
         List<User> users = userRepository.searchUsersByAccessLevel(0);
         ArrayList<UserAverageReportListPayload> userAverage = new ArrayList<>();
         for (User user : users) {
@@ -117,7 +116,6 @@ public class ReportService {
                     if (visitForm.getStatus().equals(VisitStatus.COMPLETED)) {
                         sumOfTime += (visitForm.getEndTime().getTime() - visitForm.getStartTime().getTime());
                         completedFormsCounter++;
-
                     }
 
                 }
@@ -130,31 +128,41 @@ public class ReportService {
         return ResponseEntity.ok(userAverage);
     }
 
-    public ResponseEntity<List<StatusReportListPayload>> TotalStatusForUser(String username) {
+    public ResponseEntity<Map<String, Object>> TotalStatusForUser(String username) {
         User founduser = userRepository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
-        long completed = 0;
-        long undergoing = 0;
-        long not_Started = 0;
-        ArrayList<StatusReportListPayload> statusList = new ArrayList<>();
+
+        long completedCount = 0;
+        long undergoingCount = 0;
+        long notStartedCount = 0;
+        long canceledCount = 0;
+
+        ArrayList<StatusReportListPayload> countList = new ArrayList<>();
+        ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
+
         List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(founduser);
         for (VisitAssignment visitAssignment : visitAssignmentList) {
             List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
             for (VisitForm visitForm : visitFormList) {
-                if (visitForm.getStatus().equals(VisitStatus.COMPLETED)) {
-                    ++completed;
-                } else if (visitForm.getStatus().equals(VisitStatus.UNDERGOING)) {
-                    ++undergoing;
-                } else {
-                    ++not_Started;
+                switch (visitForm.getStatus()) {
+                    case COMPLETED -> completedCount++;
+                    case UNDERGOING -> undergoingCount++;
+                    case NOT_STARTED -> notStartedCount++;
+                    case CANCELED -> canceledCount++;
                 }
             }
-
         }
-        statusList.add(new StatusReportListPayload(String.valueOf(VisitStatus.COMPLETED), completed));
-        statusList.add(new StatusReportListPayload(String.valueOf(VisitStatus.UNDERGOING), undergoing));
-        statusList.add(new StatusReportListPayload(String.valueOf(VisitStatus.NOT_STARTED), not_Started));
-        return ResponseEntity.ok(statusList);
+
+        countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.COMPLETED), completedCount));
+        countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.UNDERGOING), undergoingCount));
+        countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.NOT_STARTED), notStartedCount));
+
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("count", countList);
+        result.put("percentages", percentageList);
+
+        return ResponseEntity.ok(result);
 
     }
 

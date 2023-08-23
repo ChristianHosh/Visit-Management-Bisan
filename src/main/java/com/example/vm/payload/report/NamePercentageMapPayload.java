@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 
-public class CustomersInAnAreaListPayload {
+public class NamePercentageMapPayload {
 
     private String name;
 
