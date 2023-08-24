@@ -1,91 +1,62 @@
 package com.example.vm.controller.error;
 
 import com.example.vm.controller.error.exception.*;
-import org.springframework.http.HttpHeaders;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 @org.springframework.web.bind.annotation.ControllerAdvice
 public class ControllerAdvice {
-    @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(EntityNotFoundException exception) {
-        List<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage());
 
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    @ExceptionHandler({
+            PasswordDoesntMatchException.class,
+            NoContactTypeException.class,
+            InvalidStatusUpdateException.class
+    })
+    public ResponseEntity<ApiError> handleBadRequestExceptions(Exception exception){
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(UserAlreadyExistsException exception) {
-        List<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage());
-
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
-    }
-    @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(PasswordDoesntMatchException exception) {
-        List<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage());
-
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+    @ExceptionHandler({
+            UserAlreadyExistsException.class,
+            CustomerAlreadyAssignedException.class
+    })
+    public ResponseEntity<ApiError> handleConflictExceptions(Exception exception){
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, exception.getMessage());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
-    @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(NoContactTypeException exception) {
-        List<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage());
-
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(LocationNotFoundException exception) {
-        List<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage());
-
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleException(CustomerAlreadyAssignedException exception) {
-        List<String> errors = new ArrayList<>();
-        errors.add(exception.getMessage());
-
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.CONFLICT);
-    }
-
-    @ExceptionHandler
-    public ResponseEntity<Map<String, List<String>>> handleValidationErrors(MethodArgumentNotValidException exception) {
-        List<String> errors = exception.getBindingResult().getFieldErrors()
-                .stream().map(FieldError::getDefaultMessage).collect(Collectors.toList());
-
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    @ExceptionHandler
-    ResponseEntity<Map<String,List<String>>> handleOthers(Exception otherException) {
-        List<String> errors = new ArrayList<>();
-        errors.add(otherException.getMessage());
-
-        return new ResponseEntity<>(getErrorsMap(errors), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+    @ExceptionHandler({
+            LocationNotFoundException.class,
+            EntityNotFoundException.class
+    })
+    public ResponseEntity<ApiError> handleNotFoundExceptions(Exception exception){
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, exception.getMessage());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
 
-    private Map<String, List<String>> getErrorsMap(List<String> errors) {
-        Map<String, List<String>> errorResponse = new HashMap<>();
-        errorResponse.put("errors", errors);
-        return errorResponse;
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleMethodArgumentNotValid(MethodArgumentNotValidException exception) {
+        String message = exception.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, message);
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolation(DataIntegrityViolationException exception){
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, exception.getMostSpecificCause().getMessage());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
+    }
+
+    @ExceptionHandler(Exception.class)
+    ResponseEntity<ApiError> handleOthers(Exception exception) {
+        ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
+        return ResponseEntity.status(apiError.getStatus()).body(apiError);
+    }
 
 }
 

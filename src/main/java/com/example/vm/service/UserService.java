@@ -59,11 +59,11 @@ public class UserService {
     }
 
     public ResponseEntity<User> saveNewUser(@Valid UserPostRequest userRequest) {
-        if (!userRequest.getPassword().equals(userRequest.getConfirmPassword()))
-            throw new PasswordDoesntMatchException(PasswordDoesntMatchException.PASSWORD_DOES_NOT_MATCH);
-
         if (repository.existsById(userRequest.getUsername()))
             throw new UserAlreadyExistsException();
+
+        if (!userRequest.getPassword().equals(userRequest.getConfirmPassword()))
+            throw new PasswordDoesntMatchException();
 
         User userToSave = User.builder()
                 .username(userRequest.getUsername().toLowerCase())
