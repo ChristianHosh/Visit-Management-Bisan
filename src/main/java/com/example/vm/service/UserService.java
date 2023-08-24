@@ -69,7 +69,6 @@ public class UserService {
                 .lastName(userRequest.getLastName())
                 .password(userRequest.getPassword())
                 .accessLevel(userRequest.getAccessLevel())
-                .enabled(1)
                 .build();
 
         userToSave = repository.save(userToSave);
@@ -93,13 +92,13 @@ public class UserService {
 
 
     public ResponseEntity<User> enableUser(String username) {
-        User user = repository.findById(username)
+        User foundUser = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
-        user.setEnabled(user.getEnabled() == 0 ? 1 : 0);
+        foundUser.setEnabled(!foundUser.getEnabled());
 
-        user = repository.save(user);
+        foundUser = repository.save(foundUser);
 
-        return ResponseEntity.ok(user);
+        return ResponseEntity.ok(foundUser);
     }
 }

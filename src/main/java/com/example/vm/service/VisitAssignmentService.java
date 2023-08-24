@@ -99,7 +99,7 @@ public class VisitAssignmentService {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
-        foundAssignment.setEnabled(foundAssignment.getEnabled() == 0 ? 1 : 0);
+        foundAssignment.setEnabled(!foundAssignment.getEnabled());
 
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
@@ -182,7 +182,6 @@ public class VisitAssignmentService {
                     .customers(new ArrayList<>())
                     .date(new java.sql.Date(nextAssignmentDate.getTime()))
                     .nextVisitAssignment(null)
-                    .enabled(1)
                     .build();
 
             currentAssignment.setNextVisitAssignment(nextAssignment);

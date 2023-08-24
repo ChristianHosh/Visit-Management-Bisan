@@ -49,7 +49,6 @@ public class VisitDefinitionService {
                 .description(VisitDefinitionRequest.getDescription())
                 .visitAssignments(new ArrayList<>())
                 .type(visitType)
-                .enabled(1)
                 .allowRecurring(VisitDefinitionRequest.getAllowRecurring())
                 .frequency(VisitDefinitionRequest.getAllowRecurring() ? VisitDefinitionRequest.getFrequency() : 0)
                 .build();
@@ -81,7 +80,7 @@ public class VisitDefinitionService {
         VisitDefinition foundDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
-        foundDefinition.setEnabled(foundDefinition.getEnabled() == 0 ? 1 : 0);
+        foundDefinition.setEnabled(!foundDefinition.getEnabled());
 
         foundDefinition = visitDefinitionRepository.save(foundDefinition);
 
@@ -123,7 +122,6 @@ public class VisitDefinitionService {
         VisitAssignment visitAssignment = VisitAssignment.builder()
                 .comment(visitAssignmentRequest.getComment())
                 .date(visitAssignmentRequest.getDate())
-                .enabled(1)
                 .build();
 
         visitAssignment.setVisitDefinition(visitDefinition);
