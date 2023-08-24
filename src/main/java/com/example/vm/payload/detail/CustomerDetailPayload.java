@@ -21,7 +21,7 @@ public class CustomerDetailPayload {
 
     private String name;
 
-    private int enabled;
+    private Boolean enabled;
 
     private Address address;
 

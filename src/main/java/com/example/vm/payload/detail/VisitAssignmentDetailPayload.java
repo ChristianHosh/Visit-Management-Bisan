@@ -23,7 +23,7 @@ public class VisitAssignmentDetailPayload {
 
         private String comment;
 
-        private int enabled;
+        private Boolean enabled;
 
         private List<CustomerListPayload> customers;
 

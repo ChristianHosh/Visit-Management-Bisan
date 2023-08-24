@@ -25,9 +25,9 @@ public class VisitDefinitionDetailPayload {
 
     private int frequency;
 
-    private boolean allowRecurring;
+    private Boolean allowRecurring;
 
-    private int enabled;
+    private Boolean enabled;
 
     private List<VisitAssignmentListPayload> visitAssignments;
 

@@ -24,6 +24,8 @@ public class VisitFormDetailPayload {
 
     private String note;
 
+    private Boolean enabled;
+
     private CustomerListPayload customer;
 
     private VisitAssignmentListPayload visitAssignment;
