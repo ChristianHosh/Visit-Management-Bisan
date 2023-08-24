@@ -136,15 +136,18 @@ public class ReportService {
         long undergoingCount = 0;
         long notStartedCount = 0;
         long canceledCount = 0;
-        long total=0;
+        long totalFormsCount = 0;
 
         ArrayList<StatusReportListPayload> countList = new ArrayList<>();
         ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
 
         List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(founduser);
-        total=visitAssignmentList.size();
+
         for (VisitAssignment visitAssignment : visitAssignmentList) {
             List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
+
+            totalFormsCount += visitFormList.size();
+
             for (VisitForm visitForm : visitFormList) {
                 switch (visitForm.getStatus()) {
                     case COMPLETED -> completedCount++;
@@ -154,15 +157,16 @@ public class ReportService {
                 }
             }
         }
-
+        System.out.println(totalFormsCount);
         countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.COMPLETED), completedCount));
         countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.UNDERGOING), undergoingCount));
         countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.NOT_STARTED), notStartedCount));
         countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.CANCELED), canceledCount));
-        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.COMPLETED), (double) (completedCount / total)));
-        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.UNDERGOING), (double) (undergoingCount / total)));
-        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.NOT_STARTED), (double) (notStartedCount / total)));
-        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.CANCELED), (double) (canceledCount / total)));
+
+        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.COMPLETED), ((double) completedCount / (double) totalFormsCount) * 100));
+        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.UNDERGOING), ((double) undergoingCount / (double) totalFormsCount) * 100));
+        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.NOT_STARTED), ((double) notStartedCount / (double) totalFormsCount) * 100));
+        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.CANCELED), ((double) canceledCount / (double) totalFormsCount) * 100));
 
 
         Map<String, Object> result = new HashMap<>();

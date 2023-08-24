@@ -19,10 +19,10 @@ public class Address extends ModelAuditSuperclass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "address_line_1", nullable = false)
+    @Column(name = "address_line_1", nullable = false, length = 50)
     private String addressLine1;
 
-    @Column(name = "address_line_2")
+    @Column(name = "address_line_2", length = 50)
     private String addressLine2;
 
     @Column(name = "longitude", nullable = false)

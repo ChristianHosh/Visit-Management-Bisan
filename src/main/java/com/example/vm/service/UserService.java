@@ -9,6 +9,7 @@ import com.example.vm.dto.put.UserPutDTO;
 import com.example.vm.model.User;
 import com.example.vm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -36,8 +37,7 @@ public class UserService {
         return ResponseEntity.ok(foundUser);
     }
     public ResponseEntity<List<User>> findEmployeeUsers() {
-        List <User> foundUser =  repository.searchUsersByAccessLevelAndEnabled(0,1);
-        return ResponseEntity.ok(foundUser);
+        return ResponseEntity.ok(repository.searchUsersByAccessLevelAndEnabled(0,1));
     }
 
     public ResponseEntity<List<User>> searchUsersByQuery(String query) {
@@ -45,10 +45,11 @@ public class UserService {
 
         List<User> list1 = repository.searchUsersByFirstNameContainingOrLastNameContainingOrUsernameContaining(query, query, query);
         List<User> list2 = new ArrayList<>();
+
         try {
             list2 = repository.searchUsersByAccessLevel(Integer.parseInt(query));
-        } catch (NumberFormatException ignored) {
-        }
+        } catch (NumberFormatException ignored) {}
+
         result.addAll(list1);
         result.addAll(list2);
 
@@ -78,7 +79,6 @@ public class UserService {
 
 
     public ResponseEntity<User> updateUser(String username, UserPutDTO updatedDTO) {
-
         User userToUpdate = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 

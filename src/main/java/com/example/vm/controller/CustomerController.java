@@ -3,7 +3,7 @@ package com.example.vm.controller;
 import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
-import com.example.vm.payload.detail.CustomerDetailPayload;
+import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.service.CustomerService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,8 @@ public class CustomerController {
     }
 
     @GetMapping("/enable")
-    public ResponseEntity<?> getAllEnabledCustomers() {
+    public ResponseEntity<?> getAllEnabledCustomers()
+    {
         return customerService.findAllEnabledCustomers();
     }
 
@@ -44,7 +45,7 @@ public class CustomerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CustomerDetailPayload> getCustomerById(@PathVariable Long id) {
+    public ResponseEntity<?> getCustomerById(@PathVariable Long id) {
         return customerService.findCustomerById(id);
     }
 
@@ -54,7 +55,7 @@ public class CustomerController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveNewCustomer(@RequestBody @Valid CustomerPostDTO customerRequest) {
+    public ResponseEntity<?> saveNewCustomer(@RequestBody @Valid CustomerRequest customerRequest) {
         return customerService.saveNewCustomer(customerRequest);
     }
 

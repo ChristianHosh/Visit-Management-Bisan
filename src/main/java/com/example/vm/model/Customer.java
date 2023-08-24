@@ -27,10 +27,10 @@ public class Customer extends ModelAuditSuperclass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "enabled", length = 1, nullable = false)
+    @Column(name = "enabled", nullable = false, length = 1)
     private int enabled;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -63,8 +63,8 @@ public class Customer extends ModelAuditSuperclass {
                         this.getAddress().getZipcode(),
                         this.getAddress().getLongitude(),
                         this.getAddress().getLatitude(),
-                       this.getAddress().getIsPrecise())
-                        );
+                        this.getAddress().getIsPrecise())
+        );
     }
 
     public CustomerDetailPayload toDetailPayload() {

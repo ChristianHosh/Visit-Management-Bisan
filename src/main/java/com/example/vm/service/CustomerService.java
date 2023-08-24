@@ -7,6 +7,7 @@ import com.example.vm.dto.post.ContactPostDTO;
 import com.example.vm.dto.post.CustomerPostDTO;
 import com.example.vm.dto.put.AddressPutDTO;
 import com.example.vm.dto.put.CustomerPutDTO;
+import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.model.Address;
 import com.example.vm.model.City;
 import com.example.vm.model.Contact;
@@ -50,7 +51,6 @@ public class CustomerService {
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomersWhoHasAssignment() {
-
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAllCustomerWhoHaveAssignments()));
     }
 
@@ -68,7 +68,6 @@ public class CustomerService {
 
 
     public ResponseEntity<List<CustomerListPayload>> searchByQuery(String query) {
-
         List<Customer> customerList = customerRepository.searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(query, query, query, query);
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
     }
@@ -82,50 +81,55 @@ public class CustomerService {
         return ResponseEntity.ok(ContactListPayload.toPayload(contactList));
     }
 
-    //TODO FIX METHOD CODE
-
-    public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerPostDTO customerRequest) {
-        AddressPostDTO addressRequest = customerRequest.getAddress();
-
-        City city = cityRepository.findById(addressRequest.getCityId())
+    public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerRequest customerRequest) {
+        City city = cityRepository.findById(customerRequest.cityId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
 
-        if (!customerRepository.findCustomerByAddress_CityAndName(city, customerRequest.getName()).isEmpty())
-            throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_ALREADY_EXIST);
-
         Customer customerToSave = Customer.builder()
-                .name(customerRequest.getName())
+                .name(customerRequest.name())
                 .visitAssignments(new ArrayList<>())
                 .enabled(1)
                 .address(Address.builder()
-                        .addressLine1(addressRequest.getAddressLine1())
-                        .addressLine2(addressRequest.getAddressLine2())
-                        .city(city)
-                        .zipcode(addressRequest.getZipcode())
-                        .isPrecise(addressRequest.getPrecise())
-                        .longitude(addressRequest.getPrecise() ? addressRequest.getLongitude() : 0)
-                        .latitude(addressRequest.getPrecise() ? addressRequest.getLatitude() : 0)
+                        .addressLine1(customerRequest.addressLine1())
                         .build())
                 .build();
+        //TODO REMOVE THIS VALIDATION
+//        if (!customerRepository.findCustomerByAddress_CityAndName(city, customerRequest.getName()).isEmpty())
+//            throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_ALREADY_EXIST);
 
-        if (!customerToSave.getAddress().getIsPrecise()) {
-            try {
-                setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), city.getName(), addressRequest.getZipcode());
 
-                customerToSave = customerRepository.save(customerToSave);
-
-                return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
-
-            } catch (Exception e) {
-                System.out.println("ERROR " + e.getMessage());
-            }
-
-            throw new LocationNotFoundException();
-        }
-
-        customerToSave = customerRepository.save(customerToSave);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
+//        Customer customerToSave = Customer.builder()
+//                .name(customerRequest.getName())
+//                .visitAssignments(new ArrayList<>())
+//                .enabled(1)
+//                .address(Address.builder()
+//                        .addressLine1(addressRequest.getAddressLine1())
+//                        .addressLine2(addressRequest.getAddressLine2())
+//                        .city(city)
+//                        .zipcode(addressRequest.getZipcode())
+//                        .isPrecise(addressRequest.getPrecise())
+//                        .longitude(addressRequest.getPrecise() ? addressRequest.getLongitude() : 0)
+//                        .latitude(addressRequest.getPrecise() ? addressRequest.getLatitude() : 0)
+//                        .build())
+//                .build();
+//
+//        if (!customerToSave.getAddress().getIsPrecise()) {
+//            try {
+//                setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), city.getName(), addressRequest.getZipcode());
+//                customerToSave = customerRepository.save(customerToSave);
+//
+//                return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
+//            } catch (Exception e) {
+//                System.out.println("ERROR " + e.getMessage());
+//            }
+//
+//            throw new LocationNotFoundException();
+//        }
+//
+//        customerToSave = customerRepository.save(customerToSave);
+//
+//        return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
+        return null;
     }
 
     public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(Long id, ContactPostDTO contactRequest) {
@@ -156,6 +160,7 @@ public class CustomerService {
     }
 
 
+    //TODO FIX GEOLOCATION PRECISION
     public ResponseEntity<CustomerDetailPayload> updateCustomer(Long id, CustomerPutDTO customerRequest) {
         Customer customerToUpdate = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
@@ -180,9 +185,9 @@ public class CustomerService {
             return ResponseEntity.ok(customerToUpdate.toDetailPayload());
         } catch (Exception e) {
             System.out.println("ERROR " + e.getMessage());
+            throw new LocationNotFoundException();
         }
 
-        throw new LocationNotFoundException();
     }
 
     public ResponseEntity<CustomerDetailPayload> enableCustomer(Long id) {

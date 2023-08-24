@@ -31,9 +31,7 @@ public class VisitDefinitionService {
     }
 
     public ResponseEntity<List<VisitDefinitionListPayload>> findAllVisitDefinition() {
-
         return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findAll()));
-
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByUUID(Long id) {
@@ -63,7 +61,6 @@ public class VisitDefinitionService {
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(Long id, VisitDefinitionPutDTO updatedDTO) {
-
         VisitDefinition foundDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
@@ -94,7 +91,6 @@ public class VisitDefinitionService {
     }
 
     public ResponseEntity<List<VisitDefinitionListPayload>> searchByQuery(String query) {
-
         List<VisitDefinitionListPayload> result = new ArrayList<>();
 
         List<VisitDefinitionListPayload> list1 = VisitDefinitionListPayload.toPayload(visitDefinitionRepository.searchVisitDefinitionsByNameContaining(query));
@@ -109,7 +105,6 @@ public class VisitDefinitionService {
         result.addAll(list2);
 
         return ResponseEntity.ok(result);
-
     }
 
     public ResponseEntity<List<VisitDefinitionListPayload>> searchByType(Long id) {
@@ -120,7 +115,6 @@ public class VisitDefinitionService {
 
         return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionList));
     }
-
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(Long id, VisitAssignmentPostDTO visitAssignmentRequest) {
 
@@ -133,14 +127,10 @@ public class VisitDefinitionService {
                 .enabled(1)
                 .build();
 
-        System.out.println("COMMENT : " + visitAssignment.getComment());
-
         visitAssignment.setVisitDefinition(visitDefinition);
         visitDefinition.getVisitAssignments().add(visitAssignment);
 
         visitDefinition = visitDefinitionRepository.save(visitDefinition);
-
-        System.out.println("VISIT DEFINITION : " + visitDefinition.toDetailPayload());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(visitDefinition.toDetailPayload());
     }
