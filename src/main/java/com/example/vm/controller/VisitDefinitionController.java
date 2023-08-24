@@ -1,8 +1,7 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.post.VisitAssignmentPostDTO;
-import com.example.vm.dto.post.VisitDefinitionPostDTO;
-import com.example.vm.dto.put.VisitDefinitionPutDTO;
+import com.example.vm.dto.request.VisitAssignmentRequest;
+import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
 import com.example.vm.service.VisitDefinitionService;
 import jakarta.validation.Valid;
@@ -40,18 +39,18 @@ public class VisitDefinitionController {
         return visitDefinitionService.searchByType(id);
     }
     @PostMapping("")
-    public ResponseEntity<?> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionPostDTO visitDefinitionRequest) {
+    public ResponseEntity<?> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionRequest visitDefinitionRequest) {
        return visitDefinitionService.saveNewVisit(visitDefinitionRequest);
     }
 
 
     @PostMapping("/{id}/assignments")
-    public ResponseEntity<?> saveNewVisitAssignmentToDefinition(@PathVariable Long id, @RequestBody @Valid VisitAssignmentPostDTO visitAssignmentRequest) {
+    public ResponseEntity<?> saveNewVisitAssignmentToDefinition(@PathVariable Long id, @RequestBody @Valid VisitAssignmentRequest visitAssignmentRequest) {
         return visitDefinitionService.saveNewVisitAssignmentToDefinition(id, visitAssignmentRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVisitDefinition(@PathVariable Long id, @RequestBody @Valid VisitDefinitionPutDTO visitDefinitionRequest) {
+    public ResponseEntity<?> updateVisitDefinition(@PathVariable Long id, @RequestBody @Valid VisitDefinitionRequest visitDefinitionRequest) {
         return visitDefinitionService.updateVisitDefinition(id, visitDefinitionRequest);
     }
 

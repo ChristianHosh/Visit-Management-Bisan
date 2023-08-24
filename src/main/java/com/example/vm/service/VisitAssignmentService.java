@@ -3,7 +3,7 @@ package com.example.vm.service;
 import com.example.vm.controller.error.exception.CustomerAlreadyAssignedException;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.NoContactTypeException;
-import com.example.vm.dto.put.VisitAssignmentPutDTO;
+import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.User;
@@ -83,7 +83,7 @@ public class VisitAssignmentService {
 
     }
 
-    public ResponseEntity<VisitAssignmentDetailPayload> updateVisitAssignment(Long id, VisitAssignmentPutDTO assignmentRequest) {
+    public ResponseEntity<VisitAssignmentDetailPayload> updateVisitAssignment(Long id, VisitAssignmentRequest assignmentRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
