@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @org.springframework.web.bind.annotation.ControllerAdvice
 public class ControllerAdvice {
-
     @ExceptionHandler
     public ResponseEntity<Map<String, List<String>>> handleException(EntityNotFoundException exception) {
         List<String> errors = new ArrayList<>();

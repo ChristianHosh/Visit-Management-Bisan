@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @CrossOrigin
 @RestController
-@RequestMapping("/city")
+@RequestMapping("/cities")
 public class CityController {
     private final CityService cityService;
 

@@ -87,6 +87,28 @@ public class VisitAssignmentService {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
 
+
+        // FIND DATE MAKE SURE IT HAS NOT REACHED THAT DATE
+        Date currentAssignmentDate = foundAssignment.getDate();
+
+        Date todayDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(todayDate);
+        calendar.add(Calendar.DATE, -1);
+        todayDate.setTime(calendar.getTime().getTime());
+
+        if (assignmentRequest.getDate().before(todayDate)){
+            // THROW INVALID ARGUMENT EXCEPTION
+            System.out.println("DATE MUST BE IN THE PRESENT OR FUTURE");
+            return null;
+        }
+
+        if (currentAssignmentDate.before(todayDate)){
+            // THROW ASSIGNMENT TOO OLD EXCEPTION
+            System.out.println("ASSIGNMENT TOO OLD !!!!!!");
+            return null;
+        }
+
         foundAssignment.setComment(assignmentRequest.getComment());
         foundAssignment.setDate(assignmentRequest.getDate());
 
@@ -110,7 +132,6 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(AssignmentReportListPayload.toPayload(
                 visitAssignmentRepository.findVisitAssignmentByDateBetween(before, after)));
     }
-
 
 
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(Long assignmentId, Long customerId) {

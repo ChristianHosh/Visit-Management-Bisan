@@ -12,7 +12,7 @@ import java.util.List;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     List<Customer> searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(String name, String addressLine1, String addressLine2, String city);
 
-    @Query("SELECT u FROM Customer u WHERE SIZE(u.visitAssignments)>0 ")
+    @Query("SELECT u FROM Customer u WHERE SIZE(u.visitAssignments) > 0")
     List<Customer> findAllCustomerWhoHaveAssignments();
 
     List<Customer> findCustomerByEnabled(Boolean enabled);
