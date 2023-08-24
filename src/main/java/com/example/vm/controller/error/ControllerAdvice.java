@@ -13,7 +13,8 @@ public class ControllerAdvice {
     @ExceptionHandler({
             PasswordDoesntMatchException.class,
             NoContactTypeException.class,
-            InvalidStatusUpdateException.class
+            InvalidStatusUpdateException.class,
+            LocationTooFarException.class
     })
     public ResponseEntity<ApiError> handleBadRequestExceptions(Exception exception){
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
@@ -48,7 +49,8 @@ public class ControllerAdvice {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleDataIntegrityViolation(DataIntegrityViolationException exception){
-        ApiError apiError = new ApiError(HttpStatus.CONFLICT, exception.getMostSpecificCause().getMessage());
+        String message = parseErrorMessage(exception.getMostSpecificCause().getMessage());
+        ApiError apiError = new ApiError(HttpStatus.CONFLICT, message);
         return ResponseEntity.status(apiError.getStatus()).body(apiError);
     }
 
@@ -56,6 +58,14 @@ public class ControllerAdvice {
     ResponseEntity<ApiError> handleOthers(Exception exception) {
         ApiError apiError = new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, exception.getMessage());
         return ResponseEntity.status(apiError.getStatus()).body(apiError);
+    }
+
+    private static String parseErrorMessage(String errorMessage) {
+        int index = errorMessage.indexOf("for key");
+        if (index != -1) {
+            return errorMessage.substring(0, index).trim();
+        }
+        return errorMessage;
     }
 
 }
