@@ -25,5 +25,8 @@ public class ModelAuditSuperclass implements Serializable {
     @UpdateTimestamp(source = SourceType.DB)
     private Timestamp lastModifiedTime;
 
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled;
+
 }
 

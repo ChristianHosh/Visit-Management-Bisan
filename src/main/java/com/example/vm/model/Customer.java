@@ -30,8 +30,6 @@ public class Customer extends ModelAuditSuperclass {
     @Column(name = "name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "enabled", nullable = false, length = 1)
-    private int enabled;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")

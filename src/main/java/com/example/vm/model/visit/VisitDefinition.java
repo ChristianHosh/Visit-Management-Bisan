@@ -41,9 +41,6 @@ public class VisitDefinition extends ModelAuditSuperclass {
     @Column(name = "allow_recurring", nullable = false)
     private boolean allowRecurring;
 
-    @Column(name = "enabled", nullable = false, length = 1)
-    private int enabled;
-
     @OneToMany(mappedBy = "visitDefinition", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<VisitAssignment> visitAssignments;

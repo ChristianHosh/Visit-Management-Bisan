@@ -21,7 +21,5 @@ public class City extends ModelAuditSuperclass {
     @Column(name = "name", nullable = false, unique = true, length = 30)
     private String name;
 
-    @Column(name = "enabled", nullable = false, length = 1)
-    private int enabled;
 
 }

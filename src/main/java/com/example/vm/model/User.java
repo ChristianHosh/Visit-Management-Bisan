@@ -35,9 +35,6 @@ public class User extends ModelAuditSuperclass {
     @Column(name = "access_level", nullable = false, length = 1)
     private int accessLevel;
 
-    @Column(name = "enabled", nullable = false, length = 1)
-    private int enabled;
-
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
     @JsonBackReference
     private List<VisitAssignment> visitAssignments;

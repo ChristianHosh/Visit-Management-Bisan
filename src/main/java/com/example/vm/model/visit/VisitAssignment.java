@@ -36,9 +36,6 @@ public class VisitAssignment extends ModelAuditSuperclass {
     @Column(name = "comment", nullable = false)
     private String comment;
 
-    @Column(name = "enabled", nullable = false)
-    private int enabled;
-
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "definition_id")
     @JsonBackReference
