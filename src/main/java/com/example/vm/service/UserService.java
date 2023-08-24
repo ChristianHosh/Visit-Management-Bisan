@@ -6,6 +6,7 @@ import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.dto.post.UserPostDTO;
 import com.example.vm.dto.put.UserPutDTO;
+import com.example.vm.dto.request.UserRequest;
 import com.example.vm.model.User;
 import com.example.vm.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,19 +57,19 @@ public class UserService {
         return ResponseEntity.ok(result);
     }
 
-    public ResponseEntity<User> saveNewUser(UserPostDTO userRequest) {
-        if (!userRequest.getConfirmPassword().equals(userRequest.getPassword()))
+    public ResponseEntity<User> saveNewUser(UserRequest userRequest) {
+        if (!userRequest.confirmPassword().equals(userRequest.confirmPassword()))
             throw new PasswordDoesntMatchException(PasswordDoesntMatchException.PASSWORD_DOES_NOT_MATCH);
 
-        if (repository.existsById(userRequest.getUsername()))
+        if (repository.existsById(userRequest.username()))
             throw new UserAlreadyExistsException();
 
         User userToSave = User.builder()
-                .username(userRequest.getUsername().toLowerCase())
-                .firstName(userRequest.getFirstName())
-                .lastName(userRequest.getLastName())
-                .password(userRequest.getConfirmPassword())
-                .accessLevel(userRequest.getAccessLevel())
+                .username(userRequest.username().toLowerCase())
+                .firstName(userRequest.firstName().toLowerCase())
+                .lastName(userRequest.lastName().toLowerCase())
+                .password(userRequest.password().toLowerCase())
+                .accessLevel(userRequest.accessLevel())
                 .enabled(1)
                 .build();
 
@@ -78,13 +79,13 @@ public class UserService {
     }
 
 
-    public ResponseEntity<User> updateUser(String username, UserPutDTO updatedDTO) {
+    public ResponseEntity<User> updateUser(String username, UserRequest updatedDTO) {
         User userToUpdate = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
-        userToUpdate.setFirstName(updatedDTO.getFirstName());
-        userToUpdate.setLastName(updatedDTO.getLastName());
-        userToUpdate.setAccessLevel(updatedDTO.getAccessLevel());
+        userToUpdate.setFirstName(updatedDTO.firstName());
+        userToUpdate.setLastName(updatedDTO.lastName());
+        userToUpdate.setAccessLevel(updatedDTO.accessLevel());
 
         userToUpdate = repository.save(userToUpdate);
 
