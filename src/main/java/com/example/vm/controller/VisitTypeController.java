@@ -17,10 +17,14 @@ public class VisitTypeController {
     }
 
     @GetMapping("")
+    public ResponseEntity<?> getAllEnableVisitTypes() {
+        return visitTypeService.findAllEnablesTypes();
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<?> getAllVisitTypes() {
         return visitTypeService.findAll();
     }
-
     @PostMapping("")
     public ResponseEntity<?> saveNewVisitType(@RequestBody @Valid VisitTypeRequest visitTypeRequest) {
         System.out.println("---->" + visitTypeRequest);

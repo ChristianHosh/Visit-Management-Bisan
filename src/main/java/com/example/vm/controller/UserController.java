@@ -21,14 +21,16 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("")
+    @GetMapping("/all")
     public ResponseEntity<?> getAllUsers() {
-
         return userService.findAllUsers();
+    }
+    @GetMapping("")
+    public ResponseEntity<?> getAllEnableUsers() {
+        return userService.findAllEnableUsers();
     }
     @GetMapping("/employees")
     public ResponseEntity<?> findEmployeeUsers(){
-
         return userService.findEmployeeUsers();
     }
 

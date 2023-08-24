@@ -1,5 +1,6 @@
 package com.example.vm.repository;
 
+import com.example.vm.model.Customer;
 import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.model.visit.VisitType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,6 @@ public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition
     List<VisitDefinition> searchVisitDefinitionsByType(VisitType visitType);
 
     Long countVisitDefinitionsByType(VisitType visitType);
+
+    List<VisitDefinition> findVisitDefinitionsByEnabled(Boolean enabled);
 }

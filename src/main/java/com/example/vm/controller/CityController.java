@@ -19,9 +19,15 @@ public class CityController {
     }
 
     @GetMapping("")
+    public ResponseEntity<?> getAllEnableCities() {
+        return cityService.findAllEnabledCities();
+    }
+
+    @GetMapping("/all")
     public ResponseEntity<?> getAllCity() {
         return cityService.findAll();
     }
+
 
     @PostMapping("")
     public ResponseEntity<?> saveNewCity(@RequestBody @Valid CityRequest cityRequest) {

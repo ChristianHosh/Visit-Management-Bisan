@@ -32,6 +32,9 @@ public class VisitDefinitionService {
     public ResponseEntity<List<VisitDefinitionListPayload>> findAllVisitDefinition() {
         return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findAll()));
     }
+    public ResponseEntity<List<VisitDefinitionListPayload>> findAllEnableVisitDefinition() {
+        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findVisitDefinitionsByEnabled(true)));
+    }
 
     public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByUUID(Long id) {
         VisitDefinition foundVisitDefinition = visitDefinitionRepository.findById(id)
@@ -81,6 +84,11 @@ public class VisitDefinitionService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
         foundDefinition.setEnabled(!foundDefinition.getEnabled());
+
+        boolean isEnabled = foundDefinition.getEnabled();
+
+        foundDefinition.getVisitAssignments()
+                .forEach(visitAssignment -> visitAssignment.setEnabled(isEnabled));
 
         foundDefinition = visitDefinitionRepository.save(foundDefinition);
 

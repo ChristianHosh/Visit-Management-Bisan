@@ -167,6 +167,10 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
         foundCustomer.setEnabled(!foundCustomer.getEnabled());
+        boolean isEnabled = foundCustomer.getEnabled();
+        foundCustomer.getContacts()
+                .forEach(contact -> contact.setEnabled(isEnabled));
+
 
         foundCustomer = customerRepository.save(foundCustomer);
 
