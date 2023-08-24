@@ -12,5 +12,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> searchUsersByFirstNameContainingOrLastNameContainingOrUsernameContaining(String firstName, String lastName, String username);
 
     List<User> searchUsersByAccessLevel(int accessLevel);
-    List<User> searchUsersByAccessLevelAndEnabled(int accessLevel,int enabled);
+
+    List<User> searchUsersByAccessLevelAndEnabled(int accessLevel, Boolean enabled);
 }

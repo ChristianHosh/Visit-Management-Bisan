@@ -10,7 +10,9 @@ import java.util.List;
 @Repository
 public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition, Long> {
     List<VisitDefinition> searchVisitDefinitionsByNameContaining(String name);
+
     List<VisitDefinition> searchVisitDefinitionsByFrequency(int frequency);
+
     List<VisitDefinition> searchVisitDefinitionsByType(VisitType visitType);
 
     Long countVisitDefinitionsByType(VisitType visitType);

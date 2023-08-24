@@ -15,7 +15,7 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("SELECT u FROM Customer u WHERE SIZE(u.visitAssignments)>0 ")
     List<Customer> findAllCustomerWhoHaveAssignments();
 
-    List<Customer> findCustomerByEnabled(int enabled);
+    List<Customer> findCustomerByEnabled(Boolean enabled);
 
     List<Customer> findCustomerByAddress_CityAndName(City city, String name);
 
