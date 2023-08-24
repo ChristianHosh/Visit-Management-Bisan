@@ -4,7 +4,6 @@ package com.example.vm.service;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
-import com.example.vm.dto.post.UserPostDTO;
 import com.example.vm.dto.request.UserPostRequest;
 import com.example.vm.dto.request.UserRequest;
 import com.example.vm.model.User;
@@ -66,9 +65,9 @@ public class UserService {
 
         User userToSave = User.builder()
                 .username(userRequest.getUsername().toLowerCase())
-                .firstName(userRequest.getFirstName().toLowerCase())
-                .lastName(userRequest.getLastName().toLowerCase())
-                .password(userRequest.getPassword().toLowerCase())
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .password(userRequest.getPassword())
                 .accessLevel(userRequest.getAccessLevel())
                 .enabled(1)
                 .build();

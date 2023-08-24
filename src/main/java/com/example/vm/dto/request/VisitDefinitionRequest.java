@@ -19,13 +19,14 @@ public class VisitDefinitionRequest {
     String description;
 
     @NotNull
-    Long typeId;
-
-    @NotNull
-    @Min(value = 1)
+    @Min(value = 0)
     @Max(value = 365)
     Integer frequency;
 
     @NotNull
     Boolean allowRecurring;
+
+    @NotNull
+    Long typeId;
+
 }

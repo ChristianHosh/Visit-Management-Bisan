@@ -21,6 +21,4 @@ public class AddressListPayload {
 
     private double latitude;
 
-    private boolean precise;
-
 }

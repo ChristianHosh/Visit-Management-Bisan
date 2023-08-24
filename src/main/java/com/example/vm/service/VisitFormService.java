@@ -126,8 +126,8 @@ public class VisitFormService {
 
         double maxDistance = 250;
 
-        if (customerAddress.getIsPrecise())
-            maxDistance = 25;
+//        if (customerAddress.getIsPrecise())
+//            maxDistance = 25;
 
         if (distance > maxDistance)
             throw new LocationTooFarException();

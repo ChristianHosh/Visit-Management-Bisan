@@ -1,7 +1,5 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.post.UserPostDTO;
-import com.example.vm.dto.put.UserPutDTO;
 import com.example.vm.dto.request.UserPostRequest;
 import com.example.vm.dto.request.UserRequest;
 import com.example.vm.model.User;

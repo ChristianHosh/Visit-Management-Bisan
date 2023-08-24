@@ -1,8 +1,6 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
-import com.example.vm.dto.post.VisitTypePostDTO;
-import com.example.vm.dto.put.VisitTypePutDTO;
 import com.example.vm.dto.request.VisitTypeRequest;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.VisitTypeRepository;

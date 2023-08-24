@@ -1,7 +1,5 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.post.VisitTypePostDTO;
-import com.example.vm.dto.put.VisitTypePutDTO;
 import com.example.vm.dto.request.VisitTypeRequest;
 import com.example.vm.service.VisitTypeService;
 import jakarta.validation.Valid;
@@ -25,12 +23,14 @@ public class VisitTypeController {
 
     @PostMapping("")
     public ResponseEntity<?> saveNewVisitType(@RequestBody @Valid VisitTypeRequest visitTypeRequest) {
+        System.out.println("---->" + visitTypeRequest);
         return visitTypeService.saveNewVisitType(visitTypeRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVisitType(@PathVariable Long id, @RequestBody @Valid VisitTypeRequest visitTypeUpdate) {
-        return visitTypeService.updateVisitType(id, visitTypeUpdate);
+    public ResponseEntity<?> updateVisitType(@PathVariable Long id, @RequestBody @Valid VisitTypeRequest visitTypeRequest) {
+        System.out.println("---->" + visitTypeRequest);
+        return visitTypeService.updateVisitType(id, visitTypeRequest);
     }
 
 }
