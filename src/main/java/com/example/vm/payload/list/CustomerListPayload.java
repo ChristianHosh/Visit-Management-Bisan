@@ -14,7 +14,7 @@ public class CustomerListPayload {
 
     private String name;
 
-    private int enabled;
+    private boolean enabled;
 
     private AddressListPayload address;
 

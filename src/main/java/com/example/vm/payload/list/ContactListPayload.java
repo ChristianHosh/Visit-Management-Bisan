@@ -22,7 +22,7 @@ public class ContactListPayload {
 
     private String phoneNumber;
 
-    private int enabled;
+    private boolean enabled;
 
     private List<VisitType> visitTypes;
 

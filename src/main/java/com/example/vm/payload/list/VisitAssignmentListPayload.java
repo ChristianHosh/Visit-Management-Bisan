@@ -17,7 +17,7 @@ public class VisitAssignmentListPayload {
 
     private String comment;
 
-    private int enabled;
+    private boolean enabled;
 
     private String username;
 

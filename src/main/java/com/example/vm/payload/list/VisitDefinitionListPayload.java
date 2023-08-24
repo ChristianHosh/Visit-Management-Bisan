@@ -23,7 +23,7 @@ public class VisitDefinitionListPayload {
 
     private boolean allowRecurring;
 
-    private int enabled;
+    private boolean enabled;
 
     public static List<VisitDefinitionListPayload> toPayload(List<VisitDefinition> visitDefinitionList) {
         return visitDefinitionList.stream().map(VisitDefinition::toListPayload).toList();
