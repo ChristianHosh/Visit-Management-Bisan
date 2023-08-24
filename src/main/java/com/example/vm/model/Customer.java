@@ -32,7 +32,7 @@ public class Customer extends ModelAuditSuperclass {
 
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id")
+    @JoinColumn(name = "address_id", nullable = false)
     @JsonManagedReference
     private Address address;
 

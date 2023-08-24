@@ -36,8 +36,9 @@ public class UserService {
 
         return ResponseEntity.ok(foundUser);
     }
+
     public ResponseEntity<List<User>> findEmployeeUsers() {
-        return ResponseEntity.ok(repository.searchUsersByAccessLevelAndEnabled(0,1));
+        return ResponseEntity.ok(repository.searchUsersByAccessLevelAndEnabled(0, true));
     }
 
     public ResponseEntity<List<User>> searchUsersByQuery(String query) {
@@ -48,7 +49,8 @@ public class UserService {
 
         try {
             list2 = repository.searchUsersByAccessLevel(Integer.parseInt(query));
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) {
+        }
 
         result.addAll(list1);
         result.addAll(list2);

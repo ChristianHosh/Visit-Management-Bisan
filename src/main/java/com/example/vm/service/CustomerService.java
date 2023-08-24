@@ -53,7 +53,7 @@ public class CustomerService {
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllEnabledCustomers() {
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomerByEnabled(1)));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomerByEnabled(true)));
     }
 
     public ResponseEntity<CustomerDetailPayload> findCustomerById(Long id) {

@@ -20,7 +20,7 @@ public class CityService {
     }
 
     public ResponseEntity<List<City>> findAll() {
-        return ResponseEntity.ok(cityRepository.findCityByEnabled(1));
+        return ResponseEntity.ok(cityRepository.findCityByEnabled(true));
     }
 
     public ResponseEntity<City> findById(Long id) {
