@@ -1,7 +1,7 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
-import com.example.vm.dto.put.ContactPutDTO;
+import com.example.vm.dto.request.ContactRequest;
 import com.example.vm.model.Contact;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.ContactRepository;
@@ -28,7 +28,7 @@ public class ContactService {
         return ResponseEntity.ok(foundContact);
     }
 
-    public ResponseEntity<Contact> updateContact(Long id, ContactPutDTO contactRequest) {
+    public ResponseEntity<Contact> updateContact(Long id, ContactRequest contactRequest) {
         Contact contactToUpdate = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CONTACT_NOT_FOUND));
 
@@ -36,11 +36,9 @@ public class ContactService {
 
         String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 
-        contactRequest.setPhoneNumber(formattedNumber);
-
         contactToUpdate.setFirstName(contactRequest.getFirstName());
         contactToUpdate.setLastName(contactRequest.getLastName());
-        contactToUpdate.setPhoneNumber(contactRequest.getPhoneNumber());
+        contactToUpdate.setPhoneNumber(formattedNumber);
         contactToUpdate.setEmail(contactRequest.getEmail());
         contactToUpdate.setVisitTypes(visitTypes);
 

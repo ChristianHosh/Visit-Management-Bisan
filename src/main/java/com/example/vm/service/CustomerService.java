@@ -2,7 +2,7 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.LocationNotFoundException;
-import com.example.vm.dto.post.ContactPostDTO;
+import com.example.vm.dto.request.ContactRequest;
 import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.model.Address;
 import com.example.vm.model.City;
@@ -110,7 +110,7 @@ public class CustomerService {
         return ResponseEntity.status(HttpStatus.CREATED).body(customerRepository.save(customerToSave).toDetailPayload());
     }
 
-    public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(Long id, ContactPostDTO contactRequest) {
+    public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(Long id, ContactRequest contactRequest) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
@@ -118,13 +118,11 @@ public class CustomerService {
 
         String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 
-        contactRequest.setPhoneNumber(formattedNumber);
-
         Contact newContact = Contact.builder()
                 .firstName(contactRequest.getFirstName())
                 .lastName(contactRequest.getLastName())
                 .email(contactRequest.getEmail())
-                .phoneNumber(contactRequest.getPhoneNumber())
+                .phoneNumber(formattedNumber)
                 .visitTypes(visitTypes)
                 .enabled(1)
                 .build();

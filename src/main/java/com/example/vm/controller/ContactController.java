@@ -1,6 +1,6 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.put.ContactPutDTO;
+import com.example.vm.dto.request.ContactRequest;
 import com.example.vm.service.ContactService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +25,8 @@ public class ContactController {
 
     @PutMapping("/{id}")
     public ResponseEntity<?> updateContact(@PathVariable Long id,
-                                           @RequestBody @Valid ContactPutDTO contactUpdate) {
-        return contactService.updateContact(id, contactUpdate);
+                                           @RequestBody @Valid ContactRequest contactRequest) {
+        return contactService.updateContact(id, contactRequest);
     }
 
     @PutMapping("/{id}/endis")

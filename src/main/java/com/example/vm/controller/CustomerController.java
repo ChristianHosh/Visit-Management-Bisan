@@ -1,6 +1,6 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.post.ContactPostDTO;
+import com.example.vm.dto.request.ContactRequest;
 import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.service.CustomerService;
 import jakarta.validation.Valid;
@@ -58,7 +58,7 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/contacts")
-    public ResponseEntity<?> SaveContactToCustomer(@PathVariable Long id, @RequestBody @Valid ContactPostDTO contactRequest) {
+    public ResponseEntity<?> SaveContactToCustomer(@PathVariable Long id, @RequestBody @Valid ContactRequest contactRequest) {
         return customerService.saveContactToCustomer(id, contactRequest);
     }
 
