@@ -2,6 +2,8 @@ package com.example.vm.controller;
 
 import com.example.vm.dto.post.UserPostDTO;
 import com.example.vm.dto.put.UserPutDTO;
+import com.example.vm.dto.request.UserPostRequest;
+import com.example.vm.dto.request.UserRequest;
 import com.example.vm.model.User;
 import com.example.vm.service.UserService;
 import jakarta.validation.Valid;
@@ -43,12 +45,12 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveNewUser(@RequestBody @Valid UserPostDTO userRequest) {
+    public ResponseEntity<?> saveNewUser(@RequestBody @Valid UserPostRequest userRequest) {
         return userService.saveNewUser(userRequest);
     }
 
     @PutMapping("/{username}")
-    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody @Valid UserPutDTO userRequest) {
+    public ResponseEntity<?> updateUser(@PathVariable String username, @RequestBody @Valid UserRequest userRequest) {
         return userService.updateUser(username, userRequest);
     }
 
