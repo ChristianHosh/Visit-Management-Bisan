@@ -1,6 +1,7 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.dto.request.CityRequest;
 import com.example.vm.model.City;
 import com.example.vm.repository.CityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +30,9 @@ public class CityService {
         return ResponseEntity.ok(foundCity);
     }
 
-    public ResponseEntity<City> saveNewCity(City city) {
+    public ResponseEntity<City> saveNewCity(CityRequest cityRequest) {
         City cityToSave = City.builder()
-                .id(city.getId())
-                .name(city.getName())
+                .name(cityRequest.getName())
                 .enabled(1)
                 .build();
 
