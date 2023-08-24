@@ -33,7 +33,6 @@ public class CityService {
     public ResponseEntity<City> saveNewCity(CityRequest cityRequest) {
         City cityToSave = City.builder()
                 .name(cityRequest.getName())
-                .enabled(1)
                 .build();
 
         cityToSave = cityRepository.save(cityToSave);
