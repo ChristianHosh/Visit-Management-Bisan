@@ -1,7 +1,8 @@
 package com.example.vm.controller;
 
-import com.example.vm.model.City;
+import com.example.vm.dto.request.CityRequest;
 import com.example.vm.service.CityService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,7 @@ public class CityController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveNewCity(@RequestBody City city) {
-        return cityService.saveNewCity(city);
+    public ResponseEntity<?> saveNewCity(@RequestBody @Valid CityRequest cityRequest) {
+        return cityService.saveNewCity(cityRequest);
     }
 }

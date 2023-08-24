@@ -18,8 +18,7 @@ public class City extends ModelAuditSuperclass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, length = 30)
     private String name;
 
     @Column(name = "enabled", nullable = false, length = 1)
