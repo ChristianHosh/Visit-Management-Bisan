@@ -84,7 +84,6 @@ public class CustomerService {
         Customer customerToSave = Customer.builder()
                 .name(customerRequest.getName())
                 .visitAssignments(new ArrayList<>())
-                .enabled(1)
                 .address(Address.builder()
                         .addressLine1(customerRequest.getAddressLine1())
                         .addressLine2(customerRequest.getAddressLine2())
@@ -124,7 +123,6 @@ public class CustomerService {
                 .email(contactRequest.getEmail())
                 .phoneNumber(formattedNumber)
                 .visitTypes(visitTypes)
-                .enabled(1)
                 .build();
 
         foundCustomer.getContacts().add(newContact);
@@ -168,7 +166,7 @@ public class CustomerService {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
-        foundCustomer.setEnabled(foundCustomer.getEnabled() == 0 ? 1 : 0);
+        foundCustomer.setEnabled(!foundCustomer.getEnabled());
 
         foundCustomer = customerRepository.save(foundCustomer);
 

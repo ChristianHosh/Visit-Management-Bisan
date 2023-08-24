@@ -51,7 +51,7 @@ public class ContactService {
         Contact contact = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
-        contact.setEnabled(contact.getEnabled() == false ? true : false);
+        contact.setEnabled(!contact.getEnabled());
 
         contact = contactRepository.save(contact);
 
