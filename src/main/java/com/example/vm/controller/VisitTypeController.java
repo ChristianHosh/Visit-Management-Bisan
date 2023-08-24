@@ -2,6 +2,7 @@ package com.example.vm.controller;
 
 import com.example.vm.dto.post.VisitTypePostDTO;
 import com.example.vm.dto.put.VisitTypePutDTO;
+import com.example.vm.dto.request.VisitTypeRequest;
 import com.example.vm.service.VisitTypeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +24,12 @@ public class VisitTypeController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveNewVisitType(@RequestBody @Valid VisitTypePostDTO visitTypeRequest) {
+    public ResponseEntity<?> saveNewVisitType(@RequestBody @Valid VisitTypeRequest visitTypeRequest) {
         return visitTypeService.saveNewVisitType(visitTypeRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVisitType(@PathVariable Long id, @RequestBody @Valid VisitTypePutDTO visitTypeUpdate) {
+    public ResponseEntity<?> updateVisitType(@PathVariable Long id, @RequestBody @Valid VisitTypeRequest visitTypeUpdate) {
         return visitTypeService.updateVisitType(id, visitTypeUpdate);
     }
 

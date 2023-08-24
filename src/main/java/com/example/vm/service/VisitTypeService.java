@@ -3,6 +3,7 @@ package com.example.vm.service;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.post.VisitTypePostDTO;
 import com.example.vm.dto.put.VisitTypePutDTO;
+import com.example.vm.dto.request.VisitTypeRequest;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.repository.VisitTypeRepository;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +28,7 @@ public class VisitTypeService {
         return ResponseEntity.ok(repository.findAll());
     }
 
-    public ResponseEntity<VisitType> saveNewVisitType(VisitTypePostDTO VisitTypeRequest) {
+    public ResponseEntity<VisitType> saveNewVisitType(VisitTypeRequest VisitTypeRequest) {
 
         VisitType VisitTypeToSave = VisitType.builder()
                 .name(VisitTypeRequest.getName())
@@ -39,7 +40,7 @@ public class VisitTypeService {
         return ResponseEntity.ok(VisitTypeToSave);
     }
 
-    public ResponseEntity<VisitType> updateVisitType(Long id, VisitTypePutDTO updatedDTO) {
+    public ResponseEntity<VisitType> updateVisitType(Long id, VisitTypeRequest updatedDTO) {
         VisitType foundVisitType = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
