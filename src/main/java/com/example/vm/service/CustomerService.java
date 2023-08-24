@@ -2,11 +2,7 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.LocationNotFoundException;
-import com.example.vm.dto.post.AddressPostDTO;
 import com.example.vm.dto.post.ContactPostDTO;
-import com.example.vm.dto.post.CustomerPostDTO;
-import com.example.vm.dto.put.AddressPutDTO;
-import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.model.Address;
 import com.example.vm.model.City;
@@ -21,12 +17,14 @@ import com.example.vm.repository.CustomerRepository;
 import com.example.vm.service.formatter.PhoneNumberFormatter;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
+import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +52,6 @@ public class CustomerService {
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAllCustomerWhoHaveAssignments()));
     }
 
-
     public ResponseEntity<List<CustomerListPayload>> findAllEnabledCustomers() {
         return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomerByEnabled(1)));
     }
@@ -65,7 +62,6 @@ public class CustomerService {
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
-
 
     public ResponseEntity<List<CustomerListPayload>> searchByQuery(String query) {
         List<Customer> customerList = customerRepository.searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(query, query, query, query);
@@ -82,54 +78,36 @@ public class CustomerService {
     }
 
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerRequest customerRequest) {
-        City city = cityRepository.findById(customerRequest.cityId())
+        City foundCity = cityRepository.findById(customerRequest.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
 
         Customer customerToSave = Customer.builder()
-                .name(customerRequest.name())
+                .name(customerRequest.getName())
                 .visitAssignments(new ArrayList<>())
                 .enabled(1)
                 .address(Address.builder()
-                        .addressLine1(customerRequest.addressLine1())
+                        .addressLine1(customerRequest.getAddressLine1())
+                        .addressLine2(customerRequest.getAddressLine2())
+                        .longitude(customerRequest.getLongitude())
+                        .latitude(customerRequest.getLatitude())
+                        .zipcode(customerRequest.getZipcode())
+                        .city(foundCity)
                         .build())
                 .build();
-        //TODO REMOVE THIS VALIDATION
-//        if (!customerRepository.findCustomerByAddress_CityAndName(city, customerRequest.getName()).isEmpty())
-//            throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_ALREADY_EXIST);
 
+        if (isNotPreciseLocation(customerRequest)) {
+            try {
+                Double[] geolocation = getGeolocation(customerRequest, foundCity.getName());
+                customerToSave.getAddress().setLatitude(geolocation[0]);
+                customerToSave.getAddress().setLongitude(geolocation[1]);
+            } catch (IOException | InterruptedException | ApiException e) {
+                throw new RuntimeException(e);
+            } catch (LocationNotFoundException e) {
+                throw new LocationNotFoundException();
+            }
+        }
 
-//        Customer customerToSave = Customer.builder()
-//                .name(customerRequest.getName())
-//                .visitAssignments(new ArrayList<>())
-//                .enabled(1)
-//                .address(Address.builder()
-//                        .addressLine1(addressRequest.getAddressLine1())
-//                        .addressLine2(addressRequest.getAddressLine2())
-//                        .city(city)
-//                        .zipcode(addressRequest.getZipcode())
-//                        .isPrecise(addressRequest.getPrecise())
-//                        .longitude(addressRequest.getPrecise() ? addressRequest.getLongitude() : 0)
-//                        .latitude(addressRequest.getPrecise() ? addressRequest.getLatitude() : 0)
-//                        .build())
-//                .build();
-//
-//        if (!customerToSave.getAddress().getIsPrecise()) {
-//            try {
-//                setLngLat(customerToSave, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), city.getName(), addressRequest.getZipcode());
-//                customerToSave = customerRepository.save(customerToSave);
-//
-//                return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
-//            } catch (Exception e) {
-//                System.out.println("ERROR " + e.getMessage());
-//            }
-//
-//            throw new LocationNotFoundException();
-//        }
-//
-//        customerToSave = customerRepository.save(customerToSave);
-//
-//        return ResponseEntity.status(HttpStatus.CREATED).body(customerToSave.toDetailPayload());
-        return null;
+        return ResponseEntity.status(HttpStatus.CREATED).body(customerRepository.save(customerToSave).toDetailPayload());
     }
 
     public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(Long id, ContactPostDTO contactRequest) {
@@ -159,35 +137,33 @@ public class CustomerService {
         return ResponseEntity.status(HttpStatus.CREATED).body(foundCustomer.toDetailPayload());
     }
 
-
-    //TODO FIX GEOLOCATION PRECISION
-    public ResponseEntity<CustomerDetailPayload> updateCustomer(Long id, CustomerPutDTO customerRequest) {
+    public ResponseEntity<CustomerDetailPayload> updateCustomer(Long id, CustomerRequest customerRequest) {
         Customer customerToUpdate = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
 
-        AddressPutDTO addressRequest = customerRequest.getAddress();
-
-        City city = cityRepository.findById(addressRequest.getCityId())
+        City foundCity = cityRepository.findById(customerRequest.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
 
         customerToUpdate.setName(customerRequest.getName());
 
-        customerToUpdate.getAddress().setAddressLine1(addressRequest.getAddressLine1());
-        customerToUpdate.getAddress().setAddressLine2(addressRequest.getAddressLine2());
-        customerToUpdate.getAddress().setCity(city);
-        customerToUpdate.getAddress().setZipcode(addressRequest.getZipcode());
+        customerToUpdate.getAddress().setAddressLine1(customerRequest.getAddressLine1());
+        customerToUpdate.getAddress().setAddressLine2(customerRequest.getAddressLine2());
+        customerToUpdate.getAddress().setZipcode(customerRequest.getZipcode());
+        customerToUpdate.getAddress().setCity(foundCity);
 
-        try {
-            setLngLat(customerToUpdate, addressRequest.getAddressLine1(), addressRequest.getAddressLine2(), city.getName(), addressRequest.getZipcode());
-
-            customerToUpdate = customerRepository.save(customerToUpdate);
-
-            return ResponseEntity.ok(customerToUpdate.toDetailPayload());
-        } catch (Exception e) {
-            System.out.println("ERROR " + e.getMessage());
-            throw new LocationNotFoundException();
+        if (isNotPreciseLocation(customerRequest)) {
+            try {
+                Double[] geolocation = getGeolocation(customerRequest, foundCity.getName());
+                customerToUpdate.getAddress().setLatitude(geolocation[0]);
+                customerToUpdate.getAddress().setLongitude(geolocation[1]);
+            } catch (IOException | InterruptedException | ApiException e) {
+                throw new RuntimeException(e);
+            } catch (LocationNotFoundException e) {
+                throw new LocationNotFoundException();
+            }
         }
 
+        return ResponseEntity.ok(customerRepository.save(customerToUpdate).toDetailPayload());
     }
 
     public ResponseEntity<CustomerDetailPayload> enableCustomer(Long id) {
@@ -201,23 +177,28 @@ public class CustomerService {
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
 
-    private static void setLngLat(Customer customerToUpdate, String addressLine1, String addressLine2, String
-            city, String zipcode) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException {
-        GeoApiContext context = new GeoApiContext.Builder()
-                .apiKey(GEOLOCATION_KEY)
-                .build();
+    private Double[] getGeolocation(CustomerRequest customerRequest, String city) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException, LocationNotFoundException {
+        try (GeoApiContext context = new GeoApiContext.Builder().apiKey(GEOLOCATION_KEY).build()) {
+            GeocodingResult[] geocodingResults = GeocodingApi
+                    .geocode(context,
+                            customerRequest.getAddressLine1() + " " +
+                                    customerRequest.getAddressLine2() + ", " +
+                                    city + " " +
+                                    customerRequest.getZipcode())
+                    .await();
+            if (geocodingResults.length == 0)
+                throw new LocationNotFoundException();
 
-        System.out.println("SEARCHING FOR LOCATION: " + addressLine1 + " " + addressLine2 + ", " +
-                city + " " + zipcode);
-
-        GeocodingResult[] results = GeocodingApi.geocode(context,
-                addressLine1 + " " + addressLine2 + ", " +
-                        city + " " + zipcode).await();
-
-        customerToUpdate.getAddress().setLatitude(results[0].geometry.location.lat);
-        customerToUpdate.getAddress().setLongitude(results[0].geometry.location.lng);
-
-        context.shutdown();
+            return new Double[]{
+                    geocodingResults[0].geometry.location.lat,
+                    geocodingResults[0].geometry.location.lng,
+            };
+        }
     }
+
+    private boolean isNotPreciseLocation(CustomerRequest customerRequest) {
+        return customerRequest.getLongitude() == 0.0 && customerRequest.getLatitude() == 0.0;
+    }
+
 
 }

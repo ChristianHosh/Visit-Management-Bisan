@@ -1,8 +1,6 @@
 package com.example.vm.controller;
 
 import com.example.vm.dto.post.ContactPostDTO;
-import com.example.vm.dto.post.CustomerPostDTO;
-import com.example.vm.dto.put.CustomerPutDTO;
 import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.service.CustomerService;
 import jakarta.validation.Valid;
@@ -65,7 +63,7 @@ public class CustomerController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerPutDTO customerRequest) {
+    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody @Valid CustomerRequest customerRequest) {
         return customerService.updateCustomer(id, customerRequest);
     }
 
