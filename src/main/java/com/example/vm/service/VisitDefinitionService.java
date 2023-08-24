@@ -1,9 +1,8 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.exception.EntityNotFoundException;
-import com.example.vm.dto.post.VisitAssignmentPostDTO;
-import com.example.vm.dto.post.VisitDefinitionPostDTO;
-import com.example.vm.dto.put.VisitDefinitionPutDTO;
+import com.example.vm.dto.request.VisitAssignmentRequest;
+import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.model.visit.VisitType;
@@ -41,7 +40,7 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(foundVisitDefinition.toDetailPayload());
     }
 
-    public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisit(VisitDefinitionPostDTO VisitDefinitionRequest) {
+    public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisit(VisitDefinitionRequest VisitDefinitionRequest) {
         VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeId())
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
@@ -60,7 +59,7 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(visitDefinitionToSave.toDetailPayload());
     }
 
-    public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(Long id, VisitDefinitionPutDTO updatedDTO) {
+    public ResponseEntity<VisitDefinitionDetailPayload> updateVisitDefinition(Long id, VisitDefinitionRequest updatedDTO) {
         VisitDefinition foundDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
@@ -116,7 +115,7 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionList));
     }
 
-    public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(Long id, VisitAssignmentPostDTO visitAssignmentRequest) {
+    public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisitAssignmentToDefinition(Long id, VisitAssignmentRequest visitAssignmentRequest) {
 
         VisitDefinition visitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));

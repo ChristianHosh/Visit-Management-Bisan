@@ -1,6 +1,6 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.put.VisitAssignmentPutDTO;
+import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.service.VisitAssignmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +36,7 @@ public class VisitAssignmentController {
     }
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAssignment(@PathVariable Long id,
-                                              @RequestBody @Valid VisitAssignmentPutDTO visitAssignmentUpdate) {
+                                              @RequestBody @Valid VisitAssignmentRequest visitAssignmentUpdate) {
         return visitAssignmentService.updateVisitAssignment(id, visitAssignmentUpdate);
     }
     @PutMapping("/{id}/endis")
