@@ -62,10 +62,11 @@ public class ReportService {
             System.out.println(definitionByTypeCount);
 
             double percentage = definitionByTypeCount / definitionsCount;
+            if (percentage != 0) {
+                System.out.println(definitionsCount);
 
-            System.out.println(definitionsCount);
-
-            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage * 100));
+                customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage * 100));
+            }
         }
         return ResponseEntity.ok(customerCountList);
     }
@@ -82,11 +83,11 @@ public class ReportService {
 
             System.out.println(city.getName());
             System.out.println(countOfCustomer);
-
             double percentage = countOfCustomer / count;
-
-            System.out.println(count);
-            area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
+            if (percentage != 0) {
+                System.out.println(count);
+                area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
+            }
         }
 
         return ResponseEntity.ok(area);
@@ -121,7 +122,9 @@ public class ReportService {
                 }
             }
             System.out.println(user.getUsername() + " : " + sumOfTime + " / " + completedFormsCounter + " = " + (sumOfTime / completedFormsCounter));
+
             userAverage.add(new UserAverageReportListPayload(user.getUsername(), (sumOfTime / completedFormsCounter) / 1000));
+
         }
 
 
