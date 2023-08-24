@@ -24,6 +24,7 @@ public class ContactRequest {
 
     @NotBlank
     @NotNull
+    @Size(min = 10, max = 10)
     @Pattern(regexp = "^[0-9\\s]*$")
     String phoneNumber;
 

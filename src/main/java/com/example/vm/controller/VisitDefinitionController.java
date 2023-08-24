@@ -19,8 +19,12 @@ public class VisitDefinitionController {
     }
 
     @GetMapping("")
+    public ResponseEntity<?> getAllEnableVisitDefinition() {
+       return visitDefinitionService.findAllEnableVisitDefinition();
+    }
+    @GetMapping("/all")
     public ResponseEntity<?> getAllVisitDefinition() {
-       return visitDefinitionService.findAllVisitDefinition();
+        return visitDefinitionService.findAllVisitDefinition();
     }
 
     @GetMapping("/{id}")

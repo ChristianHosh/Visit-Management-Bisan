@@ -20,22 +20,19 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    @GetMapping("")
+    @GetMapping("/all")
     public ResponseEntity<?> getAllCustomers() {
         return customerService.findAllCustomers();
+    }
+    @GetMapping("")
+    public ResponseEntity<?> getAllEnableCustomers() {
+        return customerService.findAllEnabledCustomers();
     }
 
     @GetMapping("/assignment")
     public ResponseEntity<?> getAllCustomersWhoHasAssignment() {
         return customerService.findAllCustomersWhoHasAssignment();
     }
-
-    @GetMapping("/enable")
-    public ResponseEntity<?> getAllEnabledCustomers()
-    {
-        return customerService.findAllEnabledCustomers();
-    }
-
 
     @GetMapping(value = "/search", params = "query")
     public ResponseEntity<?> searchByQuery(@RequestParam("query") String name) {

@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment, Long> {
     List<VisitAssignment> findVisitAssignmentByDate(Date date);
-
+    List <VisitAssignment> findVisitAssignmentsByEnabled(boolean enabled);
     List<VisitAssignment> findVisitAssignmentByDateBetween(Date date1, Date date2);
 
     List<VisitAssignment> findVisitAssignmentByUser(User user);

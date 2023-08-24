@@ -29,6 +29,9 @@ public class UserService {
     public ResponseEntity<List<User>> findAllUsers() {
         return ResponseEntity.ok(repository.findAll());
     }
+    public ResponseEntity<List<User>> findAllEnableUsers() {
+        return ResponseEntity.ok(repository.findUsersByEnabled(true));
+    }
 
     public ResponseEntity<User> findUserByUsername(String username) {
         User foundUser = repository.findById(username)

@@ -16,6 +16,11 @@ public class VisitAssignmentController {
         this.visitAssignmentService = visitAssignmentService;
     }
     @GetMapping("")
+    public ResponseEntity<?> getAllEnableVisitAssignment() {
+
+        return visitAssignmentService.findAllEnableVisitAssignments();
+    }
+    @GetMapping("/all")
     public ResponseEntity<?> getAllVisitAssignment() {
 
         return visitAssignmentService.findAllVisitAssignments();
