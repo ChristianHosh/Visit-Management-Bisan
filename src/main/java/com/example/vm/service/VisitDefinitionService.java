@@ -4,17 +4,12 @@ import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.request.VisitDefinitionRequest;
-import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
-import com.example.vm.model.visit.VisitForm;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
-import com.example.vm.payload.list.StatusReportListPayload;
 import com.example.vm.payload.list.VisitDefinitionListPayload;
-import com.example.vm.payload.report.NamePercentageMapPayload;
 import com.example.vm.repository.VisitDefinitionRepository;
-import com.example.vm.repository.VisitFormRepository;
 import com.example.vm.repository.VisitTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,21 +22,19 @@ import java.util.*;
 public class VisitDefinitionService {
     private final VisitDefinitionRepository visitDefinitionRepository;
     private final VisitTypeRepository visitTypeRepository;
-    private final VisitFormRepository visitFormRepository;
 
     @Autowired
-    public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository, VisitFormRepository visitFormRepository) {
+    public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository) {
         this.visitDefinitionRepository = visitDefinitionRepository;
         this.visitTypeRepository = visitTypeRepository;
-        this.visitFormRepository = visitFormRepository;
     }
 
     public ResponseEntity<List<VisitDefinitionListPayload>> findAllVisitDefinition() {
         return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findAll()));
     }
 
-    public ResponseEntity<List<VisitDefinitionListPayload>> findAllEnableVisitDefinition() {
-        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findVisitDefinitionsByEnabled(true)));
+    public ResponseEntity<List<VisitDefinitionListPayload>> findAllEnabledVisitDefinitions() {
+        return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findVisitDefinitionsByEnabledTrue()));
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByID(Long id) {
@@ -52,7 +45,7 @@ public class VisitDefinitionService {
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisit(VisitDefinitionRequest VisitDefinitionRequest) {
-        VisitType visitType = visitTypeRepository.findByIdAndEnabled(VisitDefinitionRequest.getTypeId(), true)
+        VisitType visitType = visitTypeRepository.findByIdAndEnabledTrue(VisitDefinitionRequest.getTypeId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TYPE_NOT_FOUND));
 
         VisitDefinition visitDefinitionToSave = VisitDefinition.builder()
@@ -73,7 +66,7 @@ public class VisitDefinitionService {
         VisitDefinition foundDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
 
-        VisitType foundVisitType = visitTypeRepository.findByIdAndEnabled(id, true)
+        VisitType foundVisitType = visitTypeRepository.findByIdAndEnabledTrue(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TYPE_NOT_FOUND));
 
         foundDefinition.setName(updatedDTO.getName());

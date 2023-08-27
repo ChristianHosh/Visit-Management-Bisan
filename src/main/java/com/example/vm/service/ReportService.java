@@ -49,15 +49,15 @@ public class ReportService {
         return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findVisitFormByStatus(status)));
     }
 
-    public ResponseEntity<List<NamePercentageMapPayload >> getTypesPercentages() {
-        ArrayList<NamePercentageMapPayload > customerCountList = new ArrayList<>();
+    public ResponseEntity<List<NamePercentageMapPayload>> getTypesPercentages() {
+        ArrayList<NamePercentageMapPayload> customerCountList = new ArrayList<>();
 
         List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
 
-        long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabled(true);
+        long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabledTrue();
 
         for (VisitType visitType : visitTypeList) {
-            double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByTypeAndEnabled(visitType, true);
+            double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByTypeAndEnabledTrue(visitType);
 
             System.out.println(visitType.getName());
 
@@ -67,7 +67,7 @@ public class ReportService {
 
             if (percentage == 0) continue;
 
-            customerCountList.add(new NamePercentageMapPayload (visitType.getName(), percentage * 100));
+            customerCountList.add(new NamePercentageMapPayload(visitType.getName(), percentage * 100));
         }
         return ResponseEntity.ok(customerCountList);
     }
@@ -87,9 +87,9 @@ public class ReportService {
 
             double percentage = countOfCustomer / count;
 
-            if (percentage == 0) continue;
+            if (percentage != 0)
+                area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
 
-            area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
         }
         return ResponseEntity.ok(area);
     }
@@ -101,7 +101,7 @@ public class ReportService {
         return ResponseEntity.ok(UserAssignmentReportPayload.toPayload(foundCustomer));
     }
 
-    public ResponseEntity<List<NamePercentageMapPayload >> findAverageTimeForAllUsers() {
+    public ResponseEntity<List<NamePercentageMapPayload>> findAverageTimeForAllUsers() {
         List<User> users = userRepository.searchUsersByAccessLevel(0);
 
         ArrayList<NamePercentageMapPayload> userAverage = new ArrayList<>();
@@ -143,8 +143,9 @@ public class ReportService {
         return ResponseEntity.ok(calculatedStatus(visitAssignmentList));
 
     }
+
     public ResponseEntity<Map<String, Object>> TotalStatusForVisitDefinitions(Long id) {
-       VisitDefinition foundVisitDefinition = visitDefinitionRepository.findVisitDefinitionByIdAndEnabled(id,true)
+        VisitDefinition foundVisitDefinition = visitDefinitionRepository.findVisitDefinitionByIdAndEnabledTrue(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
         List<VisitAssignment> visitAssignmentList = foundVisitDefinition.getVisitAssignments();
         return ResponseEntity.ok(calculatedStatus(visitAssignmentList));
@@ -152,7 +153,7 @@ public class ReportService {
     }
 
 
-    public Map<String, Object> calculatedStatus( List<VisitAssignment> visitAssignmentList){
+    public Map<String, Object> calculatedStatus(List<VisitAssignment> visitAssignmentList) {
         long completedCount = 0;
         long undergoingCount = 0;
         long notStartedCount = 0;
@@ -188,9 +189,9 @@ public class ReportService {
 
             double percentage = (((double) count / (double) totalFormsCount) * 100);
 
+            if (percentage == 0 || totalFormsCount == 0) continue;
 
-            if (percentage != 0)
-                percentageList.add(new NamePercentageMapPayload(String.valueOf(status), percentage));
+            percentageList.add(new NamePercentageMapPayload(String.valueOf(status), percentage));
 
         }
 
@@ -200,32 +201,31 @@ public class ReportService {
         return result;
     }
 
-    public ResponseEntity<List<NamePercentageMapPayload>>calculatedTypes(Long id)
-    {
+    public ResponseEntity<List<NamePercentageMapPayload>> calculatedTypes(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
-        List<VisitAssignment>visitAssignmentList=foundCustomer.getVisitAssignments();
-        ArrayList<NamePercentageMapPayload > customerCountList = new ArrayList<>();
-        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
-        long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabled(true);
-        for (VisitType visitType : visitTypeList) {
-            double definitionByTypeCount=0;
-        for(VisitAssignment visitAssignment:visitAssignmentList){
-             if(visitAssignment.getVisitDefinition().getType().equals(visitType)){
-                 definitionByTypeCount =++definitionByTypeCount;
-             }
-        }
-            double percentage = definitionByTypeCount / definitionsCount;
-            if (percentage == 0) continue;
 
-            customerCountList.add(new NamePercentageMapPayload (visitType.getName(), percentage * 100));
+        List<VisitAssignment> visitAssignmentList = foundCustomer.getVisitAssignments();
+        ArrayList<NamePercentageMapPayload> customerCountList = new ArrayList<>();
+
+        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
+        long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabledTrue();
+
+        for (VisitType visitType : visitTypeList) {
+            double definitionByTypeCount = 0;
+            for (VisitAssignment visitAssignment : visitAssignmentList) {
+                if (visitAssignment.getVisitDefinition().getType().equals(visitType)) {
+                    definitionByTypeCount++;
+                }
+            }
+            double percentage = definitionByTypeCount / definitionsCount;
+
+            if (percentage == 0 || definitionsCount == 0) continue;
+
+            customerCountList.add(new NamePercentageMapPayload(visitType.getName(), percentage * 100));
         }
         return ResponseEntity.ok(customerCountList);
     }
-
-
-
-
 
 
 }

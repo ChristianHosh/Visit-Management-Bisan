@@ -2,7 +2,6 @@ package com.example.vm.controller;
 
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.request.VisitDefinitionRequest;
-import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
 import com.example.vm.service.VisitDefinitionService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,7 @@ public class VisitDefinitionController {
 
     @GetMapping("")
     public ResponseEntity<?> getAllEnableVisitDefinition() {
-       return visitDefinitionService.findAllEnableVisitDefinition();
+       return visitDefinitionService.findAllEnabledVisitDefinitions();
     }
     @GetMapping("/all")
     public ResponseEntity<?> getAllVisitDefinition() {
