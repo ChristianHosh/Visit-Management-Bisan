@@ -1,5 +1,6 @@
 package com.example.vm.service;
 
+import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.request.VisitTypeRequest;
 import com.example.vm.model.visit.VisitType;
@@ -43,7 +44,7 @@ public class VisitTypeService {
 
     public ResponseEntity<VisitType> updateVisitType(Long id, VisitTypeRequest updatedDTO) {
         VisitType foundVisitType = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         foundVisitType.setName(updatedDTO.getName());
 
@@ -58,7 +59,7 @@ public class VisitTypeService {
 
         for (Long typeId : typeIdList) {
             VisitType visitType = repository.findById(typeId)
-                    .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
+                    .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TYPE_NOT_FOUND));
 
             visitTypes.add(visitType);
         }

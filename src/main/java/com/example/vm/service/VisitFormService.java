@@ -1,5 +1,6 @@
 package com.example.vm.service;
 
+import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.InvalidStatusUpdateException;
 import com.example.vm.controller.error.exception.LocationTooFarException;
@@ -45,20 +46,20 @@ public class VisitFormService {
 
     public ResponseEntity<VisitFormDetailPayload> findVisitFormById(Long id) {
         VisitForm foundForm = visitFormRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
         return ResponseEntity.ok(foundForm.toDetailPayload());
     }
 
     public ResponseEntity<VisitFormDetailPayload> createNewForm(AssignmentCustomerDTO assignmentCustomerRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentCustomerRequest.getAssignmentId())
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
         Customer foundCustomer = customerRepository.findById(assignmentCustomerRequest.getCustomerId())
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         if (!foundAssignment.getCustomers().contains(foundCustomer))
-            throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_ASSIGNED);
+            throw new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_ASSIGNED);
 
 
         VisitForm newVisitForm = VisitForm.builder()
@@ -82,7 +83,7 @@ public class VisitFormService {
 
     public ResponseEntity<VisitFormDetailPayload> completeForm(Long id, FormGeolocationDTO formGeolocationDTO) {
         VisitForm foundForm = visitFormRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
         validateDistance(formGeolocationDTO, foundForm.getCustomer().getAddress());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
@@ -105,7 +106,7 @@ public class VisitFormService {
 
     public ResponseEntity<VisitFormDetailPayload> startForm(Long id, FormGeolocationDTO formGeolocationDTO) {
         VisitForm foundForm = visitFormRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.FORM_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
         validateDistance(formGeolocationDTO, foundForm.getCustomer().getAddress());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION

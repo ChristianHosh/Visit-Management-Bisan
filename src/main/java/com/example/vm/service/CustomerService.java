@@ -1,5 +1,6 @@
 package com.example.vm.service;
 
+import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.dto.request.ContactRequest;
@@ -58,7 +59,7 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> findCustomerById(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundCustomer.toDetailPayload());
     }
@@ -70,7 +71,7 @@ public class CustomerService {
 
     public ResponseEntity<List<ContactListPayload>> getCustomerContacts(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         List<Contact> contactList = foundCustomer.getContacts();
 
@@ -79,7 +80,7 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerRequest customerRequest) {
         City foundCity = cityRepository.findById(customerRequest.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
         Customer customerToSave = Customer.builder()
                 .name(customerRequest.getName())
@@ -111,7 +112,7 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(Long id, ContactRequest contactRequest) {
         Customer foundCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getTypes());
 
@@ -135,10 +136,10 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> updateCustomer(Long id, CustomerRequest customerRequest) {
         Customer customerToUpdate = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         City foundCity = cityRepository.findById(customerRequest.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
         customerToUpdate.setName(customerRequest.getName());
 
@@ -164,7 +165,7 @@ public class CustomerService {
 
     public ResponseEntity<CustomerDetailPayload> enableCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         foundCustomer.setEnabled(!foundCustomer.getEnabled());
         boolean isEnabled = foundCustomer.getEnabled();

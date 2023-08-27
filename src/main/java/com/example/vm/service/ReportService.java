@@ -1,5 +1,6 @@
 package com.example.vm.service;
 
+import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.model.City;
 import com.example.vm.model.Customer;
@@ -55,7 +56,7 @@ public class ReportService {
         long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabled(true);
 
         for (VisitType visitType : visitTypeList) {
-            double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByTypeAndEnabled(visitType,true);
+            double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByTypeAndEnabled(visitType, true);
 
             System.out.println(visitType.getName());
 
@@ -78,7 +79,7 @@ public class ReportService {
         long count = customerRepository.countCustomerByEnabled(true);
 
         for (City city : cityList) {
-            double countOfCustomer = customerRepository.countCustomerByAddress_CityAndEnabled(city,true);
+            double countOfCustomer = customerRepository.countCustomerByAddress_CityAndEnabled(city, true);
 
             System.out.println(city.getName());
             System.out.println(countOfCustomer);
@@ -93,14 +94,15 @@ public class ReportService {
 
     public ResponseEntity<List<UserAssignmentReportPayload>> findUserAssignmentByCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         return ResponseEntity.ok(UserAssignmentReportPayload.toPayload(foundCustomer));
     }
 
     public ResponseEntity<List<NamePercentageMapPayload >> findAverageTimeForAllUsers() {
         List<User> users = userRepository.searchUsersByAccessLevel(0);
-        ArrayList<NamePercentageMapPayload > userAverage = new ArrayList<>();
+
+        ArrayList<UserAverageReportListPayload> userAverage = new ArrayList<>();
         for (User user : users) {
 
             int completedFormsCounter = 0;
@@ -131,8 +133,8 @@ public class ReportService {
     }
 
     public ResponseEntity<Map<String, Object>> TotalStatusForUser(String username) {
-        User founduser = userRepository.findUserByUsernameAndEnabled(username,true)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+        User founduser = userRepository.findUserByUsernameAndEnabled(username, true)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         long completedCount = 0;
         long undergoingCount = 0;

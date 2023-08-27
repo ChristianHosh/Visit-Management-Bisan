@@ -1,11 +1,11 @@
 package com.example.vm.controller.error.exception;
 
-import com.example.vm.controller.error.ErrorMessages;
+import com.example.vm.controller.error.ErrorMessage;
 
 public class UserAlreadyExistsException extends RuntimeException{
 
     public UserAlreadyExistsException() {
-        super(ErrorMessages.USER_ALREADY_EXISTS);
+        super(ErrorMessage.USER_ALREADY_EXISTS.toString());
     }
 
 }

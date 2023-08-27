@@ -1,9 +1,9 @@
 package com.example.vm.controller.error.exception;
 
-public class LocationTooFarException extends RuntimeException {
-    private static final String NOT_FOUND_MESSAGE = "Invalid Location: Location too far from customer";
+import com.example.vm.controller.error.ErrorMessage;
 
+public class LocationTooFarException extends RuntimeException {
     public LocationTooFarException() {
-        super(NOT_FOUND_MESSAGE);
+        super(ErrorMessage.INVALID_LOCATION_IS_TOO_FAR.toString());
     }
 }

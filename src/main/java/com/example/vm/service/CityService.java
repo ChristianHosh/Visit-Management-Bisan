@@ -1,5 +1,6 @@
 package com.example.vm.service;
 
+import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.request.CityRequest;
 import com.example.vm.dto.request.VisitTypeRequest;
@@ -32,7 +33,7 @@ public class CityService {
 
     public ResponseEntity<City> findById(Long id) {
         City foundCity = cityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         return ResponseEntity.ok(foundCity);
     }
@@ -50,7 +51,7 @@ public class CityService {
 
     public ResponseEntity<City> updateCity(Long id, CityRequest updatedCity) {
        City foundCity= cityRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CITY_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
         foundCity.setName(updatedCity.getName());
 

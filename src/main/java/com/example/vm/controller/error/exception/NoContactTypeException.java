@@ -1,9 +1,9 @@
 package com.example.vm.controller.error.exception;
 
-public class NoContactTypeException extends RuntimeException{
+import com.example.vm.controller.error.ErrorMessage;
 
-    public static final String ASSIGNMENT_INVALID_CONTACT_TYPES = "Invalid Assignment: Contacts for this Type are not Available ";
+public class NoContactTypeException extends RuntimeException{
     public NoContactTypeException() {
-        super(ASSIGNMENT_INVALID_CONTACT_TYPES);
+        super(ErrorMessage.INVALID_ASSIGNMENT_CONTACT_TYPES.toString());
     }
 }

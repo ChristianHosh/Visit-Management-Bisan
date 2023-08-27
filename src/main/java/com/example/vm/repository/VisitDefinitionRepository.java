@@ -12,15 +12,17 @@ import java.util.Optional;
 
 @Repository
 public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition, Long> {
-    Optional<VisitDefinition>  findVisitDefinitionByIdAndEnabled(Long id , boolean enable);
+    Optional<VisitDefinition> findVisitDefinitionByIdAndEnabled(Long id, boolean enable);
+
     List<VisitDefinition> searchVisitDefinitionsByNameContaining(String name);
 
     List<VisitDefinition> searchVisitDefinitionsByFrequency(int frequency);
 
     List<VisitDefinition> searchVisitDefinitionsByType(VisitType visitType);
 
-    Long countVisitDefinitionsByTypeAndEnabled(VisitType visitType,boolean enable);
+    Long countVisitDefinitionsByTypeAndEnabled(VisitType visitType, boolean enable);
 
     List<VisitDefinition> findVisitDefinitionsByEnabled(Boolean enabled);
-   long countVisitDefinitionsByEnabled(Boolean enabled);
+
+    long countVisitDefinitionsByEnabled(Boolean enabled);
 }

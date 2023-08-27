@@ -1,9 +1,9 @@
 package com.example.vm.controller.error.exception;
 
-import com.example.vm.controller.error.ErrorMessages;
+import com.example.vm.controller.error.ErrorMessage;
 
 public class PasswordDoesntMatchException extends RuntimeException {
     public PasswordDoesntMatchException() {
-        super(ErrorMessages.PASSWORD_DOES_NOT_MATCH);
+        super(ErrorMessage.PASSWORDS_DO_NOT_MATCH.toString());
     }
 }

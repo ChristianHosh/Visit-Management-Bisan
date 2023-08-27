@@ -1,5 +1,6 @@
 package com.example.vm.service;
 
+import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.request.ContactRequest;
 import com.example.vm.model.Contact;
@@ -23,14 +24,14 @@ public class ContactService {
 
     public ResponseEntity<Contact> findContactByUUID(Long id) {
         Contact foundContact = contactRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CONTACT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CONTACT_NOT_FOUND));
 
         return ResponseEntity.ok(foundContact);
     }
 
     public ResponseEntity<Contact> updateContact(Long id, ContactRequest contactRequest) {
         Contact contactToUpdate = contactRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CONTACT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CONTACT_NOT_FOUND));
 
         List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getTypes());
 
@@ -49,7 +50,7 @@ public class ContactService {
 
     public ResponseEntity<Contact> enableContact(Long id) {
         Contact contact = contactRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         contact.setEnabled(!contact.getEnabled());
 

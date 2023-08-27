@@ -1,6 +1,6 @@
 package com.example.vm.service;
 
-import com.example.vm.controller.error.ErrorMessages;
+import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.CustomerAlreadyAssignedException;
 import com.example.vm.controller.error.exception.EntityNotEnabled;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
@@ -56,20 +56,20 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> findVisitAssignmentById(Long id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
         return ResponseEntity.ok(foundAssignment.toDetailPayload());
     }
 
     public ResponseEntity<List<ContactListPayload>> findCustomerContactsByAssignmentType(Long assignmentId, Long customerId) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentId)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
         Customer foundCustomer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         if (!foundAssignment.getCustomers().contains(foundCustomer))
-            throw new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_ASSIGNED);
+            throw new CustomerAlreadyAssignedException();
 
         VisitType assignmentVisitType = foundAssignment.getVisitDefinition().getType();
 
@@ -82,7 +82,7 @@ public class VisitAssignmentService {
 
     public ResponseEntity<List<VisitFormListPayload>> getFormsByAssignment(Long id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
         List<VisitForm> formList = visitFormRepository.findVisitFormByVisitAssignment(foundAssignment);
 
@@ -92,7 +92,7 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> updateVisitAssignment(Long id, VisitAssignmentRequest assignmentRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
 
         // FIND DATE MAKE SURE IT HAS NOT REACHED THAT DATE
@@ -126,7 +126,7 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> enableVisitAssignment(Long id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
         foundAssignment.setEnabled(!foundAssignment.getEnabled());
 
@@ -143,10 +143,10 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(Long assignmentId, Long customerId) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentId)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
         Customer foundCustomer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         VisitType assignmentVisitType = foundAssignment.getVisitDefinition().getType();
 
@@ -154,10 +154,10 @@ public class VisitAssignmentService {
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
 
         if (!foundAssignment.getEnabled())
-            throw new EntityNotEnabled(ErrorMessages.ASSIGNMENT_NOT_ENABLED);
+            throw new EntityNotEnabled(ErrorMessage.ASSIGNMENT_NOT_ENABLED);
 
         if (!foundCustomer.getEnabled())
-            throw new EntityNotEnabled(ErrorMessages.CUSTOMER_NOT_ENABLED);
+            throw new EntityNotEnabled(ErrorMessage.CUSTOMER_NOT_ENABLED);
 
         if (contactList.isEmpty())
             throw new NoContactTypeException();
@@ -183,16 +183,16 @@ public class VisitAssignmentService {
 
     public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToUser(Long id, String username) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.ASSIGNMENT_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
         User foundUser = userRepository.findById(username)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         if (!foundAssignment.getEnabled())
-            throw new EntityNotEnabled(ErrorMessages.ASSIGNMENT_NOT_ENABLED);
+            throw new EntityNotEnabled(ErrorMessage.ASSIGNMENT_NOT_ENABLED);
 
         if (!foundUser.getEnabled())
-            throw new EntityNotEnabled(ErrorMessages.USER_NOT_ENABLED);
+            throw new EntityNotEnabled(ErrorMessage.USER_NOT_ENABLED);
 
         foundAssignment.setUser(foundUser);
 

@@ -1,8 +1,9 @@
 package com.example.vm.controller.error.exception;
 
+import com.example.vm.controller.error.ErrorMessage;
+
 public class LocationNotFoundException extends RuntimeException{
-    private static final String NOT_FOUND_MESSAGE = "Invalid Address: Location not found";
     public LocationNotFoundException() {
-        super(NOT_FOUND_MESSAGE);
+        super(ErrorMessage.ADDRESS_NOT_FOUND.toString());
     }
 }
