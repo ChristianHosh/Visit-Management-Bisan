@@ -102,7 +102,7 @@ public class ReportService {
     public ResponseEntity<List<NamePercentageMapPayload >> findAverageTimeForAllUsers() {
         List<User> users = userRepository.searchUsersByAccessLevel(0);
 
-        ArrayList<UserAverageReportListPayload> userAverage = new ArrayList<>();
+        ArrayList<NamePercentageMapPayload> userAverage = new ArrayList<>();
         for (User user : users) {
 
             int completedFormsCounter = 0;

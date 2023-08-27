@@ -14,6 +14,7 @@ import com.example.vm.payload.list.StatusReportListPayload;
 import com.example.vm.payload.list.VisitDefinitionListPayload;
 import com.example.vm.payload.report.NamePercentageMapPayload;
 import com.example.vm.repository.VisitDefinitionRepository;
+import com.example.vm.repository.VisitFormRepository;
 import com.example.vm.repository.VisitTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,11 +27,13 @@ import java.util.*;
 public class VisitDefinitionService {
     private final VisitDefinitionRepository visitDefinitionRepository;
     private final VisitTypeRepository visitTypeRepository;
+    private final VisitFormRepository visitFormRepository;
 
     @Autowired
-    public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository) {
+    public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository, VisitFormRepository visitFormRepository) {
         this.visitDefinitionRepository = visitDefinitionRepository;
         this.visitTypeRepository = visitTypeRepository;
+        this.visitFormRepository = visitFormRepository;
     }
 
     public ResponseEntity<List<VisitDefinitionListPayload>> findAllVisitDefinition() {
@@ -41,24 +44,20 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findVisitDefinitionsByEnabled(true)));
     }
 
-    public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByID(Long id) {
+    public ResponseEntity<Map<String, Object>> findVisitDefinitionByID(Long id) {
         VisitDefinition foundVisitDefinition = visitDefinitionRepository.findVisitDefinitionByIdAndEnabled(id, true)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
-
-        List<VisitAssignment> visitAssignments = foundVisitDefinition.getVisitAssignments();
+        List<VisitAssignment>visitAssignmentList = foundVisitDefinition.getVisitAssignments();
         long completedCount = 0;
         long undergoingCount = 0;
         long notStartedCount = 0;
         long canceledCount = 0;
         long totalFormsCount = 0;
-
         ArrayList<StatusReportListPayload> countList = new ArrayList<>();
         ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
-
         for (VisitAssignment visitAssignment : visitAssignmentList) {
             List<VisitForm> visitFormList = visitFormRepository
                     .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
-
             totalFormsCount += visitFormList.size();
 
             for (VisitForm visitForm : visitFormList) {
@@ -88,6 +87,7 @@ public class VisitDefinitionService {
         }
 
         Map<String, Object> result = new HashMap<>();
+        result.put("Details",foundVisitDefinition.toDetailPayload());
         result.put("count", countList);
         result.put("percentages", percentageList);
         return ResponseEntity.ok(result);
