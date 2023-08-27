@@ -1,6 +1,8 @@
 package com.example.vm.service;
 
+import com.example.vm.controller.error.ErrorMessages;
 import com.example.vm.controller.error.exception.CustomerAlreadyAssignedException;
+import com.example.vm.controller.error.exception.EntityNotEnabled;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.NoContactTypeException;
 import com.example.vm.dto.request.VisitAssignmentRequest;
@@ -150,6 +152,9 @@ public class VisitAssignmentService {
 
         List<Contact> contactList = contactRepository
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
+
+        if (!foundCustomer.getEnabled())
+            throw new EntityNotEnabled(ErrorMessages.CUSTOMER_NOT_ENABLED);
 
         if (contactList.isEmpty())
             throw new NoContactTypeException();

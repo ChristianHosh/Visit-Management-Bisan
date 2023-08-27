@@ -45,13 +45,15 @@ public class VisitAssignmentController {
         return visitAssignmentService.updateVisitAssignment(id, visitAssignmentUpdate);
     }
     @PutMapping("/{id}/endis")
-    public ResponseEntity<?> enableCustomer(@PathVariable Long id) {
+    public ResponseEntity<?> enableVisitAssignment(@PathVariable Long id) {
         return visitAssignmentService.enableVisitAssignment(id);
     }
+
     @PostMapping("/{id}/customers")
     public ResponseEntity<?> assignVisitToCustomer(@PathVariable(name = "id") Long assignmentId, @RequestBody @Valid Long customerId) {
         return visitAssignmentService.assignVisitToCustomer(assignmentId, customerId);
     }
+
     @PostMapping("/{id}/users")
     public ResponseEntity<?> assignVisitToUser(@PathVariable Long id, @RequestBody @Valid String username) {
         System.out.println(username);
