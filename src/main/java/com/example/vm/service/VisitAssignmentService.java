@@ -153,6 +153,9 @@ public class VisitAssignmentService {
         List<Contact> contactList = contactRepository
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
 
+        if (!foundAssignment.getEnabled())
+            throw new EntityNotEnabled(ErrorMessages.ASSIGNMENT_NOT_ENABLED);
+
         if (!foundCustomer.getEnabled())
             throw new EntityNotEnabled(ErrorMessages.CUSTOMER_NOT_ENABLED);
 
@@ -184,6 +187,12 @@ public class VisitAssignmentService {
 
         User foundUser = userRepository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
+
+        if (!foundAssignment.getEnabled())
+            throw new EntityNotEnabled(ErrorMessages.ASSIGNMENT_NOT_ENABLED);
+
+        if (!foundUser.getEnabled())
+            throw new EntityNotEnabled(ErrorMessages.USER_NOT_ENABLED);
 
         foundAssignment.setUser(foundUser);
 

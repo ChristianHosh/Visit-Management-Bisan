@@ -14,6 +14,7 @@ public class ErrorMessages {
 
 
     public static final String PASSWORD_DOES_NOT_MATCH = "Passwords should match";
-
     public static final String CUSTOMER_NOT_ENABLED = "Customer Not Enabled";
+    public static final String USER_NOT_ENABLED = "User Not Enabled";
+    public static final String ASSIGNMENT_NOT_ENABLED = "Assignment Not Enabled";
 }

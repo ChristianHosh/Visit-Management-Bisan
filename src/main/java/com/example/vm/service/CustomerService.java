@@ -49,7 +49,7 @@ public class CustomerService {
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllCustomersWhoHasAssignment() {
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAllCustomerWhoHaveAssignments()));
+        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomersByVisitAssignmentsIsNotEmpty()));
     }
 
     public ResponseEntity<List<CustomerListPayload>> findAllEnabledCustomers() {

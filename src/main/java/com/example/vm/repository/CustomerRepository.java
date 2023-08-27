@@ -14,14 +14,14 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("SELECT u FROM Customer u WHERE SIZE(u.visitAssignments) > 0")
     List<Customer> findAllCustomerWhoHaveAssignments();
+    // DONE BY ELIANA
+
+    List<Customer> findCustomersByVisitAssignmentsIsNotEmpty();
 
     List<Customer> findCustomerByEnabled(Boolean enabled);
 
-    List<Customer> findCustomerByAddress_CityAndName(City city, String name);
-
     Long countCustomerByEnabled(Boolean enabled);
 
-    int countCustomerByAddress_City(City city);
-    int countCustomerByAddress_CityAndEnabled(City city,boolean enable);
+    Long countCustomerByAddress_CityAndEnabled(City city, Boolean enabled);
 
 }
