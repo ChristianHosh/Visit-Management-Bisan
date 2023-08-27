@@ -17,4 +17,5 @@ public class ErrorMessages {
     public static final String CUSTOMER_NOT_ENABLED = "Customer Not Enabled";
     public static final String USER_NOT_ENABLED = "User Not Enabled";
     public static final String ASSIGNMENT_NOT_ENABLED = "Assignment Not Enabled";
+    public static final String USER_ALREADY_EXISTS = "Username Already Exists";
 }
