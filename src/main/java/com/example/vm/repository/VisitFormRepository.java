@@ -12,6 +12,9 @@ import java.util.List;
 public interface VisitFormRepository extends JpaRepository<VisitForm, Long> {
     List<VisitForm> findVisitFormByVisitAssignment(VisitAssignment visitAssignment);
 
+    List<VisitForm> findVisitFormByVisitAssignmentAndEnabled(VisitAssignment visitAssignment, Boolean enabled);
+
+
     List<VisitForm> findVisitFormByStatus(VisitStatus status);
 
     List<VisitForm> findVisitFormsByEnabled(Boolean enabled);

@@ -70,7 +70,7 @@ public class ReportService {
 
         List<City> cityList = cityRepository.findAll();
 
-        long count = customerRepository.count();
+        long count = customerRepository.countCustomerByEnabled(true);
 
         for (City city : cityList) {
             double countOfCustomer = customerRepository.countCustomerByAddress_City(city);
@@ -99,10 +99,12 @@ public class ReportService {
             int completedFormsCounter = 0;
             double sumOfTime = 0;
 
-            List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(user);
+            List<VisitAssignment> visitAssignmentList = visitAssignmentRepository
+                    .findVisitAssignmentByUserAndEnabled(user, true);
 
             for (VisitAssignment visitAssignment : visitAssignmentList) {
-                List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
+                List<VisitForm> visitFormList = visitFormRepository
+                        .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
 
                 for (VisitForm visitForm : visitFormList) {
                     if (visitForm.getStatus().equals(VisitStatus.COMPLETED)) {
@@ -136,10 +138,12 @@ public class ReportService {
         ArrayList<StatusReportListPayload> countList = new ArrayList<>();
         ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
 
-        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentByUser(founduser);
+        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository
+                .findVisitAssignmentByUserAndEnabled(founduser, true);
 
         for (VisitAssignment visitAssignment : visitAssignmentList) {
-            List<VisitForm> visitFormList = visitFormRepository.findVisitFormByVisitAssignment(visitAssignment);
+            List<VisitForm> visitFormList = visitFormRepository
+                    .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
 
             totalFormsCount += visitFormList.size();
 
@@ -156,7 +160,7 @@ public class ReportService {
         Iterator<Long> statusCountIterator = Arrays.asList(notStartedCount, undergoingCount, canceledCount, completedCount).iterator();
         Iterator<VisitStatus> statusIterator = Arrays.asList(VisitStatus.values()).iterator();
 
-        while (statusIterator.hasNext() && statusCountIterator.hasNext()){
+        while (statusIterator.hasNext() && statusCountIterator.hasNext()) {
             VisitStatus status = statusIterator.next();
             Long count = statusCountIterator.next();
 

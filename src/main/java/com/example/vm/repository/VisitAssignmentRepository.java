@@ -14,7 +14,7 @@ public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment
     List <VisitAssignment> findVisitAssignmentsByEnabled(boolean enabled);
     List<VisitAssignment> findVisitAssignmentByDateBetween(Date date1, Date date2);
 
-    List<VisitAssignment> findVisitAssignmentByUser(User user);
+    List<VisitAssignment> findVisitAssignmentByUserAndEnabled(User user, Boolean enabled);
 
 
 
