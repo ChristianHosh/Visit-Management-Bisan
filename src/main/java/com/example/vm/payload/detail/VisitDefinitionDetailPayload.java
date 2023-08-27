@@ -32,4 +32,6 @@ public class VisitDefinitionDetailPayload {
     private List<VisitAssignmentListPayload> visitAssignments;
 
 
+
+
 }

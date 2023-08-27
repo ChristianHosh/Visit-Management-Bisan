@@ -24,12 +24,13 @@ public class VisitDefinitionController {
     }
     @GetMapping("/all")
     public ResponseEntity<?> getAllVisitDefinition() {
+
         return visitDefinitionService.findAllVisitDefinition();
     }
-
+////////////////////////////////////////////////////////////////////////////////////////////////
     @GetMapping("/{id}")
     public ResponseEntity<VisitDefinitionDetailPayload> getVisitDefinitionById(@PathVariable Long id) {
-      return visitDefinitionService.findVisitDefinitionByUUID(id);
+      return visitDefinitionService.findVisitDefinitionByID(id);
 
     }
 

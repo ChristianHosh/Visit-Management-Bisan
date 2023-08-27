@@ -47,8 +47,8 @@ public class ReportService {
         return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findVisitFormByStatus(status)));
     }
 
-    public ResponseEntity<List<CountByTypeListPayload>> getTypesPercentages() {
-        ArrayList<CountByTypeListPayload> customerCountList = new ArrayList<>();
+    public ResponseEntity<List<NamePercentageMapPayload >> getTypesPercentages() {
+        ArrayList<NamePercentageMapPayload > customerCountList = new ArrayList<>();
 
         List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
 
@@ -65,7 +65,7 @@ public class ReportService {
 
             if (percentage == 0) continue;
 
-            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage * 100));
+            customerCountList.add(new NamePercentageMapPayload (visitType.getName(), percentage * 100));
         }
         return ResponseEntity.ok(customerCountList);
     }
@@ -98,9 +98,9 @@ public class ReportService {
         return ResponseEntity.ok(UserAssignmentReportPayload.toPayload(foundCustomer));
     }
 
-    public ResponseEntity<List<UserAverageReportListPayload>> findAverageTimeForAllUsers() {
+    public ResponseEntity<List<NamePercentageMapPayload >> findAverageTimeForAllUsers() {
         List<User> users = userRepository.searchUsersByAccessLevel(0);
-        ArrayList<UserAverageReportListPayload> userAverage = new ArrayList<>();
+        ArrayList<NamePercentageMapPayload > userAverage = new ArrayList<>();
         for (User user : users) {
 
             int completedFormsCounter = 0;
@@ -123,10 +123,9 @@ public class ReportService {
             }
             System.out.println(user.getUsername() + " : " + sumOfTime + " / " + completedFormsCounter + " = " + (sumOfTime / completedFormsCounter));
 
-            userAverage.add(new UserAverageReportListPayload(user.getUsername(), (sumOfTime / completedFormsCounter) / 1000));
+            userAverage.add(new NamePercentageMapPayload(user.getUsername(), (sumOfTime / completedFormsCounter) / 1000));
 
         }
-
 
         return ResponseEntity.ok(userAverage);
     }
@@ -182,7 +181,6 @@ public class ReportService {
         Map<String, Object> result = new HashMap<>();
         result.put("count", countList);
         result.put("percentages", percentageList);
-
         return ResponseEntity.ok(result);
     }
 

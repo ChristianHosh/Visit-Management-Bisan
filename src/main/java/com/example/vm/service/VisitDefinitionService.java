@@ -3,11 +3,15 @@ package com.example.vm.service;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.request.VisitDefinitionRequest;
+import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.visit.VisitAssignment;
 import com.example.vm.model.visit.VisitDefinition;
+import com.example.vm.model.visit.VisitForm;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.detail.VisitDefinitionDetailPayload;
+import com.example.vm.payload.list.StatusReportListPayload;
 import com.example.vm.payload.list.VisitDefinitionListPayload;
+import com.example.vm.payload.report.NamePercentageMapPayload;
 import com.example.vm.repository.VisitDefinitionRepository;
 import com.example.vm.repository.VisitTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class VisitDefinitionService {
@@ -36,11 +39,57 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findVisitDefinitionsByEnabled(true)));
     }
 
-    public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByUUID(Long id) {
-        VisitDefinition foundVisitDefinition = visitDefinitionRepository.findById(id)
+    public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByID(Long id) {
+        VisitDefinition foundVisitDefinition = visitDefinitionRepository.findVisitDefinitionByIdAndEnabled(id,true)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
-        return ResponseEntity.ok(foundVisitDefinition.toDetailPayload());
+        List<VisitAssignment>visitAssignments=foundVisitDefinition.getVisitAssignments();
+        long completedCount = 0;
+        long undergoingCount = 0;
+        long notStartedCount = 0;
+        long canceledCount = 0;
+        long totalFormsCount = 0;
+
+        ArrayList<StatusReportListPayload> countList = new ArrayList<>();
+        ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
+
+        for (VisitAssignment visitAssignment : visitAssignmentList) {
+            List<VisitForm> visitFormList = visitFormRepository
+                    .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
+
+            totalFormsCount += visitFormList.size();
+
+            for (VisitForm visitForm : visitFormList) {
+                switch (visitForm.getStatus()) {
+                    case COMPLETED -> completedCount++;
+                    case UNDERGOING -> undergoingCount++;
+                    case NOT_STARTED -> notStartedCount++;
+                    case CANCELED -> canceledCount++;
+                }
+            }
+        }
+
+        Iterator<Long> statusCountIterator = Arrays.asList(notStartedCount, undergoingCount, canceledCount, completedCount).iterator();
+        Iterator<VisitStatus> statusIterator = Arrays.asList(VisitStatus.values()).iterator();
+
+        while (statusIterator.hasNext() && statusCountIterator.hasNext()) {
+            VisitStatus status = statusIterator.next();
+            Long count = statusCountIterator.next();
+
+            countList.add(new StatusReportListPayload(String.valueOf(status), count));
+
+            double percentage = (((double) count / (double) totalFormsCount) * 100);
+
+            if (percentage == 0) continue;
+
+            percentageList.add(new NamePercentageMapPayload(String.valueOf(status), percentage));
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("count", countList);
+        result.put("percentages", percentageList);
+        return ResponseEntity.ok(result);
+
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisit(VisitDefinitionRequest VisitDefinitionRequest) {
