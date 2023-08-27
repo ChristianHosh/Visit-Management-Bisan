@@ -16,7 +16,7 @@ public interface VisitDefinitionRepository extends JpaRepository<VisitDefinition
 
     List<VisitDefinition> searchVisitDefinitionsByType(VisitType visitType);
 
-    Long countVisitDefinitionsByType(VisitType visitType);
+    Long countVisitDefinitionsByTypeAndEnabled(VisitType visitType,boolean enable);
 
     List<VisitDefinition> findVisitDefinitionsByEnabled(Boolean enabled);
 }
