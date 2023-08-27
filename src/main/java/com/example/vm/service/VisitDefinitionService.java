@@ -44,53 +44,10 @@ public class VisitDefinitionService {
         return ResponseEntity.ok(VisitDefinitionListPayload.toPayload(visitDefinitionRepository.findVisitDefinitionsByEnabled(true)));
     }
 
-    public ResponseEntity<Map<String, Object>> findVisitDefinitionByID(Long id) {
-        VisitDefinition foundVisitDefinition = visitDefinitionRepository.findVisitDefinitionByIdAndEnabled(id, true)
+    public ResponseEntity<VisitDefinitionDetailPayload> findVisitDefinitionByID(Long id) {
+        VisitDefinition foundVisitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
-        List<VisitAssignment>visitAssignmentList = foundVisitDefinition.getVisitAssignments();
-        long completedCount = 0;
-        long undergoingCount = 0;
-        long notStartedCount = 0;
-        long canceledCount = 0;
-        long totalFormsCount = 0;
-        ArrayList<StatusReportListPayload> countList = new ArrayList<>();
-        ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
-        for (VisitAssignment visitAssignment : visitAssignmentList) {
-            List<VisitForm> visitFormList = visitFormRepository
-                    .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
-            totalFormsCount += visitFormList.size();
-
-            for (VisitForm visitForm : visitFormList) {
-                switch (visitForm.getStatus()) {
-                    case COMPLETED -> completedCount++;
-                    case UNDERGOING -> undergoingCount++;
-                    case NOT_STARTED -> notStartedCount++;
-                    case CANCELED -> canceledCount++;
-                }
-            }
-        }
-
-        Iterator<Long> statusCountIterator = Arrays.asList(notStartedCount, undergoingCount, canceledCount, completedCount).iterator();
-        Iterator<VisitStatus> statusIterator = Arrays.asList(VisitStatus.values()).iterator();
-
-        while (statusIterator.hasNext() && statusCountIterator.hasNext()) {
-            VisitStatus status = statusIterator.next();
-            Long count = statusCountIterator.next();
-
-            countList.add(new StatusReportListPayload(String.valueOf(status), count));
-
-            double percentage = (((double) count / (double) totalFormsCount) * 100);
-
-            if (percentage == 0) continue;
-
-            percentageList.add(new NamePercentageMapPayload(String.valueOf(status), percentage));
-        }
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("Details",foundVisitDefinition.toDetailPayload());
-        result.put("count", countList);
-        result.put("percentages", percentageList);
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(foundVisitDefinition.toDetailPayload());
 
     }
 

@@ -74,4 +74,8 @@ public class ReportController {
     public ResponseEntity<?> statusAverageForUser(@PathVariable String username) {
         return reportService.TotalStatusForUser(username);
     }
+    @GetMapping("/visit_definitions/{id}")
+    public ResponseEntity<?> statusAverageForVisitDefinition(@PathVariable Long id) {
+        return reportService.TotalStatusForVisitDefinitions(id);
+    }
 }

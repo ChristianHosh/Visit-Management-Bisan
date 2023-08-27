@@ -7,6 +7,7 @@ import com.example.vm.model.Customer;
 import com.example.vm.model.User;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.visit.VisitAssignment;
+import com.example.vm.model.visit.VisitDefinition;
 import com.example.vm.model.visit.VisitForm;
 import com.example.vm.model.visit.VisitType;
 import com.example.vm.payload.list.StatusReportListPayload;
@@ -136,18 +137,28 @@ public class ReportService {
         User founduser = userRepository.findUserByUsernameAndEnabled(username, true)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
+        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository
+                .findVisitAssignmentByUserAndEnabled(founduser, true);
+        return ResponseEntity.ok(calculatedStatus(visitAssignmentList));
+
+    }
+    public ResponseEntity<Map<String, Object>> TotalStatusForVisitDefinitions(Long id) {
+       VisitDefinition foundVisitDefinition = visitDefinitionRepository.findVisitDefinitionByIdAndEnabled(id,true)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
+        List<VisitAssignment> visitAssignmentList = foundVisitDefinition.getVisitAssignments();
+        return ResponseEntity.ok(calculatedStatus(visitAssignmentList));
+
+    }
+
+
+    public Map<String, Object> calculatedStatus( List<VisitAssignment> visitAssignmentList){
         long completedCount = 0;
         long undergoingCount = 0;
         long notStartedCount = 0;
         long canceledCount = 0;
         long totalFormsCount = 0;
-
         ArrayList<StatusReportListPayload> countList = new ArrayList<>();
         ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
-
-        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository
-                .findVisitAssignmentByUserAndEnabled(founduser, true);
-
         for (VisitAssignment visitAssignment : visitAssignmentList) {
             List<VisitForm> visitFormList = visitFormRepository
                     .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
@@ -183,8 +194,9 @@ public class ReportService {
         Map<String, Object> result = new HashMap<>();
         result.put("count", countList);
         result.put("percentages", percentageList);
-        return ResponseEntity.ok(result);
+        return result;
     }
+
 
 
 }
