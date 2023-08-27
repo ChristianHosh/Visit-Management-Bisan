@@ -78,4 +78,11 @@ public class ReportController {
     public ResponseEntity<?> statusAverageForVisitDefinition(@PathVariable Long id) {
         return reportService.TotalStatusForVisitDefinitions(id);
     }
+
+    @GetMapping("/specific_type/{id}")
+    public ResponseEntity<?> getTypesPercentagesForSpecificCustomer(@PathVariable Long id) {
+        return reportService.calculatedTypes(id);
+    }
+
+
 }

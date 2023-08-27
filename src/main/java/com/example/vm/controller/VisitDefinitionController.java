@@ -29,7 +29,7 @@ public class VisitDefinitionController {
     }
 ////////////////////////////////////////////////////////////////////////////////////////////////
     @GetMapping("/{id}")
-    public ResponseEntity<?> getVisitDefinitionById(@PathVariable Long id) {
+    public ResponseEntity<? > getVisitDefinitionById(@PathVariable Long id) {
       return visitDefinitionService.findVisitDefinitionByID(id);
 
     }

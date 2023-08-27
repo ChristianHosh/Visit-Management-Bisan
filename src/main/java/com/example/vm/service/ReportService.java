@@ -197,6 +197,32 @@ public class ReportService {
         return result;
     }
 
+    public ResponseEntity<List<NamePercentageMapPayload>>calculatedTypes(Long id)
+    {
+        Customer foundCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
+        List<VisitAssignment>visitAssignmentList=foundCustomer.getVisitAssignments();
+        ArrayList<NamePercentageMapPayload > customerCountList = new ArrayList<>();
+        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
+        long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabled(true);
+        for (VisitType visitType : visitTypeList) {
+            double definitionByTypeCount=0;
+        for(VisitAssignment visitAssignment:visitAssignmentList){
+             if(visitAssignment.getVisitDefinition().getType().equals(visitType)){
+                 definitionByTypeCount =++definitionByTypeCount;
+             }
+        }
+            double percentage = definitionByTypeCount / definitionsCount;
+            if (percentage == 0) continue;
+
+            customerCountList.add(new NamePercentageMapPayload (visitType.getName(), percentage * 100));
+        }
+        return ResponseEntity.ok(customerCountList);
+    }
+
+
+
+
 
 
 }

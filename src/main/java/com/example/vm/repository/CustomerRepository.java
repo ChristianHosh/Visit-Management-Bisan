@@ -17,7 +17,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     // DONE BY ELIANA
 
     List<Customer> findCustomersByVisitAssignmentsIsNotEmpty();
-
     List<Customer> findCustomerByEnabled(Boolean enabled);
 
     Long countCustomerByEnabled(Boolean enabled);
