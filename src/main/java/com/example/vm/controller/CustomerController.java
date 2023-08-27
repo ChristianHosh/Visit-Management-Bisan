@@ -24,6 +24,7 @@ public class CustomerController {
     public ResponseEntity<?> getAllCustomers() {
         return customerService.findAllCustomers();
     }
+    
     @GetMapping("")
     public ResponseEntity<?> getAllEnableCustomers() {
         return customerService.findAllEnabledCustomers();

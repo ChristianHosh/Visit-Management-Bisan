@@ -40,7 +40,7 @@ public class ReportService {
     }
 
     public ResponseEntity<List<FormReportListPayload>> getAllForms() {
-        return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findAll()));
+        return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findVisitFormsByEnabled(true)));
     }
 
     public ResponseEntity<List<FormReportListPayload>> getAllFormsByStatus(VisitStatus status) {
@@ -56,17 +56,11 @@ public class ReportService {
 
         for (VisitType visitType : visitTypeList) {
             double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByType(visitType);
-
-            System.out.println(visitType.getName());
-
-            System.out.println(definitionByTypeCount);
-
             double percentage = definitionByTypeCount / definitionsCount;
-            if (percentage != 0) {
-                System.out.println(definitionsCount);
 
-                customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage * 100));
-            }
+            if (percentage == 0) continue;
+
+            customerCountList.add(new CountByTypeListPayload(visitType.getName(), percentage * 100));
         }
         return ResponseEntity.ok(customerCountList);
     }
@@ -80,14 +74,11 @@ public class ReportService {
 
         for (City city : cityList) {
             double countOfCustomer = customerRepository.countCustomerByAddress_City(city);
-
-            System.out.println(city.getName());
-            System.out.println(countOfCustomer);
             double percentage = countOfCustomer / count;
-            if (percentage != 0) {
-                System.out.println(count);
-                area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
-            }
+
+            if (percentage == 0) continue;
+
+            area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
         }
 
         return ResponseEntity.ok(area);
@@ -139,6 +130,7 @@ public class ReportService {
         long undergoingCount = 0;
         long notStartedCount = 0;
         long canceledCount = 0;
+
         long totalFormsCount = 0;
 
         ArrayList<StatusReportListPayload> countList = new ArrayList<>();
@@ -160,17 +152,22 @@ public class ReportService {
                 }
             }
         }
-        System.out.println(totalFormsCount);
-        countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.COMPLETED), completedCount));
-        countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.UNDERGOING), undergoingCount));
-        countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.NOT_STARTED), notStartedCount));
-        countList.add(new StatusReportListPayload(String.valueOf(VisitStatus.CANCELED), canceledCount));
 
-        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.COMPLETED), ((double) completedCount / (double) totalFormsCount) * 100));
-        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.UNDERGOING), ((double) undergoingCount / (double) totalFormsCount) * 100));
-        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.NOT_STARTED), ((double) notStartedCount / (double) totalFormsCount) * 100));
-        percentageList.add(new NamePercentageMapPayload(String.valueOf(VisitStatus.CANCELED), ((double) canceledCount / (double) totalFormsCount) * 100));
+        Iterator<Long> statusCountIterator = Arrays.asList(notStartedCount, undergoingCount, canceledCount, completedCount).iterator();
+        Iterator<VisitStatus> statusIterator = Arrays.asList(VisitStatus.values()).iterator();
 
+        while (statusIterator.hasNext() && statusCountIterator.hasNext()){
+            VisitStatus status = statusIterator.next();
+            Long count = statusCountIterator.next();
+
+            countList.add(new StatusReportListPayload(String.valueOf(status), count));
+
+            double percentage = (((double) count / (double) totalFormsCount) * 100);
+
+            if (percentage == 0) continue;
+
+            percentageList.add(new NamePercentageMapPayload(String.valueOf(status), percentage));
+        }
 
         Map<String, Object> result = new HashMap<>();
         result.put("count", countList);

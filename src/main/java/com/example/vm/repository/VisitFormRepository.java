@@ -14,4 +14,8 @@ public interface VisitFormRepository extends JpaRepository<VisitForm, Long> {
 
     List<VisitForm> findVisitFormByStatus(VisitStatus status);
 
+    List<VisitForm> findVisitFormsByEnabled(Boolean enabled);
+
+
+//    List<VisitForm>
 }
