@@ -52,7 +52,7 @@ public class ReportService {
 
         List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
 
-        long definitionsCount = visitDefinitionRepository.count();
+        long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabled(true);
 
         for (VisitType visitType : visitTypeList) {
             double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByTypeAndEnabled(visitType,true);
@@ -132,14 +132,13 @@ public class ReportService {
     }
 
     public ResponseEntity<Map<String, Object>> TotalStatusForUser(String username) {
-        User founduser = userRepository.findById(username)
-                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.CUSTOMER_NOT_FOUND));
+        User founduser = userRepository.findUserByUsernameAndEnabled(username,true)
+                .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.USER_NOT_FOUND));
 
         long completedCount = 0;
         long undergoingCount = 0;
         long notStartedCount = 0;
         long canceledCount = 0;
-
         long totalFormsCount = 0;
 
         ArrayList<StatusReportListPayload> countList = new ArrayList<>();

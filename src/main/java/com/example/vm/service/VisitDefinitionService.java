@@ -44,7 +44,7 @@ public class VisitDefinitionService {
     }
 
     public ResponseEntity<VisitDefinitionDetailPayload> saveNewVisit(VisitDefinitionRequest VisitDefinitionRequest) {
-        VisitType visitType = visitTypeRepository.findById(VisitDefinitionRequest.getTypeId())
+        VisitType visitType = visitTypeRepository.findByIdAndEnabled(VisitDefinitionRequest.getTypeId(),true)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
         VisitDefinition visitDefinitionToSave = VisitDefinition.builder()
@@ -65,7 +65,7 @@ public class VisitDefinitionService {
         VisitDefinition foundDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.DEFINITION_NOT_FOUND));
 
-        VisitType foundVisitType = visitTypeRepository.findById(updatedDTO.getTypeId())
+        VisitType foundVisitType = visitTypeRepository.findByIdAndEnabled(id,true)
                 .orElseThrow(() -> new EntityNotFoundException(EntityNotFoundException.TYPE_NOT_FOUND));
 
         foundDefinition.setName(updatedDTO.getName());
@@ -134,7 +134,6 @@ public class VisitDefinitionService {
 
         visitAssignment.setVisitDefinition(visitDefinition);
         visitDefinition.getVisitAssignments().add(visitAssignment);
-
         visitDefinition = visitDefinitionRepository.save(visitDefinition);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(visitDefinition.toDetailPayload());
