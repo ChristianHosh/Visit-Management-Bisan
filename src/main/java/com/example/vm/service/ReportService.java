@@ -84,6 +84,7 @@ public class ReportService {
 
             System.out.println(city.getName());
             System.out.println(countOfCustomer);
+
             double percentage = countOfCustomer / count;
 
             if (percentage == 0) continue;
@@ -157,6 +158,7 @@ public class ReportService {
         long notStartedCount = 0;
         long canceledCount = 0;
         long totalFormsCount = 0;
+
         ArrayList<StatusReportListPayload> countList = new ArrayList<>();
         ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
         for (VisitAssignment visitAssignment : visitAssignmentList) {
@@ -186,9 +188,10 @@ public class ReportService {
 
             double percentage = (((double) count / (double) totalFormsCount) * 100);
 
-            if (percentage == 0) continue;
 
-            percentageList.add(new NamePercentageMapPayload(String.valueOf(status), percentage));
+            if (percentage != 0)
+                percentageList.add(new NamePercentageMapPayload(String.valueOf(status), percentage));
+
         }
 
         Map<String, Object> result = new HashMap<>();

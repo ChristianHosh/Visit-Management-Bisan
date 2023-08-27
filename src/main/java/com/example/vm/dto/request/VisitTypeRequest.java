@@ -10,9 +10,9 @@ import lombok.Getter;
 @Getter
 public class VisitTypeRequest {
 
-    @NotBlank
-    @NotNull
-    @Size(min = 3, max = 30)
+    @NotBlank(message = "Bad request: name is blank")
+    @NotNull(message = "Bad request: name is null")
+    @Size(min = 3, max = 30, message = "Bad request: name must be between 3 and 30 characters long")
     @JsonProperty("name")
     private String name;
 

@@ -8,19 +8,19 @@ import lombok.Getter;
 @Getter
 public class UserPostRequest extends UserRequest {
 
-    @NotBlank
-    @NotNull
-    @Size(min = 3, max = 30)
+    @NotBlank(message = "Bad request: username is blank")
+    @NotNull(message = "Bad request: username is null")
+    @Size(min = 3, max = 30, message = "Bad request: username must be between 3 and 30 characters long")
     String username;
 
-    @NotBlank
-    @NotNull
-    @Size(min = 8, max = 30)
+    @NotBlank(message = "Bad request: password is blank")
+    @NotNull(message = "Bad request: password is null")
+    @Size(min = 8, max = 30, message = "Bad request: password must be between 8 and 30 characters long")
     String password;
 
-    @NotBlank
-    @NotNull
-    @Size(min = 8, max = 30)
+    @NotBlank(message = "Bad request: confirm password is blank")
+    @NotNull(message = "Bad request: confirm password is null")
+    @Size(min = 8, max = 30, message = "Bad request, confirm password must be between 8 and 30 characters long")
     String confirmPassword;
 
 

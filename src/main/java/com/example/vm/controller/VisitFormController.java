@@ -1,14 +1,12 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.AssignmentCustomerDTO;
-import com.example.vm.dto.FormGeolocationDTO;
+import com.example.vm.dto.AssignmentCustomerRequest;
+import com.example.vm.dto.FormGeolocationRequest;
 import com.example.vm.service.VisitFormService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @CrossOrigin
 @RestController
@@ -23,8 +21,8 @@ public class VisitFormController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> createNewForm(@RequestBody @Valid AssignmentCustomerDTO assignmentCustomerDTO) {
-        return visitFormService.createNewForm(assignmentCustomerDTO);
+    public ResponseEntity<?> createNewForm(@RequestBody @Valid AssignmentCustomerRequest assignmentCustomerRequest) {
+        return visitFormService.createNewForm(assignmentCustomerRequest);
     }
 
     @GetMapping("/{id}")
@@ -33,12 +31,12 @@ public class VisitFormController {
     }
 
     @PutMapping("/{id}/start")
-    public ResponseEntity<?> updateFormStatusUndergoing(@PathVariable Long id, @RequestBody @Valid FormGeolocationDTO geolocationDTO) {
+    public ResponseEntity<?> updateFormStatusUndergoing(@PathVariable Long id, @RequestBody @Valid FormGeolocationRequest geolocationDTO) {
         return visitFormService.startForm(id, geolocationDTO);
     }
 
     @PutMapping("/{id}/complete")
-    public ResponseEntity<?> updateFormStatusComplete(@PathVariable Long id, @RequestBody @Valid FormGeolocationDTO geolocationDTO) {
+    public ResponseEntity<?> updateFormStatusComplete(@PathVariable Long id, @RequestBody @Valid FormGeolocationRequest geolocationDTO) {
         return visitFormService.completeForm(id, geolocationDTO);
     }
 

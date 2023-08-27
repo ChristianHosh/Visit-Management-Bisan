@@ -63,10 +63,8 @@ public class ControllerAdvice {
 
     private static String parseErrorMessage(String errorMessage) {
         int index = errorMessage.indexOf("for key");
-        if (index != -1) {
-            return errorMessage.substring(0, index).trim();
-        }
-        return errorMessage;
+        return index != -1 ? errorMessage.substring(0, index).trim() : errorMessage;
+
     }
 
 }
