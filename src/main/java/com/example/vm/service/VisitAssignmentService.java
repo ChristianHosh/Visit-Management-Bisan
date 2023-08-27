@@ -1,10 +1,7 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
-import com.example.vm.controller.error.exception.CustomerAlreadyAssignedException;
-import com.example.vm.controller.error.exception.EntityNotEnabled;
-import com.example.vm.controller.error.exception.EntityNotFoundException;
-import com.example.vm.controller.error.exception.NoContactTypeException;
+import com.example.vm.controller.error.exception.*;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
@@ -48,6 +45,7 @@ public class VisitAssignmentService {
 
         return ResponseEntity.ok(VisitAssignmentListPayload.toPayload(visitAssignmentList));
     }
+
     public ResponseEntity<List<VisitAssignmentListPayload>> findAllEnableVisitAssignments() {
         List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentsByEnabled(true);
 
@@ -104,17 +102,13 @@ public class VisitAssignmentService {
         calendar.add(Calendar.DATE, -1);
         todayDate.setTime(calendar.getTime().getTime());
 
-        if (assignmentRequest.getDate().before(todayDate)){
-            // THROW INVALID ARGUMENT EXCEPTION
-            System.out.println("DATE MUST BE IN THE PRESENT OR FUTURE");
-            return null;
-        }
+        // VALIDATES THE DATE TO MAKE SURE IT IN THE PRESENT OR FUTURE
+        if (assignmentRequest.getDate().before(todayDate))
+            throw new InvalidDateException(ErrorMessage.DATE_IN_PAST);
 
-        if (currentAssignmentDate.before(todayDate)){
-            // THROW ASSIGNMENT TOO OLD EXCEPTION
-            System.out.println("ASSIGNMENT TOO OLD !!!!!!");
-            return null;
-        }
+        // VALIDATES THE CURRENT DATE TO MAKE SURE IT HAS NOT BEEN PASSED YET
+        if (currentAssignmentDate.before(todayDate))
+            throw new InvalidDateException(ErrorMessage.DATE_TOO_OLD);
 
         foundAssignment.setComment(assignmentRequest.getComment());
         foundAssignment.setDate(assignmentRequest.getDate());

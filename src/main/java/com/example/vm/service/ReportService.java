@@ -75,7 +75,7 @@ public class ReportService {
     public ResponseEntity<List<NamePercentageMapPayload>> getCityCustomersPercentage() {
         ArrayList<NamePercentageMapPayload> area = new ArrayList<>();
 
-        List<City> cityList = cityRepository.findCityByEnabled(true);
+        List<City> cityList = cityRepository.findCitiesByEnabledTrue();
 
         long count = customerRepository.countCustomerByEnabled(true);
 
