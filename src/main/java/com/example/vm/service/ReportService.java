@@ -50,12 +50,17 @@ public class ReportService {
     public ResponseEntity<List<CountByTypeListPayload>> getTypesPercentages() {
         ArrayList<CountByTypeListPayload> customerCountList = new ArrayList<>();
 
-        List<VisitType> visitTypeList = visitTypeRepository.findAll();
+        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
 
         long definitionsCount = visitDefinitionRepository.count();
 
         for (VisitType visitType : visitTypeList) {
-            double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByType(visitType);
+            double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByTypeAndEnabled(visitType,true);
+
+            System.out.println(visitType.getName());
+
+            System.out.println(definitionByTypeCount);
+
             double percentage = definitionByTypeCount / definitionsCount;
 
             if (percentage == 0) continue;
@@ -68,19 +73,21 @@ public class ReportService {
     public ResponseEntity<List<NamePercentageMapPayload>> getCityCustomersPercentage() {
         ArrayList<NamePercentageMapPayload> area = new ArrayList<>();
 
-        List<City> cityList = cityRepository.findAll();
+        List<City> cityList = cityRepository.findCityByEnabled(true);
 
         long count = customerRepository.countCustomerByEnabled(true);
 
         for (City city : cityList) {
-            double countOfCustomer = customerRepository.countCustomerByAddress_City(city);
+            double countOfCustomer = customerRepository.countCustomerByAddress_CityAndEnabled(city,true);
+
+            System.out.println(city.getName());
+            System.out.println(countOfCustomer);
             double percentage = countOfCustomer / count;
 
             if (percentage == 0) continue;
 
             area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
         }
-
         return ResponseEntity.ok(area);
     }
 
@@ -178,7 +185,6 @@ public class ReportService {
         result.put("percentages", percentageList);
 
         return ResponseEntity.ok(result);
-
     }
 
 
