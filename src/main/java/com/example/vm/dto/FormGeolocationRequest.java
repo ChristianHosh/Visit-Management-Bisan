@@ -1,9 +1,11 @@
 package com.example.vm.dto;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class FormGeolocationDTO {
+@Getter
+@Setter
+public class FormGeolocationRequest {
 
     private Double longitude;
 

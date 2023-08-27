@@ -11,11 +11,11 @@ import java.sql.Date;
 @AllArgsConstructor
 public class VisitAssignmentRequest {
 
-    @NotNull
+    @NotNull(message = "Bad request: date is null")
     private Date date;
 
-    @NotNull
-    @Size
+    @NotNull(message = "Bad request: comment is null")
+    @Size(min = 5, max = 30, message = "Bad request: comment must be between 5 and 30 characters long")
     private String comment;
 
 }

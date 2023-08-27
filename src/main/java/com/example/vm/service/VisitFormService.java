@@ -4,8 +4,8 @@ import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.InvalidStatusUpdateException;
 import com.example.vm.controller.error.exception.LocationTooFarException;
-import com.example.vm.dto.AssignmentCustomerDTO;
-import com.example.vm.dto.FormGeolocationDTO;
+import com.example.vm.dto.AssignmentCustomerRequest;
+import com.example.vm.dto.FormGeolocationRequest;
 import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
@@ -51,7 +51,7 @@ public class VisitFormService {
         return ResponseEntity.ok(foundForm.toDetailPayload());
     }
 
-    public ResponseEntity<VisitFormDetailPayload> createNewForm(AssignmentCustomerDTO assignmentCustomerRequest) {
+    public ResponseEntity<VisitFormDetailPayload> createNewForm(AssignmentCustomerRequest assignmentCustomerRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentCustomerRequest.getAssignmentId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
@@ -81,11 +81,11 @@ public class VisitFormService {
 
     }
 
-    public ResponseEntity<VisitFormDetailPayload> completeForm(Long id, FormGeolocationDTO formGeolocationDTO) {
+    public ResponseEntity<VisitFormDetailPayload> completeForm(Long id, FormGeolocationRequest formGeolocationRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        validateDistance(formGeolocationDTO, foundForm.getCustomer().getAddress());
+        validateDistance(formGeolocationRequest, foundForm.getCustomer().getAddress());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.UNDERGOING))
@@ -94,7 +94,7 @@ public class VisitFormService {
 
         foundForm.setStatus(VisitStatus.COMPLETED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
-        foundForm.setNote(formGeolocationDTO.getNote());
+        foundForm.setNote(formGeolocationRequest.getNote());
 
         foundForm = visitFormRepository.save(foundForm);
 
@@ -104,11 +104,11 @@ public class VisitFormService {
     }
 
 
-    public ResponseEntity<VisitFormDetailPayload> startForm(Long id, FormGeolocationDTO formGeolocationDTO) {
+    public ResponseEntity<VisitFormDetailPayload> startForm(Long id, FormGeolocationRequest formGeolocationRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        validateDistance(formGeolocationDTO, foundForm.getCustomer().getAddress());
+        validateDistance(formGeolocationRequest, foundForm.getCustomer().getAddress());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.NOT_STARTED))
@@ -122,15 +122,10 @@ public class VisitFormService {
         return ResponseEntity.ok(foundForm.toDetailPayload());
     }
 
-    private static void validateDistance(FormGeolocationDTO formGeolocationDTO, Address customerAddress) {
-        double distance = distanceBetweenTwoPoints(customerAddress, formGeolocationDTO);
+    private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Address customerAddress) {
+        double distance = distanceBetweenTwoPoints(customerAddress, formGeolocationRequest);
 
-        double maxDistance = 250;
-
-//        if (customerAddress.getIsPrecise())
-//            maxDistance = 25;
-
-        if (distance > maxDistance)
+        if (distance > 250)
             throw new LocationTooFarException();
     }
 
@@ -138,12 +133,12 @@ public class VisitFormService {
         return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)) * 111 * 1000;
     }
 
-    private static double distanceBetweenTwoPoints(Address customerAddress, FormGeolocationDTO formGeolocationDTO) {
+    private static double distanceBetweenTwoPoints(Address customerAddress, FormGeolocationRequest formGeolocationRequest) {
         double customerLat = customerAddress.getLatitude();
         double customerLng = customerAddress.getLongitude();
 
-        double userLat = formGeolocationDTO.getLatitude();
-        double userLng = formGeolocationDTO.getLongitude();
+        double userLat = formGeolocationRequest.getLatitude();
+        double userLng = formGeolocationRequest.getLongitude();
 
         return distanceBetweenTwoPoints(customerLat, customerLng, userLat, userLng);
     }

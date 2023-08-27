@@ -8,25 +8,25 @@ import lombok.Getter;
 @AllArgsConstructor
 public class VisitDefinitionRequest {
 
-    @NotBlank
-    @NotNull
-    @Size(min = 3, max = 30)
+    @NotBlank(message = "Bad request: name is blank")
+    @NotNull(message = "Bad request: name is null")
+    @Size(min = 3, max = 30, message = "Bad request: name must be between 3 and 30 characters long")
     String name;
 
-    @NotBlank
-    @NotNull
-    @Size(min = 3, max = 255)
+    @NotBlank(message = "Bad request: description is blank")
+    @NotNull(message = "Bad request: description is null")
+    @Size(min = 3, max = 255, message = "Bad request: description must be between 3 and 255 characters long")
     String description;
 
-    @NotNull
-    @Min(value = 0)
-    @Max(value = 365)
+    @NotNull(message = "Bad request: frequency is null")
+    @Min(value = 0, message = "Bad request: frequency must be more or equal to 0")
+    @Max(value = 365, message = "Bad request: frequency must be less or equal to 365")
     Integer frequency;
 
-    @NotNull
+    @NotNull(message = "Bad request: allow recurring is null")
     Boolean allowRecurring;
 
-    @NotNull
+    @NotNull(message = "Bad request: type id is null")
     Long typeId;
 
 }

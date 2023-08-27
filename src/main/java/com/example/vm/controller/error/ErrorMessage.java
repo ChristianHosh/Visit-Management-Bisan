@@ -15,7 +15,6 @@ public enum ErrorMessage {
     CUSTOMER_NOT_ASSIGNED("Entity not found: Customer is not assigned"),
 
 
-
     // NOT ENABLED MESSAGES
     CITY_NOT_ENABLED("Entity not enabled: City not enabled"),
     CONTACT_NOT_ENABLED("Entity not enabled: Contact not enabled"),
@@ -29,9 +28,11 @@ public enum ErrorMessage {
 
     // BAD REQUEST MESSAGES
     PASSWORDS_DO_NOT_MATCH("Bad request: Passwords should match"),
-    INVALID_ASSIGNMENT_CONTACT_TYPES("Bad Request: No Contacts of this type are available"),
-    INVALID_FORM_STATUS_UPDATE("Bad Request: Form status can't be updated"),
-    INVALID_LOCATION_IS_TOO_FAR("Bad Request: Location is too far from customer"),
+    INVALID_ASSIGNMENT_CONTACT_TYPES("Bad request: No Contacts of this type are available"),
+    INVALID_FORM_STATUS_UPDATE("Bad request: Form status can't be updated"),
+    INVALID_LOCATION_IS_TOO_FAR("Bad request: Location is too far from customer"),
+    DATE_IN_PAST("Bad request: date must be in the present or future"),
+    DATE_TOO_OLD("Bad request: date has already passed"),
 
 
     // CONFLICT EXCEPTIONS
