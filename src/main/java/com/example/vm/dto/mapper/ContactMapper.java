@@ -12,6 +12,7 @@ public class ContactMapper {
 
         ContactResponse response = new ContactResponse();
 
+        response.setId(contact.getId());
         response.setFirstName(contact.getFirstName());
         response.setLastName(contact.getLastName());
         response.setEmail(contact.getEmail());

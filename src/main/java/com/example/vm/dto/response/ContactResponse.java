@@ -7,6 +7,7 @@ import java.util.List;
 @Getter
 @Setter
 public class ContactResponse extends ModelAuditResponse {
+    private Long id;
     private String firstName;
     private String lastName;
     private String email;
