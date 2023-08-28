@@ -45,16 +45,21 @@ public class ReportController {
 
     @GetMapping("/customers/{id}")
     public ResponseEntity<?> findAllCustomerById(@PathVariable Long id) {
-        return reportService.findUserAssignmentByCustomer(id);
+        return reportService.customerReport(id);
     }
 
-    @GetMapping("/customers/countByType")
+   /* @GetMapping("/customers/{id}/types")
+    public ResponseEntity<?> getTypesPercentagesForSpecificCustomer(@PathVariable Long id) {
+        return reportService.calculateTypePercentageForCustomer(id);
+    }*/
+
+    @GetMapping("/customers/count_by_type")
     public ResponseEntity<?> getTypesPercentages() {
         return reportService.getTypesPercentages();
     }
 
 
-    @GetMapping("/customers/countByArea")
+    @GetMapping("/customers/count_by_area")
     public ResponseEntity<?> countCustomersInAnArea() {
         return reportService.getCityCustomersPercentage();
     }
@@ -74,15 +79,13 @@ public class ReportController {
     public ResponseEntity<?> statusAverageForUser(@PathVariable String username) {
         return reportService.TotalStatusForUser(username);
     }
+
     @GetMapping("/visit_definitions/{id}")
     public ResponseEntity<?> statusAverageForVisitDefinition(@PathVariable Long id) {
         return reportService.TotalStatusForVisitDefinitions(id);
     }
 
-    @GetMapping("/specific_type/{id}")
-    public ResponseEntity<?> getTypesPercentagesForSpecificCustomer(@PathVariable Long id) {
-        return reportService.calculatedTypes(id);
-    }
+
 
 
 }

@@ -9,6 +9,6 @@ import java.util.Optional;
 
 @Repository
 public interface VisitTypeRepository extends JpaRepository<VisitType, Long> {
-    List<VisitType> findVisitTypesByEnabled(Boolean enabled);
+    List<VisitType> findVisitTypesByEnabledTrue();
     Optional<VisitType> findByIdAndEnabledTrue(Long id);
 }

@@ -100,11 +100,8 @@ public class UserService {
     public ResponseEntity<User> enableUser(String username) {
         User foundUser = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
-
         foundUser.setEnabled(!foundUser.getEnabled());
-
         foundUser = repository.save(foundUser);
-
         return ResponseEntity.ok(foundUser);
     }
 }

@@ -27,7 +27,7 @@ public class VisitTypeService {
         return ResponseEntity.ok(repository.findAll());
     }
     public ResponseEntity<List<VisitType>> findAllEnablesTypes() {
-        return ResponseEntity.ok(repository.findVisitTypesByEnabled(true));
+        return ResponseEntity.ok(repository.findVisitTypesByEnabledTrue());
     }
 
     public ResponseEntity<VisitType> saveNewVisitType(VisitTypeRequest VisitTypeRequest) {

@@ -52,7 +52,7 @@ public class ReportService {
     public ResponseEntity<List<NamePercentageMapPayload>> getTypesPercentages() {
         ArrayList<NamePercentageMapPayload> customerCountList = new ArrayList<>();
 
-        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
+        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabledTrue();
 
         long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabledTrue();
 
@@ -94,11 +94,10 @@ public class ReportService {
         return ResponseEntity.ok(area);
     }
 
-    public ResponseEntity<List<UserAssignmentReportPayload>> findUserAssignmentByCustomer(Long id) {
+    public List<UserAssignmentReportPayload> findUserAssignmentByCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
-
-        return ResponseEntity.ok(UserAssignmentReportPayload.toPayload(foundCustomer));
+        return UserAssignmentReportPayload.toPayload(foundCustomer);
     }
 
     public ResponseEntity<List<NamePercentageMapPayload>> findAverageTimeForAllUsers() {
@@ -147,11 +146,18 @@ public class ReportService {
     public ResponseEntity<Map<String, Object>> TotalStatusForVisitDefinitions(Long id) {
         VisitDefinition foundVisitDefinition = visitDefinitionRepository.findVisitDefinitionByIdAndEnabledTrue(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
-        List<VisitAssignment> visitAssignmentList = foundVisitDefinition.getVisitAssignments();
-        return ResponseEntity.ok(calculatedStatus(visitAssignmentList));
 
+        List<VisitAssignment> visitAssignmentList = foundVisitDefinition.getVisitAssignments();
+
+        return ResponseEntity.ok(calculatedStatus(visitAssignmentList));
     }
 
+    public Map<String, Object> TotalStatusForCustomer(Long id) {
+        Customer foundCustomer = customerRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
+        List<VisitAssignment> visitAssignmentList = foundCustomer.getVisitAssignments();
+        return calculatedStatus(visitAssignmentList);
+    }
 
     public Map<String, Object> calculatedStatus(List<VisitAssignment> visitAssignmentList) {
         long completedCount = 0;
@@ -165,7 +171,6 @@ public class ReportService {
         for (VisitAssignment visitAssignment : visitAssignmentList) {
             List<VisitForm> visitFormList = visitFormRepository
                     .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
-
             totalFormsCount += visitFormList.size();
 
             for (VisitForm visitForm : visitFormList) {
@@ -201,31 +206,46 @@ public class ReportService {
         return result;
     }
 
-    public ResponseEntity<List<NamePercentageMapPayload>> calculatedTypes(Long id) {
+    public List<NamePercentageMapPayload> calculateTypePercentageForCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
-        List<VisitAssignment> visitAssignmentList = foundCustomer.getVisitAssignments();
         ArrayList<NamePercentageMapPayload> customerCountList = new ArrayList<>();
 
-        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabled(true);
-        long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabledTrue();
+        List<VisitAssignment> customerAssignmentList = foundCustomer.getVisitAssignments();
+        long customerAssignmentListSize = customerAssignmentList.size();
+
+        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabledTrue();
 
         for (VisitType visitType : visitTypeList) {
-            double definitionByTypeCount = 0;
-            for (VisitAssignment visitAssignment : visitAssignmentList) {
+            long assignmentByTypeCount = 0;
+
+            for (VisitAssignment visitAssignment : customerAssignmentList) {
                 if (visitAssignment.getVisitDefinition().getType().equals(visitType)) {
-                    definitionByTypeCount++;
+                    assignmentByTypeCount++;
                 }
             }
-            double percentage = definitionByTypeCount / definitionsCount;
 
-            if (percentage == 0 || definitionsCount == 0) continue;
+            System.out.println("DEF TYPE COUNT: " + assignmentByTypeCount);
+
+            double percentage = (double) assignmentByTypeCount / (double) customerAssignmentListSize;
+
+            if (percentage == 0 || customerAssignmentListSize == 0) continue;
 
             customerCountList.add(new NamePercentageMapPayload(visitType.getName(), percentage * 100));
+
         }
-        return ResponseEntity.ok(customerCountList);
+        return customerCountList;
     }
 
+    public ResponseEntity<Map<String, Object>> customerReport(Long id) {
+        List<UserAssignmentReportPayload> details = findUserAssignmentByCustomer(id);
+        List<NamePercentageMapPayload> percentagesForType = calculateTypePercentageForCustomer(id);
+        Map<String, Object> result = new HashMap<>();
+        result.put("details", details);
+        result.put("percentagesForType", percentagesForType);
+        result.putAll(TotalStatusForCustomer(id));
+        return ResponseEntity.ok(result);
+    }
 
 }

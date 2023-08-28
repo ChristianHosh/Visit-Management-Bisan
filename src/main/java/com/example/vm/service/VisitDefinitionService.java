@@ -2,6 +2,7 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.controller.error.exception.InvalidDateException;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.model.visit.VisitAssignment;
@@ -127,6 +128,17 @@ public class VisitDefinitionService {
 
         VisitDefinition visitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
+
+        // FIND DATE MAKE SURE IT HAS NOT REACHED THAT DATE
+        Date todayDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(todayDate);
+        calendar.add(Calendar.DATE, -1);
+        todayDate.setTime(calendar.getTime().getTime());
+
+        // VALIDATES THE DATE TO MAKE SURE IT IN THE PRESENT OR FUTURE
+        if (visitAssignmentRequest.getDate().before(todayDate))
+            throw new InvalidDateException(ErrorMessage.DATE_IN_PAST);
 
         VisitAssignment visitAssignment = VisitAssignment.builder()
                 .comment(visitAssignmentRequest.getComment())
