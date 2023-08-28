@@ -34,5 +34,5 @@ public class ContactRequest {
     String email;
 
     @NotNull(message = "Bad request: types are null")
-    List<Long> types;
+    List<Long> visitTypes;
 }

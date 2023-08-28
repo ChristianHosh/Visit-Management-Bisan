@@ -40,7 +40,7 @@ public class UserController {
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<User> getByUsername(@PathVariable @Valid String username) {
+    public ResponseEntity<?> getByUsername(@PathVariable @Valid String username) {
         return userService.findUserByUsername(username);
     }
 
@@ -55,7 +55,7 @@ public class UserController {
     }
 
     @PutMapping("/{username}/endis")
-    public ResponseEntity<User> enableUser(@PathVariable String username) {
+    public ResponseEntity<?> enableUser(@PathVariable String username) {
         return userService.enableUser(username);
     }
 

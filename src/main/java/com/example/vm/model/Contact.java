@@ -1,12 +1,12 @@
 package com.example.vm.model;
 
-import com.example.vm.model.visit.VisitType;
-import com.example.vm.payload.list.ContactListPayload;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -15,7 +15,6 @@ import java.util.List;
 @Table(name = "contact_model")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class Contact extends ModelAuditSuperclass {
 
     @Id
@@ -49,9 +48,19 @@ public class Contact extends ModelAuditSuperclass {
     )
     private List<VisitType> visitTypes;
 
-    public ContactListPayload toListPayload() {
-        return new ContactListPayload(this.getId(),
-                this.getFirstName(), this.getLastName(), this.getEmail(),
-                this.getPhoneNumber(), this.getEnabled(), this.getVisitTypes());
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Contact contact = (Contact) o;
+        return getId() != null && Objects.equals(getId(), contact.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

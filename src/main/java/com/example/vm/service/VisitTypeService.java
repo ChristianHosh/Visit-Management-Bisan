@@ -2,8 +2,10 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.dto.mapper.VisitTypeMapper;
 import com.example.vm.dto.request.VisitTypeRequest;
-import com.example.vm.model.visit.VisitType;
+import com.example.vm.dto.response.VisitTypeResponse;
+import com.example.vm.model.VisitType;
 import com.example.vm.repository.VisitTypeRepository;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,26 +25,30 @@ public class VisitTypeService {
         this.repository = repository;
     }
 
-    public ResponseEntity<List<VisitType>> findAll() {
-        return ResponseEntity.ok(repository.findAll());
+    public ResponseEntity<List<VisitTypeResponse>> findAll() {
+        List<VisitType> queryResult = repository.findAll();
+
+        return ResponseEntity.ok(VisitTypeMapper.listToResponseList(queryResult));
     }
-    public ResponseEntity<List<VisitType>> findAllEnablesTypes() {
-        return ResponseEntity.ok(repository.findVisitTypesByEnabledTrue());
+    public ResponseEntity<List<VisitTypeResponse>> findAllEnablesTypes() {
+        List<VisitType> queryResult = repository.findVisitTypesByEnabledTrue();
+
+        return ResponseEntity.ok(VisitTypeMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<VisitType> saveNewVisitType(VisitTypeRequest VisitTypeRequest) {
+    public ResponseEntity<VisitTypeResponse> saveNewVisitType(VisitTypeRequest visitTypeRequest) {
 
-        VisitType VisitTypeToSave = VisitType.builder()
-                .name(VisitTypeRequest.getName())
+        VisitType visitTypeToSave = VisitType.builder()
+                .name(visitTypeRequest.getName())
                 .build();
 
 
-        VisitTypeToSave = repository.save(VisitTypeToSave);
+        visitTypeToSave = repository.save(visitTypeToSave);
 
-        return ResponseEntity.ok(VisitTypeToSave);
+        return ResponseEntity.ok(VisitTypeMapper.toListResponse(visitTypeToSave));
     }
 
-    public ResponseEntity<VisitType> updateVisitType(Long id, VisitTypeRequest updatedDTO) {
+    public ResponseEntity<VisitTypeResponse> updateVisitType(Long id, VisitTypeRequest updatedDTO) {
         VisitType foundVisitType = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
@@ -50,7 +56,7 @@ public class VisitTypeService {
 
         foundVisitType = repository.save(foundVisitType);
 
-        return ResponseEntity.ok(foundVisitType);
+        return ResponseEntity.ok(VisitTypeMapper.toListResponse(foundVisitType));
     }
 
     @NotNull

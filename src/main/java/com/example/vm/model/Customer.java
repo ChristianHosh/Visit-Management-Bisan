@@ -1,15 +1,13 @@
 package com.example.vm.model;
 
-import com.example.vm.model.visit.VisitAssignment;
-import com.example.vm.payload.detail.CustomerDetailPayload;
-import com.example.vm.payload.list.AddressListPayload;
-import com.example.vm.payload.list.CustomerListPayload;
 import com.example.vm.payload.report.CustomerReportListPayload;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.util.List;
+import java.util.Objects;
 
 
 @Getter
@@ -19,7 +17,6 @@ import java.util.List;
 @Table(name = "customer_model")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class Customer extends ModelAuditSuperclass {
 
     @Id
@@ -48,36 +45,23 @@ public class Customer extends ModelAuditSuperclass {
     )
     private List<VisitAssignment> visitAssignments;
 
-    public CustomerListPayload toListPayload() {
-        return new CustomerListPayload(
-                this.getId(),
-                this.getName(),
-                this.getEnabled(),
-                new AddressListPayload(
-                        this.getAddress().getCity().getId(),
-                        this.getAddress().getCity().getName(),
-                        this.getAddress().getAddressLine1(),
-                        this.getAddress().getAddressLine2(),
-                        this.getAddress().getZipcode(),
-                        this.getAddress().getLongitude(),
-                        this.getAddress().getLatitude()));
-    }
-
-    public CustomerDetailPayload toDetailPayload() {
-        return new CustomerDetailPayload(
-                this.getCreatedTime(),
-                this.getLastModifiedTime(),
-                this.getId(),
-                this.getName(),
-                this.getEnabled(),
-                this.getAddress(),
-                this.getContacts(),
-                this.getVisitAssignments().stream().map(VisitAssignment::toListPayload).toList());
-    }
-
     public CustomerReportListPayload toListPayloadReport() {
         return new CustomerReportListPayload(this.getId(), this.getName());
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        Customer customer = (Customer) o;
+        return getId() != null && Objects.equals(getId(), customer.getId());
+    }
 
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }

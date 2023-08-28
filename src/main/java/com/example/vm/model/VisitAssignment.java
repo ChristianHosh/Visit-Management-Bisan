@@ -1,19 +1,16 @@
-package com.example.vm.model.visit;
+package com.example.vm.model;
 
-import com.example.vm.model.Customer;
-import com.example.vm.model.ModelAuditSuperclass;
-import com.example.vm.model.User;
-import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
-import com.example.vm.payload.list.VisitAssignmentListPayload;
-import com.example.vm.payload.report.UserAssignmentReportPayload;
 import com.example.vm.payload.report.AssignmentReportListPayload;
+import com.example.vm.payload.report.UserAssignmentReportPayload;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -22,7 +19,6 @@ import java.util.List;
 @Table(name = "visit_assignment_model")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class VisitAssignment extends ModelAuditSuperclass {
 
     @Id
@@ -60,21 +56,6 @@ public class VisitAssignment extends ModelAuditSuperclass {
     @JsonManagedReference
     private User user;
 
-    public VisitAssignmentListPayload toListPayload() {
-        return new VisitAssignmentListPayload(this.getId(),
-                this.getDate(),
-                this.getComment(),
-                this.getEnabled(),
-                this.getUser() == null ? null : this.getUser().getUsername());
-    }
-
-    public VisitAssignmentDetailPayload toDetailPayload() {
-        return new VisitAssignmentDetailPayload(this.getCreatedTime(), this.getLastModifiedTime(), this.getId(),
-                this.getDate(), this.getComment(), this.getEnabled(),
-                this.getCustomers().stream().map(Customer::toListPayload).toList(), this.getUser()
-        );
-    }
-
     public AssignmentReportListPayload toReportListPayload() {
         if (this.getUser() != null) {
             return new AssignmentReportListPayload(this.getId(), this.getComment(), this.getDate(),
@@ -98,4 +79,19 @@ public class VisitAssignment extends ModelAuditSuperclass {
 
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        VisitAssignment that = (VisitAssignment) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }

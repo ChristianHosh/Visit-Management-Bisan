@@ -4,16 +4,17 @@ import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.InvalidStatusUpdateException;
 import com.example.vm.controller.error.exception.LocationTooFarException;
-import com.example.vm.dto.AssignmentCustomerRequest;
-import com.example.vm.dto.FormGeolocationRequest;
+import com.example.vm.dto.mapper.VisitFormMapper;
+import com.example.vm.dto.request.AssignmentCustomerRequest;
+import com.example.vm.dto.request.FormGeolocationRequest;
+import com.example.vm.dto.response.VisitFormResponse;
 import com.example.vm.model.Address;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.visit.VisitAssignment;
-import com.example.vm.model.visit.VisitForm;
-import com.example.vm.model.visit.VisitType;
-import com.example.vm.payload.detail.VisitFormDetailPayload;
+import com.example.vm.model.VisitAssignment;
+import com.example.vm.model.VisitForm;
+import com.example.vm.model.VisitType;
 import com.example.vm.repository.ContactRepository;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
@@ -44,14 +45,14 @@ public class VisitFormService {
         this.visitAssignmentService = visitAssignmentService;
     }
 
-    public ResponseEntity<VisitFormDetailPayload> findVisitFormById(Long id) {
+    public ResponseEntity<VisitFormResponse> findVisitFormById(Long id) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        return ResponseEntity.ok(foundForm.toDetailPayload());
+        return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
-    public ResponseEntity<VisitFormDetailPayload> createNewForm(AssignmentCustomerRequest assignmentCustomerRequest) {
+    public ResponseEntity<VisitFormResponse> createNewForm(AssignmentCustomerRequest assignmentCustomerRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentCustomerRequest.getAssignmentId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
@@ -77,11 +78,11 @@ public class VisitFormService {
         newVisitForm.setContacts(contacts);
         newVisitForm = visitFormRepository.save(newVisitForm);
 
-        return ResponseEntity.ok(newVisitForm.toDetailPayload());
+        return ResponseEntity.ok(VisitFormMapper.toListResponse(newVisitForm));
 
     }
 
-    public ResponseEntity<VisitFormDetailPayload> completeForm(Long id, FormGeolocationRequest formGeolocationRequest) {
+    public ResponseEntity<VisitFormResponse> completeForm(Long id, FormGeolocationRequest formGeolocationRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
@@ -100,11 +101,11 @@ public class VisitFormService {
 
         visitAssignmentService.createNextVisitAssignment(foundForm.getVisitAssignment(), foundForm.getCustomer());
 
-        return ResponseEntity.ok(foundForm.toDetailPayload());
+        return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
 
-    public ResponseEntity<VisitFormDetailPayload> startForm(Long id, FormGeolocationRequest formGeolocationRequest) {
+    public ResponseEntity<VisitFormResponse> startForm(Long id, FormGeolocationRequest formGeolocationRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
@@ -119,7 +120,7 @@ public class VisitFormService {
 
         foundForm = visitFormRepository.save(foundForm);
 
-        return ResponseEntity.ok(foundForm.toDetailPayload());
+        return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
     private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Address customerAddress) {

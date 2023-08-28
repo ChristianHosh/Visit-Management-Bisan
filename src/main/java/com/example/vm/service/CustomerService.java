@@ -3,18 +3,17 @@ package com.example.vm.service;
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.LocationNotFoundException;
+import com.example.vm.dto.mapper.ContactMapper;
+import com.example.vm.dto.mapper.CustomerMapper;
+import com.example.vm.dto.mapper.VisitAssignmentMapper;
 import com.example.vm.dto.request.ContactRequest;
 import com.example.vm.dto.request.CustomerRequest;
-import com.example.vm.model.Address;
-import com.example.vm.model.City;
-import com.example.vm.model.Contact;
-import com.example.vm.model.Customer;
-import com.example.vm.model.visit.VisitType;
-import com.example.vm.payload.detail.CustomerDetailPayload;
-import com.example.vm.payload.list.ContactListPayload;
-import com.example.vm.payload.list.CustomerListPayload;
+import com.example.vm.dto.response.ContactResponse;
+import com.example.vm.dto.response.CustomerResponse;
+import com.example.vm.model.*;
 import com.example.vm.repository.CityRepository;
 import com.example.vm.repository.CustomerRepository;
+import com.example.vm.repository.VisitAssignmentRepository;
 import com.example.vm.service.formatter.PhoneNumberFormatter;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -26,8 +25,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.sql.Date;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class CustomerService {
@@ -37,48 +39,57 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final CityRepository cityRepository;
     private final VisitTypeService visitTypeService;
+    private final VisitAssignmentRepository visitAssignmentRepository;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, CityRepository cityRepository, VisitTypeService visitTypeService) {
+    public CustomerService(CustomerRepository customerRepository, CityRepository cityRepository, VisitTypeService visitTypeService,
+                           VisitAssignmentRepository visitAssignmentRepository) {
         this.customerRepository = customerRepository;
         this.cityRepository = cityRepository;
         this.visitTypeService = visitTypeService;
+        this.visitAssignmentRepository = visitAssignmentRepository;
     }
 
-    public ResponseEntity<List<CustomerListPayload>> findAllCustomers() {
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findAll()));
+    public ResponseEntity<List<CustomerResponse>> findAllCustomers() {
+        List<Customer> queryResult = customerRepository.findAll();
+
+        return ResponseEntity.ok(CustomerMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<List<CustomerListPayload>> findAllCustomersWhoHasAssignment() {
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomersByVisitAssignmentsIsNotEmpty()));
+    public ResponseEntity<List<CustomerResponse>> findAllCustomersWhoHasAssignment() {
+        List<Customer> queryResult = customerRepository.findCustomersByVisitAssignmentsIsNotEmpty();
+
+        return ResponseEntity.ok(CustomerMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<List<CustomerListPayload>> findAllEnabledCustomers() {
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerRepository.findCustomerByEnabled(true)));
+    public ResponseEntity<List<CustomerResponse>> findAllEnabledCustomers() {
+        List<Customer> queryResult = customerRepository.findCustomerByEnabledTrue();
+
+        return ResponseEntity.ok(CustomerMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<CustomerDetailPayload> findCustomerById(Long id) {
+    public ResponseEntity<CustomerResponse> findCustomerById(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        return ResponseEntity.ok(foundCustomer.toDetailPayload());
+        return ResponseEntity.ok(CustomerMapper.toDetailedResponse(foundCustomer));
     }
 
-    public ResponseEntity<List<CustomerListPayload>> searchByQuery(String query) {
-        List<Customer> customerList = customerRepository.searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(query, query, query, query);
-        return ResponseEntity.ok(CustomerListPayload.toPayload(customerList));
+    public ResponseEntity<List<CustomerResponse>> searchByQuery(String query) {
+        List<Customer> queryResult = customerRepository
+                .findByNameContainsIgnoreCaseOrAddress_AddressLine1ContainsIgnoreCaseOrAddress_AddressLine2ContainsIgnoreCaseOrAddress_City_NameContainsIgnoreCase(query,query,query,query);
+
+        return ResponseEntity.ok(CustomerMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<List<ContactListPayload>> getCustomerContacts(Long id) {
+    public ResponseEntity<List<ContactResponse>> getCustomerContacts(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
-        List<Contact> contactList = foundCustomer.getContacts();
-
-        return ResponseEntity.ok(ContactListPayload.toPayload(contactList));
+        return ResponseEntity.ok(ContactMapper.listToResponseList(foundCustomer.getContacts()));
     }
 
-    public ResponseEntity<CustomerDetailPayload> saveNewCustomer(CustomerRequest customerRequest) {
+    public ResponseEntity<Map<String, Object>> saveNewCustomer(CustomerRequest customerRequest) {
         City foundCity = cityRepository.findById(customerRequest.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
@@ -107,14 +118,33 @@ public class CustomerService {
             }
         }
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(customerRepository.save(customerToSave).toDetailPayload());
+        customerToSave = customerRepository.save(customerToSave);
+
+        Date todayDate = new Date(System.currentTimeMillis());
+
+        List<VisitDefinition> visitDefinitionList = foundCity.getVisitDefinitions();
+
+        List<VisitAssignment> availableAssignments = new ArrayList<>();
+
+        for (VisitDefinition currentVisitDefinition : visitDefinitionList) {
+            List<VisitAssignment> visitAssignments = visitAssignmentRepository
+                    .findByVisitDefinitionAndDateAfter(currentVisitDefinition, todayDate);
+
+            availableAssignments.addAll(visitAssignments);
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("customer", CustomerMapper.toListResponse(customerToSave));
+        map.put("availableAssignments", VisitAssignmentMapper.listToResponseList(availableAssignments));
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(map);
     }
 
-    public ResponseEntity<CustomerDetailPayload> saveContactToCustomer(Long id, ContactRequest contactRequest) {
+    public ResponseEntity<CustomerResponse> saveContactToCustomer(Long id, ContactRequest contactRequest) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
-        List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getTypes());
+        List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getVisitTypes());
 
         String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 
@@ -131,10 +161,10 @@ public class CustomerService {
 
         foundCustomer = customerRepository.save(foundCustomer);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(foundCustomer.toDetailPayload());
+        return ResponseEntity.status(HttpStatus.CREATED).body(CustomerMapper.toDetailedResponse(foundCustomer));
     }
 
-    public ResponseEntity<CustomerDetailPayload> updateCustomer(Long id, CustomerRequest customerRequest) {
+    public ResponseEntity<CustomerResponse> updateCustomer(Long id, CustomerRequest customerRequest) {
         Customer customerToUpdate = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
@@ -160,10 +190,12 @@ public class CustomerService {
             }
         }
 
-        return ResponseEntity.ok(customerRepository.save(customerToUpdate).toDetailPayload());
+        customerToUpdate = customerRepository.save(customerToUpdate);
+
+        return ResponseEntity.ok(CustomerMapper.toDetailedResponse(customerToUpdate));
     }
 
-    public ResponseEntity<CustomerDetailPayload> enableCustomer(Long id) {
+    public ResponseEntity<CustomerResponse> enableCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
@@ -175,7 +207,7 @@ public class CustomerService {
 
         foundCustomer = customerRepository.save(foundCustomer);
 
-        return ResponseEntity.ok(foundCustomer.toDetailPayload());
+        return ResponseEntity.ok(CustomerMapper.toDetailedResponse(foundCustomer));
     }
 
     private Double[] getGeolocation(CustomerRequest customerRequest, String city) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException, LocationNotFoundException {

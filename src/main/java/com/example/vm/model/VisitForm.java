@@ -1,18 +1,14 @@
-package com.example.vm.model.visit;
+package com.example.vm.model;
 
-import com.example.vm.model.Contact;
-import com.example.vm.model.Customer;
-import com.example.vm.model.ModelAuditSuperclass;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.payload.detail.VisitFormDetailPayload;
-import com.example.vm.payload.list.ContactListPayload;
-import com.example.vm.payload.list.VisitFormListPayload;
 import com.example.vm.payload.report.FormReportListPayload;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Objects;
 
 
 @Getter
@@ -22,7 +18,6 @@ import java.util.List;
 @Table(name = "visit_form_model")
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
 public class VisitForm extends ModelAuditSuperclass {
 
     @Id
@@ -60,14 +55,6 @@ public class VisitForm extends ModelAuditSuperclass {
     private List<Contact> contacts;
 
 
-    public VisitFormDetailPayload toDetailPayload() {
-        return new VisitFormDetailPayload(
-                this.getId(), this.getStartTime(), this.getEndTime(), this.getStatus(), this.getNote(), this.getEnabled(),
-                this.getCustomer().toListPayload(),
-                this.getVisitAssignment().toListPayload(),
-                ContactListPayload.toPayload(this.getContacts()));
-    }
-
     public FormReportListPayload toListPayloadReport() {
         return new FormReportListPayload(
                 this.getId(), this.getStatus(), this.getStartTime(), this.getEndTime(),
@@ -78,10 +65,19 @@ public class VisitForm extends ModelAuditSuperclass {
         );
     }
 
-    public VisitFormListPayload toListPayload() {
-        return new VisitFormListPayload(this.getId(),
-                this.getStatus(),
-                this.getCustomer().toListPayload()
-        );
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        VisitForm visitForm = (VisitForm) o;
+        return getId() != null && Objects.equals(getId(), visitForm.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 }

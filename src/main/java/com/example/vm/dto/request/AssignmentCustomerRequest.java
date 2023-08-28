@@ -1,4 +1,4 @@
-package com.example.vm.dto;
+package com.example.vm.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;

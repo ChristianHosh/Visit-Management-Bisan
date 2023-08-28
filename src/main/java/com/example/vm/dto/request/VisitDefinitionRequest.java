@@ -29,4 +29,7 @@ public class VisitDefinitionRequest {
     @NotNull(message = "Bad request: type id is null")
     Long typeId;
 
+    @NotNull(message = "Bad request: city id is null")
+    Long cityId;
+
 }

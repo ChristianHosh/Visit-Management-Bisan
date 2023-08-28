@@ -17,12 +17,10 @@ public class VisitAssignmentController {
     }
     @GetMapping("")
     public ResponseEntity<?> getAllEnableVisitAssignment() {
-
-        return visitAssignmentService.findAllEnableVisitAssignments();
+        return visitAssignmentService.findAllEnabledVisitAssignments();
     }
     @GetMapping("/all")
     public ResponseEntity<?> getAllVisitAssignment() {
-
         return visitAssignmentService.findAllVisitAssignments();
     }
 

@@ -2,9 +2,11 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.dto.mapper.ContactMapper;
 import com.example.vm.dto.request.ContactRequest;
+import com.example.vm.dto.response.ContactResponse;
 import com.example.vm.model.Contact;
-import com.example.vm.model.visit.VisitType;
+import com.example.vm.model.VisitType;
 import com.example.vm.repository.ContactRepository;
 import com.example.vm.service.formatter.PhoneNumberFormatter;
 import org.springframework.http.ResponseEntity;
@@ -22,18 +24,18 @@ public class ContactService {
         this.visitTypeService = visitTypeService;
     }
 
-    public ResponseEntity<Contact> findContactByUUID(Long id) {
+    public ResponseEntity<ContactResponse> findContactById(Long id) {
         Contact foundContact = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CONTACT_NOT_FOUND));
 
-        return ResponseEntity.ok(foundContact);
+        return ResponseEntity.ok(ContactMapper.toListResponse(foundContact));
     }
 
-    public ResponseEntity<Contact> updateContact(Long id, ContactRequest contactRequest) {
+    public ResponseEntity<ContactResponse> updateContact(Long id, ContactRequest contactRequest) {
         Contact contactToUpdate = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CONTACT_NOT_FOUND));
 
-        List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getTypes());
+        List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getVisitTypes());
 
         String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
 
@@ -45,18 +47,18 @@ public class ContactService {
 
         contactToUpdate = contactRepository.save(contactToUpdate);
 
-        return ResponseEntity.ok(contactToUpdate);
+        return ResponseEntity.ok(ContactMapper.toListResponse(contactToUpdate));
     }
 
-    public ResponseEntity<Contact> enableContact(Long id) {
-        Contact contact = contactRepository.findById(id)
+    public ResponseEntity<ContactResponse> enableContact(Long id) {
+        Contact foundContact = contactRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        contact.setEnabled(!contact.getEnabled());
+        foundContact.setEnabled(!foundContact.getEnabled());
 
-        contact = contactRepository.save(contact);
+        foundContact = contactRepository.save(foundContact);
 
-        return ResponseEntity.ok(contact);
+        return ResponseEntity.ok(ContactMapper.toListResponse(foundContact));
     }
 
 }

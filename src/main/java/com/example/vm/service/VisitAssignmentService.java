@@ -2,20 +2,24 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.*;
+import com.example.vm.dto.mapper.ContactMapper;
+import com.example.vm.dto.mapper.VisitAssignmentMapper;
+import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.VisitAssignmentRequest;
+import com.example.vm.dto.response.ContactResponse;
+import com.example.vm.dto.response.VisitAssignmentResponse;
+import com.example.vm.dto.response.VisitFormResponse;
+import com.example.vm.model.City;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.User;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.visit.VisitAssignment;
-import com.example.vm.model.visit.VisitForm;
-import com.example.vm.model.visit.VisitType;
-import com.example.vm.payload.detail.VisitAssignmentDetailPayload;
-import com.example.vm.payload.list.ContactListPayload;
-import com.example.vm.payload.list.VisitAssignmentListPayload;
-import com.example.vm.payload.list.VisitFormListPayload;
+import com.example.vm.model.VisitAssignment;
+import com.example.vm.model.VisitForm;
+import com.example.vm.model.VisitType;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.repository.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +36,7 @@ public class VisitAssignmentService {
     private final UserRepository userRepository;
     private final VisitFormRepository visitFormRepository;
 
+    @Autowired
     public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository, VisitFormRepository visitFormRepository) {
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
@@ -40,26 +45,27 @@ public class VisitAssignmentService {
         this.visitFormRepository = visitFormRepository;
     }
 
-    public ResponseEntity<List<VisitAssignmentListPayload>> findAllVisitAssignments() {
-        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findAll();
+    public ResponseEntity<List<VisitAssignmentResponse>> findAllVisitAssignments() {
+        List<VisitAssignment> queryResult = visitAssignmentRepository.findAll();
 
-        return ResponseEntity.ok(VisitAssignmentListPayload.toPayload(visitAssignmentList));
+        return ResponseEntity.ok(VisitAssignmentMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<List<VisitAssignmentListPayload>> findAllEnableVisitAssignments() {
-        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findVisitAssignmentsByEnabled(true);
+    public ResponseEntity<List<VisitAssignmentResponse>> findAllEnabledVisitAssignments() {
+        List<VisitAssignment> queryResult = visitAssignmentRepository.findVisitAssignmentsByEnabledTrue();
 
-        return ResponseEntity.ok(VisitAssignmentListPayload.toPayload(visitAssignmentList));
+        return ResponseEntity.ok(VisitAssignmentMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<VisitAssignmentDetailPayload> findVisitAssignmentById(Long id) {
+    public ResponseEntity<VisitAssignmentResponse> findVisitAssignmentById(Long id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
-        return ResponseEntity.ok(foundAssignment.toDetailPayload());
+        //TODO ADD DETAILED RESPONSE
+        return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
-    public ResponseEntity<List<ContactListPayload>> findCustomerContactsByAssignmentType(Long assignmentId, Long customerId) {
+    public ResponseEntity<List<ContactResponse>> findCustomerContactsByAssignmentType(Long assignmentId, Long customerId) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
@@ -74,21 +80,21 @@ public class VisitAssignmentService {
         List<Contact> contactList = contactRepository
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
 
-        return ResponseEntity.ok(ContactListPayload.toPayload(contactList));
+        return ResponseEntity.ok(ContactMapper.listToResponseList(contactList));
 
     }
 
-    public ResponseEntity<List<VisitFormListPayload>> getFormsByAssignment(Long id) {
+    public ResponseEntity<List<VisitFormResponse>> getFormsByAssignment(Long id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
         List<VisitForm> formList = visitFormRepository.findVisitFormByVisitAssignment(foundAssignment);
 
-        return ResponseEntity.ok(VisitFormListPayload.toPayload(formList));
+        return ResponseEntity.ok(VisitFormMapper.listToRespnoseList(formList));
 
     }
 
-    public ResponseEntity<VisitAssignmentDetailPayload> updateVisitAssignment(Long id, VisitAssignmentRequest assignmentRequest) {
+    public ResponseEntity<VisitAssignmentResponse> updateVisitAssignment(Long id, VisitAssignmentRequest assignmentRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
@@ -115,10 +121,10 @@ public class VisitAssignmentService {
 
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
-        return ResponseEntity.ok(foundAssignment.toDetailPayload());
+        return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
-    public ResponseEntity<VisitAssignmentDetailPayload> enableVisitAssignment(Long id) {
+    public ResponseEntity<VisitAssignmentResponse> enableVisitAssignment(Long id) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
@@ -126,32 +132,33 @@ public class VisitAssignmentService {
 
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
-        return ResponseEntity.ok(foundAssignment.toDetailPayload());
+        return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
+    //TODO FIX REPORT PAYLOADS
     public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date before, Date after) {
         return ResponseEntity.ok(AssignmentReportListPayload.toPayload(
                 visitAssignmentRepository.findVisitAssignmentByDateBetween(before, after)));
     }
 
 
-    public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToCustomer(Long assignmentId, Long customerId) {
-        VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentId)
+    public ResponseEntity<VisitAssignmentResponse> assignVisitToCustomer(Long assignmentId, Long customerId) {
+        VisitAssignment foundAssignment = visitAssignmentRepository.findByIdAndEnabledTrue(assignmentId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
-        Customer foundCustomer = customerRepository.findById(customerId)
+        Customer foundCustomer = customerRepository.findByIdAndEnabledTrue(customerId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
         VisitType assignmentVisitType = foundAssignment.getVisitDefinition().getType();
 
+        City assignmentCity = foundAssignment.getVisitDefinition().getCity();
+
         List<Contact> contactList = contactRepository
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
 
-        if (!foundAssignment.getEnabled())
-            throw new EntityNotEnabled(ErrorMessage.ASSIGNMENT_NOT_ENABLED);
 
-        if (!foundCustomer.getEnabled())
-            throw new EntityNotEnabled(ErrorMessage.CUSTOMER_NOT_ENABLED);
+        if (!foundCustomer.getAddress().getCity().equals(assignmentCity))
+            throw new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_IN_CITY);
 
         if (contactList.isEmpty())
             throw new NoContactTypeException();
@@ -172,10 +179,10 @@ public class VisitAssignmentService {
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
         visitFormRepository.save(newVisitForm);
 
-        return ResponseEntity.ok(foundAssignment.toDetailPayload());
+        return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
-    public ResponseEntity<VisitAssignmentDetailPayload> assignVisitToUser(Long id, String username) {
+    public ResponseEntity<VisitAssignmentResponse> assignVisitToUser(Long id, String username) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
@@ -192,11 +199,11 @@ public class VisitAssignmentService {
 
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
-        return ResponseEntity.ok(foundAssignment.toDetailPayload());
+        return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
     public void createNextVisitAssignment(VisitAssignment currentAssignment, Customer currentCustomer) {
-        if (!currentAssignment.getVisitDefinition().isAllowRecurring())
+        if (!currentAssignment.getVisitDefinition().getAllowRecurring())
             return;
 
         if (currentAssignment.getNextVisitAssignment() == null) {

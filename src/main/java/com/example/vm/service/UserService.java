@@ -5,8 +5,10 @@ import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
+import com.example.vm.dto.mapper.UserMapper;
 import com.example.vm.dto.request.UserPostRequest;
 import com.example.vm.dto.request.UserRequest;
+import com.example.vm.dto.response.UserResponse;
 import com.example.vm.model.User;
 import com.example.vm.repository.UserRepository;
 import jakarta.validation.Valid;
@@ -14,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,42 +28,38 @@ public class UserService {
         this.repository = repository;
     }
 
-    public ResponseEntity<List<User>> findAllUsers() {
-        return ResponseEntity.ok(repository.findAll());
-    }
-    public ResponseEntity<List<User>> findAllEnableUsers() {
-        return ResponseEntity.ok(repository.findUsersByEnabled(true));
+    public ResponseEntity<List<UserResponse>> findAllUsers() {
+        List<User> queryResult = repository.findAll();
+
+        return ResponseEntity.ok(UserMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<User> findUserByUsername(String username) {
+    public ResponseEntity<List<UserResponse>> findAllEnableUsers() {
+        List<User> queryResult = repository.findUsersByEnabledTrue();
+
+        return ResponseEntity.ok(UserMapper.listToResponseList(queryResult));
+    }
+
+    public ResponseEntity<UserResponse> findUserByUsername(String username) {
         User foundUser = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        return ResponseEntity.ok(foundUser);
+        return ResponseEntity.ok(UserMapper.toListResponse(foundUser));
     }
 
-    public ResponseEntity<List<User>> findEmployeeUsers() {
-        return ResponseEntity.ok(repository.searchUsersByAccessLevelAndEnabled(0, true));
+    public ResponseEntity<List<UserResponse>> findEmployeeUsers() {
+        List<User> queryResult = repository.searchUsersByAccessLevelAndEnabledTrue(0);
+
+        return ResponseEntity.ok(UserMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<List<User>> searchUsersByQuery(String query) {
-        List<User> result = new ArrayList<>();
+    public ResponseEntity<List<UserResponse>> searchUsersByQuery(String query) {
+        List<User> queryResult = repository.searchUsersByFirstNameContainingOrLastNameContainingOrUsernameContaining(query, query, query);
 
-        List<User> list1 = repository.searchUsersByFirstNameContainingOrLastNameContainingOrUsernameContaining(query, query, query);
-        List<User> list2 = new ArrayList<>();
-
-        try {
-            list2 = repository.searchUsersByAccessLevel(Integer.parseInt(query));
-        } catch (NumberFormatException ignored) {
-        }
-
-        result.addAll(list1);
-        result.addAll(list2);
-
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(UserMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<User> saveNewUser(@Valid UserPostRequest userRequest) {
+    public ResponseEntity<UserResponse> saveNewUser(@Valid UserPostRequest userRequest) {
         if (repository.existsById(userRequest.getUsername()))
             throw new UserAlreadyExistsException();
 
@@ -79,11 +76,11 @@ public class UserService {
 
         userToSave = repository.save(userToSave);
 
-        return ResponseEntity.ok(userToSave);
+        return ResponseEntity.ok(UserMapper.toListResponse(userToSave));
     }
 
 
-    public ResponseEntity<User> updateUser(String username, UserRequest updatedDTO) {
+    public ResponseEntity<UserResponse> updateUser(String username, UserRequest updatedDTO) {
         User userToUpdate = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
@@ -93,15 +90,17 @@ public class UserService {
 
         userToUpdate = repository.save(userToUpdate);
 
-        return ResponseEntity.ok(userToUpdate);
+        return ResponseEntity.ok(UserMapper.toListResponse(userToUpdate));
     }
 
 
-    public ResponseEntity<User> enableUser(String username) {
+    public ResponseEntity<UserResponse> enableUser(String username) {
         User foundUser = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
+
         foundUser.setEnabled(!foundUser.getEnabled());
         foundUser = repository.save(foundUser);
-        return ResponseEntity.ok(foundUser);
+
+        return ResponseEntity.ok(UserMapper.toListResponse(foundUser));
     }
 }

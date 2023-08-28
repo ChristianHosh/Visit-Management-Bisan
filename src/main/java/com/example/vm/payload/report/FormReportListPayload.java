@@ -1,7 +1,7 @@
 package com.example.vm.payload.report;
 
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.visit.VisitForm;
+import com.example.vm.model.VisitForm;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

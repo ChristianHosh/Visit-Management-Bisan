@@ -1,6 +1,6 @@
 package com.example.vm.payload.report;
 
-import com.example.vm.model.visit.VisitAssignment;
+import com.example.vm.model.VisitAssignment;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

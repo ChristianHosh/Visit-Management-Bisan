@@ -31,16 +31,16 @@ public enum ErrorMessage {
     INVALID_ASSIGNMENT_CONTACT_TYPES("Bad request: No Contacts of this type are available"),
     INVALID_FORM_STATUS_UPDATE("Bad request: Form status can't be updated"),
     INVALID_LOCATION_IS_TOO_FAR("Bad request: Location is too far from customer"),
+    CUSTOMER_NOT_IN_CITY("Bad request: customer is not in the visit's city"),
     DATE_IN_PAST("Bad request: date must be in the present or future"),
     DATE_TOO_OLD("Bad request: date has already passed"),
 
 
     // CONFLICT EXCEPTIONS
     USER_ALREADY_EXISTS("Conflict: Username already exists"),
-    CUSTOMER_ALREADY_ASSIGNED("Conflict: Customer is already assigned"),
+    CUSTOMER_ALREADY_ASSIGNED("Conflict: Customer is already assigned");
 
 
-    ;
 
     public final String message;
 

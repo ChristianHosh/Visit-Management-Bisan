@@ -1,4 +1,4 @@
-package com.example.vm.payload.list;
+package com.example.vm.payload.report;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.AssignmentCustomerRequest;
-import com.example.vm.dto.FormGeolocationRequest;
+import com.example.vm.dto.request.AssignmentCustomerRequest;
+import com.example.vm.dto.request.FormGeolocationRequest;
 import com.example.vm.service.VisitFormService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

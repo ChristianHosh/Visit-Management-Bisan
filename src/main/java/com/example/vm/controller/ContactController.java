@@ -20,7 +20,7 @@ public class ContactController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getContactById(@PathVariable Long id) {
-        return contactService.findContactByUUID(id);
+        return contactService.findContactById(id);
     }
 
     @PutMapping("/{id}")

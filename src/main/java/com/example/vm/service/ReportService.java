@@ -6,11 +6,11 @@ import com.example.vm.model.City;
 import com.example.vm.model.Customer;
 import com.example.vm.model.User;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.visit.VisitAssignment;
-import com.example.vm.model.visit.VisitDefinition;
-import com.example.vm.model.visit.VisitForm;
-import com.example.vm.model.visit.VisitType;
-import com.example.vm.payload.list.StatusReportListPayload;
+import com.example.vm.model.VisitAssignment;
+import com.example.vm.model.VisitDefinition;
+import com.example.vm.model.VisitForm;
+import com.example.vm.model.VisitType;
+import com.example.vm.payload.report.StatusReportListPayload;
 import com.example.vm.payload.report.*;
 import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,7 +101,7 @@ public class ReportService {
     }
 
     public ResponseEntity<List<NamePercentageMapPayload>> findAverageTimeForAllUsers() {
-        List<User> users = userRepository.searchUsersByAccessLevel(0);
+        List<User> users = userRepository.searchUsersByAccessLevelAndEnabledTrue(0);
 
         ArrayList<NamePercentageMapPayload> userAverage = new ArrayList<>();
         for (User user : users) {
@@ -134,7 +134,7 @@ public class ReportService {
     }
 
     public ResponseEntity<Map<String, Object>> TotalStatusForUser(String username) {
-        User founduser = userRepository.findUserByUsernameAndEnabled(username, true)
+        User founduser = userRepository.findUserByUsernameAndEnabledTrue(username)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         List<VisitAssignment> visitAssignmentList = visitAssignmentRepository
