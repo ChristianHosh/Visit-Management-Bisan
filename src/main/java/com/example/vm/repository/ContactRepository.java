@@ -13,5 +13,4 @@ public interface ContactRepository extends JpaRepository<Contact, Long> {
 
     List<Contact> findContactsByCustomerAndVisitTypesContaining(Customer customer, VisitType visitType);
 
-    int countContactsByVisitTypesContaining(VisitType visitType);
 }

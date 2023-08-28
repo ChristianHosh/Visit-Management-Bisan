@@ -16,7 +16,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
             where upper(c.name) like upper(concat('%', ?1, '%')) or upper(c.address.addressLine1) like upper(concat('%', ?2, '%')) or upper(c.address.addressLine2) like upper(concat('%', ?3, '%')) or upper(c.address.city.name) like upper(concat('%', ?4, '%'))""")
     List<Customer> findByNameContainsIgnoreCaseOrAddress_AddressLine1ContainsIgnoreCaseOrAddress_AddressLine2ContainsIgnoreCaseOrAddress_City_NameContainsIgnoreCase(String name, String addressLine1, String addressLine2, String name1);
     Optional<Customer> findByIdAndEnabledTrue(Long id);
-    List<Customer> searchCustomersByNameContainingOrAddress_CityContainingOrAddress_AddressLine1ContainingOrAddress_AddressLine2Containing(String name, String addressLine1, String addressLine2, String city);
 
     @Query("SELECT u FROM Customer u WHERE SIZE(u.visitAssignments) > 0")
     List<Customer> findAllCustomerWhoHaveAssignments();

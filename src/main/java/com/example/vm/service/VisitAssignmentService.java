@@ -61,7 +61,6 @@ public class VisitAssignmentService {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
-        //TODO ADD DETAILED RESPONSE
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
@@ -135,7 +134,6 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
-    //TODO FIX REPORT PAYLOADS
     public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date before, Date after) {
         return ResponseEntity.ok(AssignmentReportListPayload.toPayload(
                 visitAssignmentRepository.findVisitAssignmentByDateBetween(before, after)));

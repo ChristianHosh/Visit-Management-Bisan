@@ -19,7 +19,6 @@ public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment
     @Query("SELECT u FROM VisitAssignment u WHERE u.visitDefinition.type =:visit")
 
     List<VisitAssignment> findVisitAssignmentForSpecificType(VisitType visit);
-    List<VisitAssignment> findVisitAssignmentByDate(Date date);
 
     List<VisitAssignment> findVisitAssignmentsByEnabledTrue();
 

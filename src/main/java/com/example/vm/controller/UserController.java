@@ -2,7 +2,6 @@ package com.example.vm.controller;
 
 import com.example.vm.dto.request.UserPostRequest;
 import com.example.vm.dto.request.UserRequest;
-import com.example.vm.model.User;
 import com.example.vm.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
