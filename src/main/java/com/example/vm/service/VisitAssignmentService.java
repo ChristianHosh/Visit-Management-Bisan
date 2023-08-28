@@ -134,6 +134,7 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
+    //TODO FIX REPORTS
     public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date before, Date after) {
         return ResponseEntity.ok(AssignmentReportListPayload.toPayload(
                 visitAssignmentRepository.findVisitAssignmentByDateBetween(before, after)));

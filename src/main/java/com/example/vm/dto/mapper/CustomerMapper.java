@@ -4,6 +4,7 @@ import com.example.vm.dto.response.AddressResponse;
 import com.example.vm.dto.response.CustomerResponse;
 import com.example.vm.model.Address;
 import com.example.vm.model.Customer;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -13,16 +14,9 @@ public class CustomerMapper {
     public static CustomerResponse toDetailedResponse(Customer customer) {
         if (customer == null) return null;
 
-        CustomerResponse response = new CustomerResponse();
+        CustomerResponse response = setBasicAttributes(customer);
 
-        response.setId(customer.getId());
-        response.setName(customer.getName());
-        response.setAddress(getAddressResponse(customer.getAddress()));
         response.setContacts(ContactMapper.listToResponseList(customer.getContacts()));
-
-        response.setEnabled(customer.getEnabled());
-        response.setCreatedTime(customer.getCreatedTime());
-        response.setLastModifiedTime(customer.getLastModifiedTime());
 
         return response;
     }
@@ -30,15 +24,7 @@ public class CustomerMapper {
     public static CustomerResponse toListResponse(Customer customer) {
         if (customer == null) return null;
 
-        CustomerResponse response = new CustomerResponse();
-
-        response.setId(customer.getId());
-        response.setName(customer.getName());
-        response.setAddress(getAddressResponse(customer.getAddress()));
-
-        response.setEnabled(customer.getEnabled());
-
-        return response;
+        return setBasicAttributes(customer);
     }
 
     public static List<CustomerResponse> listToResponseList(List<Customer> customerList) {
@@ -70,5 +56,18 @@ public class CustomerMapper {
         return address;
     }
 
+    @NotNull
+    private static CustomerResponse setBasicAttributes(Customer customer) {
+        CustomerResponse response = new CustomerResponse();
+
+        response.setId(customer.getId());
+        response.setName(customer.getName());
+        response.setAddress(getAddressResponse(customer.getAddress()));
+
+        response.setEnabled(customer.getEnabled());
+        response.setCreatedTime(customer.getCreatedTime());
+        response.setLastModifiedTime(customer.getLastModifiedTime());
+        return response;
+    }
 
 }
