@@ -30,6 +30,7 @@ public class VisitTypeService {
 
         return ResponseEntity.ok(VisitTypeMapper.listToResponseList(queryResult));
     }
+
     public ResponseEntity<List<VisitTypeResponse>> findAllEnablesTypes() {
         List<VisitType> queryResult = repository.findVisitTypesByEnabledTrue();
 
@@ -37,22 +38,18 @@ public class VisitTypeService {
     }
 
     public ResponseEntity<VisitTypeResponse> saveNewVisitType(VisitTypeRequest visitTypeRequest) {
-
-        VisitType visitTypeToSave = VisitType.builder()
-                .name(visitTypeRequest.getName())
-                .build();
-
+        VisitType visitTypeToSave = VisitTypeMapper.toEntity(visitTypeRequest);
 
         visitTypeToSave = repository.save(visitTypeToSave);
 
         return ResponseEntity.ok(VisitTypeMapper.toListResponse(visitTypeToSave));
     }
 
-    public ResponseEntity<VisitTypeResponse> updateVisitType(Long id, VisitTypeRequest updatedDTO) {
+    public ResponseEntity<VisitTypeResponse> updateVisitType(Long id, VisitTypeRequest visitTypeRequest) {
         VisitType foundVisitType = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        foundVisitType.setName(updatedDTO.getName());
+        VisitTypeMapper.update(foundVisitType, visitTypeRequest);
 
         foundVisitType = repository.save(foundVisitType);
 

@@ -14,7 +14,6 @@ import com.example.vm.model.*;
 import com.example.vm.repository.CityRepository;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
-import com.example.vm.service.formatter.PhoneNumberFormatter;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
@@ -93,18 +92,7 @@ public class CustomerService {
         City foundCity = cityRepository.findById(customerRequest.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
-        Customer customerToSave = Customer.builder()
-                .name(customerRequest.getName())
-                .visitAssignments(new ArrayList<>())
-                .address(Address.builder()
-                        .addressLine1(customerRequest.getAddressLine1())
-                        .addressLine2(customerRequest.getAddressLine2())
-                        .longitude(customerRequest.getLongitude())
-                        .latitude(customerRequest.getLatitude())
-                        .zipcode(customerRequest.getZipcode())
-                        .city(foundCity)
-                        .build())
-                .build();
+        Customer customerToSave = CustomerMapper.toEntity(customerRequest, foundCity);
 
         if (isNotPreciseLocation(customerRequest)) {
             try {
@@ -146,18 +134,9 @@ public class CustomerService {
 
         List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getVisitTypes());
 
-        String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
+        Contact contactToSave = ContactMapper.toEntity(contactRequest, foundCustomer, visitTypes);
 
-        Contact newContact = Contact.builder()
-                .firstName(contactRequest.getFirstName())
-                .lastName(contactRequest.getLastName())
-                .email(contactRequest.getEmail())
-                .phoneNumber(formattedNumber)
-                .visitTypes(visitTypes)
-                .build();
-
-        foundCustomer.getContacts().add(newContact);
-        newContact.setCustomer(foundCustomer);
+        foundCustomer.getContacts().add(contactToSave);
 
         foundCustomer = customerRepository.save(foundCustomer);
 
@@ -171,12 +150,7 @@ public class CustomerService {
         City foundCity = cityRepository.findById(customerRequest.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
-        customerToUpdate.setName(customerRequest.getName());
-
-        customerToUpdate.getAddress().setAddressLine1(customerRequest.getAddressLine1());
-        customerToUpdate.getAddress().setAddressLine2(customerRequest.getAddressLine2());
-        customerToUpdate.getAddress().setZipcode(customerRequest.getZipcode());
-        customerToUpdate.getAddress().setCity(foundCity);
+        CustomerMapper.update(customerToUpdate, customerRequest, foundCity);
 
         if (isNotPreciseLocation(customerRequest)) {
             try {

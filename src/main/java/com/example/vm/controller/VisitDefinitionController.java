@@ -44,7 +44,7 @@ public class VisitDefinitionController {
     }
     @PostMapping("")
     public ResponseEntity<?> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionRequest visitDefinitionRequest) {
-       return visitDefinitionService.saveNewVisit(visitDefinitionRequest);
+       return visitDefinitionService.saveNewVisitDefinition(visitDefinitionRequest);
     }
 
 

@@ -78,7 +78,9 @@ public class UserService {
         User userToUpdate = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        userToUpdate = repository.save(UserMapper.toEntity(userToUpdate, userRequest));
+        UserMapper.update(userToUpdate, userRequest);
+
+        userToUpdate = repository.save(userToUpdate);
 
         return ResponseEntity.ok(UserMapper.toListResponse(userToUpdate));
     }

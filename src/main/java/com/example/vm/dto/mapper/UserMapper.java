@@ -46,13 +46,11 @@ public class UserMapper {
                 .build();
     }
 
-    public static User toEntity(User oldUser, UserRequest userRequest) {
+    public static void update(User oldUser, UserRequest userRequest) {
         oldUser.setFirstName(userRequest.getFirstName());
         oldUser.setLastName(userRequest.getLastName());
         oldUser.setAccessLevel(userRequest.getAccessLevel());
 
-        return oldUser;
     }
-
 }
 

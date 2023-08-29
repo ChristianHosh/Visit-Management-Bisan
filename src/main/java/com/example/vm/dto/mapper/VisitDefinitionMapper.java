@@ -71,14 +71,12 @@ public class VisitDefinitionMapper {
                 .build();
     }
 
-    public static VisitDefinition toEntity(VisitDefinition oldDefinition, VisitDefinitionRequest definitionRequest, VisitType type, City city){
+    public static void update(VisitDefinition oldDefinition, VisitDefinitionRequest definitionRequest, VisitType type, City city) {
         oldDefinition.setName(definitionRequest.getName());
         oldDefinition.setDescription(definitionRequest.getDescription());
         oldDefinition.setType(type);
         oldDefinition.setCity(city);
         oldDefinition.setAllowRecurring(definitionRequest.getAllowRecurring());
         oldDefinition.setFrequency(definitionRequest.getAllowRecurring() ? definitionRequest.getFrequency() : 0);
-
-        return oldDefinition;
     }
 }

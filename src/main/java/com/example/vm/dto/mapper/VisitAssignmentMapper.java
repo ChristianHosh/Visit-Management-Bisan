@@ -3,6 +3,7 @@ package com.example.vm.dto.mapper;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.response.VisitAssignmentResponse;
 import com.example.vm.model.VisitAssignment;
+import com.example.vm.model.VisitDefinition;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -50,18 +51,17 @@ public class VisitAssignmentMapper {
         return response;
     }
 
-    public static VisitAssignment toEntity(VisitAssignmentRequest assignmentRequest) {
+    public static VisitAssignment toEntity(VisitAssignmentRequest assignmentRequest, VisitDefinition visitDefinition) {
         return VisitAssignment
                 .builder()
                 .comment(assignmentRequest.getComment())
                 .date(assignmentRequest.getDate())
+                .visitDefinition(visitDefinition)
                 .build();
     }
 
-    public static VisitAssignment toEntity(VisitAssignment oldAssignment, VisitAssignmentRequest assignmentRequest) {
+    public static void update(VisitAssignment oldAssignment, VisitAssignmentRequest assignmentRequest) {
         oldAssignment.setComment(assignmentRequest.getComment());
         oldAssignment.setDate(assignmentRequest.getDate());
-
-        return oldAssignment;
     }
 }

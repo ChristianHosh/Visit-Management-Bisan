@@ -114,7 +114,9 @@ public class VisitAssignmentService {
         if (currentAssignmentDate.before(todayDate))
             throw new InvalidDateException(ErrorMessage.DATE_TOO_OLD);
 
-        foundAssignment = visitAssignmentRepository.save(VisitAssignmentMapper.toEntity(foundAssignment, assignmentRequest));
+        VisitAssignmentMapper.update(foundAssignment, assignmentRequest);
+
+        foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }

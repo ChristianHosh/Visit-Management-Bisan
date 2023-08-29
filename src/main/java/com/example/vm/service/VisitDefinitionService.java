@@ -59,7 +59,7 @@ public class VisitDefinitionService {
 
     }
 
-    public ResponseEntity<VisitDefinitionResponse> saveNewVisit(VisitDefinitionRequest visitDefinitionRequest) {
+    public ResponseEntity<VisitDefinitionResponse> saveNewVisitDefinition(VisitDefinitionRequest visitDefinitionRequest) {
         VisitType foundVisitType = visitTypeRepository.findByIdAndEnabledTrue(visitDefinitionRequest.getTypeId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TYPE_NOT_FOUND));
 
@@ -83,7 +83,9 @@ public class VisitDefinitionService {
         City foundCity = cityRepository.findByIdAndEnabledTrue(visitDefinitionRequest.getCityId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
-        foundDefinition = visitDefinitionRepository.save(VisitDefinitionMapper.toEntity(foundDefinition, visitDefinitionRequest, foundVisitType, foundCity));
+        VisitDefinitionMapper.update(foundDefinition, visitDefinitionRequest, foundVisitType, foundCity);
+
+        foundDefinition = visitDefinitionRepository.save(foundDefinition);
 
         return ResponseEntity.ok(VisitDefinitionMapper.toDetailedResponse(foundDefinition));
     }
@@ -147,9 +149,9 @@ public class VisitDefinitionService {
         if (visitAssignmentRequest.getDate().before(todayDate))
             throw new InvalidDateException(ErrorMessage.DATE_IN_PAST);
 
-        VisitAssignment visitAssignment = VisitAssignmentMapper.toEntity(visitAssignmentRequest);
+        VisitAssignment visitAssignment = VisitAssignmentMapper.toEntity(visitAssignmentRequest, visitDefinition);
 
-        visitAssignment.setVisitDefinition(visitDefinition);
+
         visitDefinition.getVisitAssignments().add(visitAssignment);
         visitDefinition = visitDefinitionRepository.save(visitDefinition);
 

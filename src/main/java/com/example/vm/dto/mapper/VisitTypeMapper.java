@@ -1,5 +1,6 @@
 package com.example.vm.dto.mapper;
 
+import com.example.vm.dto.request.VisitTypeRequest;
 import com.example.vm.dto.response.VisitTypeResponse;
 import com.example.vm.model.VisitType;
 
@@ -25,5 +26,16 @@ public class VisitTypeMapper {
                 .stream()
                 .map(VisitTypeMapper::toListResponse)
                 .toList();
+    }
+
+    public static VisitType toEntity(VisitTypeRequest typeRequest){
+        return VisitType
+                .builder()
+                .name(typeRequest.getName())
+                .build();
+    }
+
+    public static void update(VisitType oldType, VisitTypeRequest typeRequest){
+        oldType.setName(typeRequest.getName());
     }
 }

@@ -8,7 +8,6 @@ import com.example.vm.dto.response.ContactResponse;
 import com.example.vm.model.Contact;
 import com.example.vm.model.VisitType;
 import com.example.vm.repository.ContactRepository;
-import com.example.vm.service.formatter.PhoneNumberFormatter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -37,13 +36,7 @@ public class ContactService {
 
         List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getVisitTypes());
 
-        String formattedNumber = PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber());
-
-        contactToUpdate.setFirstName(contactRequest.getFirstName());
-        contactToUpdate.setLastName(contactRequest.getLastName());
-        contactToUpdate.setPhoneNumber(formattedNumber);
-        contactToUpdate.setEmail(contactRequest.getEmail());
-        contactToUpdate.setVisitTypes(visitTypes);
+        ContactMapper.update(contactToUpdate, contactRequest, visitTypes);
 
         contactToUpdate = contactRepository.save(contactToUpdate);
 

@@ -1,11 +1,14 @@
 package com.example.vm.dto.mapper;
 
+import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.dto.response.AddressResponse;
 import com.example.vm.dto.response.CustomerResponse;
 import com.example.vm.model.Address;
+import com.example.vm.model.City;
 import com.example.vm.model.Customer;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomerMapper {
@@ -70,4 +73,28 @@ public class CustomerMapper {
         return response;
     }
 
+    public static Customer toEntity(CustomerRequest customerRequest, City foundCity) {
+        return Customer.builder()
+                .name(customerRequest.getName())
+                .visitAssignments(new ArrayList<>())
+                .address(Address.builder()
+                        .addressLine1(customerRequest.getAddressLine1())
+                        .addressLine2(customerRequest.getAddressLine2())
+                        .longitude(customerRequest.getLongitude())
+                        .latitude(customerRequest.getLatitude())
+                        .zipcode(customerRequest.getZipcode())
+                        .city(foundCity)
+                        .build())
+                .build();
+    }
+
+    public static void update(Customer oldCustomer, CustomerRequest customerRequest, City foundCity) {
+        oldCustomer.setName(customerRequest.getName());
+
+        oldCustomer.getAddress().setAddressLine1(customerRequest.getAddressLine1());
+        oldCustomer.getAddress().setAddressLine2(customerRequest.getAddressLine2());
+        oldCustomer.getAddress().setZipcode(customerRequest.getZipcode());
+        oldCustomer.getAddress().setCity(foundCity);
+
+    }
 }
