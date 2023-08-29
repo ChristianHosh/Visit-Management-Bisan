@@ -66,13 +66,7 @@ public class UserService {
         if (!userRequest.getPassword().equals(userRequest.getConfirmPassword()))
             throw new PasswordDoesntMatchException();
 
-        User userToSave = User.builder()
-                .username(userRequest.getUsername().toLowerCase())
-                .firstName(userRequest.getFirstName())
-                .lastName(userRequest.getLastName())
-                .password(userRequest.getPassword())
-                .accessLevel(userRequest.getAccessLevel())
-                .build();
+        User userToSave = UserMapper.toEntity(userRequest);
 
         userToSave = repository.save(userToSave);
 
@@ -80,15 +74,11 @@ public class UserService {
     }
 
 
-    public ResponseEntity<UserResponse> updateUser(String username, UserRequest updatedDTO) {
+    public ResponseEntity<UserResponse> updateUser(String username, UserRequest userRequest) {
         User userToUpdate = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        userToUpdate.setFirstName(updatedDTO.getFirstName());
-        userToUpdate.setLastName(updatedDTO.getLastName());
-        userToUpdate.setAccessLevel(updatedDTO.getAccessLevel());
-
-        userToUpdate = repository.save(userToUpdate);
+        userToUpdate = repository.save(UserMapper.toEntity(userToUpdate, userRequest));
 
         return ResponseEntity.ok(UserMapper.toListResponse(userToUpdate));
     }

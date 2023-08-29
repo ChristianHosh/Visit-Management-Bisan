@@ -1,5 +1,7 @@
 package com.example.vm.dto.mapper;
 
+import com.example.vm.dto.request.UserPostRequest;
+import com.example.vm.dto.request.UserRequest;
 import com.example.vm.dto.response.UserResponse;
 import com.example.vm.model.User;
 
@@ -34,6 +36,23 @@ public class UserMapper {
     }
 
 
+    public static User toEntity(UserPostRequest userRequest) {
+        return User.builder()
+                .username(userRequest.getUsername().toLowerCase())
+                .firstName(userRequest.getFirstName())
+                .lastName(userRequest.getLastName())
+                .password(userRequest.getPassword())
+                .accessLevel(userRequest.getAccessLevel())
+                .build();
+    }
+
+    public static User toEntity(User oldUser, UserRequest userRequest) {
+        oldUser.setFirstName(userRequest.getFirstName());
+        oldUser.setLastName(userRequest.getLastName());
+        oldUser.setAccessLevel(userRequest.getAccessLevel());
+
+        return oldUser;
+    }
 
 }
 
