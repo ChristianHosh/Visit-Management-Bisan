@@ -160,9 +160,11 @@ public class VisitAssignmentService {
         if (contactList.isEmpty())
             throw new NoContactTypeException();
 
+        if (foundAssignment.getDate().before(new Date()))
+            throw new InvalidDateException(ErrorMessage.DATE_TOO_OLD);
+
         if (foundAssignment.getCustomers().contains(foundCustomer))
             throw new CustomerAlreadyAssignedException();
-
 
         VisitForm newVisitForm = VisitForm.builder()
                 .status(VisitStatus.NOT_STARTED)

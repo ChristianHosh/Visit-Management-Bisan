@@ -3,6 +3,7 @@ package com.example.vm.dto.mapper;
 import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.dto.response.VisitDefinitionResponse;
 import com.example.vm.model.City;
+import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.VisitDefinition;
 import com.example.vm.model.VisitType;
 import org.jetbrains.annotations.NotNull;
@@ -24,6 +25,16 @@ public class VisitDefinitionMapper {
         VisitDefinitionResponse response = setBasicAttributes(definition);
 
         response.setVisitAssignments(VisitAssignmentMapper.listToResponseList(definition.getVisitAssignments()));
+
+        return response;
+    }
+
+    public static VisitDefinitionResponse toDetailedResponse(VisitDefinition definition, List<VisitAssignment> visitAssignmentList) {
+        if (definition == null) return null;
+
+        VisitDefinitionResponse response = setBasicAttributes(definition);
+
+        response.setVisitAssignments(VisitAssignmentMapper.listToResponseList(visitAssignmentList));
 
         return response;
     }

@@ -13,6 +13,7 @@ import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.VisitDefinition;
 import com.example.vm.model.VisitType;
 import com.example.vm.repository.CityRepository;
+import com.example.vm.repository.VisitAssignmentRepository;
 import com.example.vm.repository.VisitDefinitionRepository;
 import com.example.vm.repository.VisitTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,13 +31,16 @@ public class VisitDefinitionService {
     private final VisitDefinitionRepository visitDefinitionRepository;
     private final VisitTypeRepository visitTypeRepository;
     private final CityRepository cityRepository;
+    private final VisitAssignmentRepository visitAssignmentRepository;
 
     @Autowired
     public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository,
-                                  CityRepository cityRepository) {
+                                  CityRepository cityRepository,
+                                  VisitAssignmentRepository visitAssignmentRepository) {
         this.visitDefinitionRepository = visitDefinitionRepository;
         this.visitTypeRepository = visitTypeRepository;
         this.cityRepository = cityRepository;
+        this.visitAssignmentRepository = visitAssignmentRepository;
     }
 
     public ResponseEntity<List<VisitDefinitionResponse>> findAllVisitDefinition() {
@@ -55,8 +59,10 @@ public class VisitDefinitionService {
         VisitDefinition foundVisitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
 
-        return ResponseEntity.ok(VisitDefinitionMapper.toDetailedResponse(foundVisitDefinition));
+        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.
+                findByVisitDefinitionAndDateAfter(foundVisitDefinition, new java.sql.Date(System.currentTimeMillis()));
 
+        return ResponseEntity.ok(VisitDefinitionMapper.toDetailedResponse(foundVisitDefinition, visitAssignmentList));
     }
 
     public ResponseEntity<VisitDefinitionResponse> saveNewVisitDefinition(VisitDefinitionRequest visitDefinitionRequest) {
