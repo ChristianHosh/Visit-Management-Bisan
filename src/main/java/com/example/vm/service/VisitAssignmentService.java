@@ -97,7 +97,6 @@ public class VisitAssignmentService {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
-
         // FIND DATE MAKE SURE IT HAS NOT REACHED THAT DATE
         Date currentAssignmentDate = foundAssignment.getDate();
 
@@ -115,10 +114,7 @@ public class VisitAssignmentService {
         if (currentAssignmentDate.before(todayDate))
             throw new InvalidDateException(ErrorMessage.DATE_TOO_OLD);
 
-        foundAssignment.setComment(assignmentRequest.getComment());
-        foundAssignment.setDate(assignmentRequest.getDate());
-
-        foundAssignment = visitAssignmentRepository.save(foundAssignment);
+        foundAssignment = visitAssignmentRepository.save(VisitAssignmentMapper.toEntity(foundAssignment, assignmentRequest));
 
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }

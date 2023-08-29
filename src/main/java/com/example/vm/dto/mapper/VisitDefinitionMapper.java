@@ -1,9 +1,13 @@
 package com.example.vm.dto.mapper;
 
+import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.dto.response.VisitDefinitionResponse;
+import com.example.vm.model.City;
 import com.example.vm.model.VisitDefinition;
+import com.example.vm.model.VisitType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VisitDefinitionMapper {
@@ -39,7 +43,7 @@ public class VisitDefinitionMapper {
         response.setCreatedTime(definition.getCreatedTime());
         response.setLastModifiedTime(definition.getLastModifiedTime());
 
-        if (definition.getCity() != null){
+        if (definition.getCity() != null) {
             response.setCityId(definition.getCity().getId());
             response.setCityName(definition.getCity().getName());
         }
@@ -52,5 +56,29 @@ public class VisitDefinitionMapper {
                 .stream()
                 .map(VisitDefinitionMapper::toListResponse)
                 .toList();
+    }
+
+    public static VisitDefinition toEntity(VisitDefinitionRequest definitionRequest, VisitType type, City city) {
+        return VisitDefinition
+                .builder()
+                .name(definitionRequest.getName())
+                .description(definitionRequest.getDescription())
+                .visitAssignments(new ArrayList<>())
+                .type(type)
+                .city(city)
+                .allowRecurring(definitionRequest.getAllowRecurring())
+                .frequency(definitionRequest.getAllowRecurring() ? definitionRequest.getFrequency() : 0)
+                .build();
+    }
+
+    public static VisitDefinition toEntity(VisitDefinition oldDefinition, VisitDefinitionRequest definitionRequest, VisitType type, City city){
+        oldDefinition.setName(definitionRequest.getName());
+        oldDefinition.setDescription(definitionRequest.getDescription());
+        oldDefinition.setType(type);
+        oldDefinition.setCity(city);
+        oldDefinition.setAllowRecurring(definitionRequest.getAllowRecurring());
+        oldDefinition.setFrequency(definitionRequest.getAllowRecurring() ? definitionRequest.getFrequency() : 0);
+
+        return oldDefinition;
     }
 }

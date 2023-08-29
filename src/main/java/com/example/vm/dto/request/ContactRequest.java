@@ -33,6 +33,6 @@ public class ContactRequest {
     @Email(message = "Bad request: email is invalid")
     String email;
 
-    @NotNull(message = "Bad request: types are null")
+    @NotNull(message = "Bad request: visit types are null")
     List<Long> visitTypes;
 }

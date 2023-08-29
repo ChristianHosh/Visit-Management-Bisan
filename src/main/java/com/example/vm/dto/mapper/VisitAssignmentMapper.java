@@ -1,5 +1,6 @@
 package com.example.vm.dto.mapper;
 
+import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.response.VisitAssignmentResponse;
 import com.example.vm.model.VisitAssignment;
 import org.jetbrains.annotations.NotNull;
@@ -47,5 +48,20 @@ public class VisitAssignmentMapper {
         response.setLastModifiedTime(assignment.getLastModifiedTime());
 
         return response;
+    }
+
+    public static VisitAssignment toEntity(VisitAssignmentRequest assignmentRequest) {
+        return VisitAssignment
+                .builder()
+                .comment(assignmentRequest.getComment())
+                .date(assignmentRequest.getDate())
+                .build();
+    }
+
+    public static VisitAssignment toEntity(VisitAssignment oldAssignment, VisitAssignmentRequest assignmentRequest) {
+        oldAssignment.setComment(assignmentRequest.getComment());
+        oldAssignment.setDate(assignmentRequest.getDate());
+
+        return oldAssignment;
     }
 }
