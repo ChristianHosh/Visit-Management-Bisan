@@ -12,7 +12,7 @@ import java.time.Instant;
 @Setter
 public class ApiError {
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:s")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy | hh:mm:s")
     private Timestamp timestamp;
 
     private Integer status;

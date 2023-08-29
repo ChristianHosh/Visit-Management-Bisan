@@ -13,8 +13,10 @@ public class VisitFormMapper {
         VisitFormResponse response = new VisitFormResponse();
 
         response.setId(form.getId());
-        response.setStatus(form.getStatus());
+        response.setStatus(form.getStatus().toString());
         response.setCustomer(CustomerMapper.toListResponse(form.getCustomer()));
+        response.setStartTime(form.getStartTime());
+        response.setEndTime(form.getEndTime());
 
         response.setEnabled(form.getEnabled());
         response.setCreatedTime(form.getCreatedTime());

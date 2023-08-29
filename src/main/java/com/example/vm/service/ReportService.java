@@ -110,7 +110,7 @@ public class ReportService {
             double sumOfTime = 0;
 
             List<VisitAssignment> visitAssignmentList = visitAssignmentRepository
-                    .findVisitAssignmentByUserAndEnabled(user, true);
+                    .findVisitAssignmentByUserAndEnabledTrue(user);
 
             for (VisitAssignment visitAssignment : visitAssignmentList) {
                 List<VisitForm> visitFormList = visitFormRepository
@@ -138,7 +138,8 @@ public class ReportService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         List<VisitAssignment> visitAssignmentList = visitAssignmentRepository
-                .findVisitAssignmentByUserAndEnabled(founduser, true);
+                .findVisitAssignmentByUserAndEnabledTrue(founduser);
+
         return ResponseEntity.ok(calculatedStatus(visitAssignmentList));
 
     }
@@ -156,6 +157,7 @@ public class ReportService {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
         List<VisitAssignment> visitAssignmentList = foundCustomer.getVisitAssignments();
+
         return calculatedStatus(visitAssignmentList);
     }
 
