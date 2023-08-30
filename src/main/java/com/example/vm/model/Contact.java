@@ -28,12 +28,11 @@ public class Contact extends ModelAuditSuperclass {
     @Column(name = "last_name", nullable = false, length = 30)
     private String lastName;
 
-    @Column(name = "email", length = 50, nullable = false, unique = true)
+    @Column(name = "email", length = 50, unique = true)
     private String email;
 
     @Column(name = "phone_number", length = 10, nullable = false, unique = true)
     private String phoneNumber;
-
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "customer_id")

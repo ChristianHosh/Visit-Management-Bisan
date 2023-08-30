@@ -28,7 +28,10 @@ public class CityController {
         return cityService.findAll();
     }
 
-
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getCityById(@PathVariable @Valid Long id){
+        return cityService.findById(id);
+    }
     @PostMapping("")
     public ResponseEntity<?> saveNewCity(@RequestBody @Valid CityRequest cityRequest) {
         return cityService.saveNewCity(cityRequest);

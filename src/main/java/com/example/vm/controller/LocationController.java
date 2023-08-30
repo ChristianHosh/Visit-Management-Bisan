@@ -1,7 +1,6 @@
 package com.example.vm.controller;
 
 import com.example.vm.dto.request.LocationRequest;
-import com.example.vm.dto.request.UserPostRequest;
 import com.example.vm.service.LocationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -16,6 +16,10 @@ public class LocationMapper {
         response.setCityName(location.getCity().getName());
         response.setCityId(location.getCity().getId());
 
+        response.setEnabled(location.getEnabled());
+        response.setCreatedTime(location.getCreatedTime());
+        response.setLastModifiedTime(location.getLastModifiedTime());
+
         return response;
     }
 

@@ -61,6 +61,8 @@ public class CustomerMapper {
 
         response.setId(customer.getId());
         response.setName(customer.getName());
+        response.setLongitude(customer.getLongitude());
+        response.setLatitude(customer.getLatitude());
         response.setLocation(getLocationResponse(customer.getLocation()));
 
         response.setEnabled(customer.getEnabled());

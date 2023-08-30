@@ -14,6 +14,7 @@ public class VisitDefinitionResponse extends ModelAuditResponse{
     private String description;
     private Integer frequency;
     private Boolean allowRecurring;
+
     private Long locationId;
     private String address;
 

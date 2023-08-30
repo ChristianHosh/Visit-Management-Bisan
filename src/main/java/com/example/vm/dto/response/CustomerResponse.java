@@ -11,6 +11,8 @@ public class CustomerResponse extends ModelAuditResponse {
 
     private Long id;
     private String name;
+    private Double longitude;
+    private Double latitude;
     private LocationResponse location;
     private List<ContactResponse> contacts;
 }

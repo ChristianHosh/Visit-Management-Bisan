@@ -8,7 +8,7 @@ import java.util.List;
 
 public class CityMapper {
 
-    public static CityResponse toResponse(City city){
+    public static CityResponse toListResponse(City city){
         CityResponse response = new CityResponse();
 
         response.setId(city.getId());
@@ -21,10 +21,24 @@ public class CityMapper {
         return response;
     }
 
+    public static CityResponse toDetailedResponse(City city) {
+        CityResponse response = new CityResponse();
+
+        response.setId(city.getId());
+        response.setName(city.getName());
+
+        response.setEnabled(city.getEnabled());
+        response.setCreatedTime(city.getCreatedTime());
+        response.setLastModifiedTime(city.getLastModifiedTime());
+        response.setLocations(LocationMapper.toResponseList(city.getLocations()));
+
+        return response;
+    }
+
     public static List<CityResponse> toResponseList(List<City> cityList){
         return cityList
                 .stream()
-                .map(CityMapper::toResponse)
+                .map(CityMapper::toListResponse)
                 .toList();
     }
 
@@ -33,4 +47,6 @@ public class CityMapper {
                 .name(request.getName())
                 .build();
     }
+
+
 }

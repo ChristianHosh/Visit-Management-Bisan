@@ -43,7 +43,7 @@ public class ContactMapper {
         return Contact.builder()
                 .firstName(contactRequest.getFirstName())
                 .lastName(contactRequest.getLastName())
-                .email(contactRequest.getEmail())
+                .email(contactRequest.getEmail().isBlank() ? null : contactRequest.getEmail())
                 .phoneNumber(PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber()))
                 .visitTypes(visitTypes)
                 .customer(customer)
@@ -54,7 +54,7 @@ public class ContactMapper {
         contactToUpdate.setFirstName(contactRequest.getFirstName());
         contactToUpdate.setLastName(contactRequest.getLastName());
         contactToUpdate.setPhoneNumber(PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber()));
-        contactToUpdate.setEmail(contactRequest.getEmail());
+        contactToUpdate.setEmail(contactRequest.getEmail().isBlank() ? null : contactRequest.getEmail());
         contactToUpdate.setVisitTypes(visitTypes);
     }
 }

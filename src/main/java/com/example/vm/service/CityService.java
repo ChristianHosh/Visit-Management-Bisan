@@ -38,7 +38,7 @@ public class CityService {
         City foundCity = cityRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        return ResponseEntity.ok(CityMapper.toResponse(foundCity));
+        return ResponseEntity.ok(CityMapper.toDetailedResponse(foundCity));
     }
 
     public ResponseEntity<CityResponse> saveNewCity(CityRequest cityRequest) {
@@ -46,7 +46,7 @@ public class CityService {
 
         cityToSave = cityRepository.save(cityToSave);
 
-        return ResponseEntity.ok(CityMapper.toResponse(cityToSave));
+        return ResponseEntity.ok(CityMapper.toListResponse(cityToSave));
 
     }
 

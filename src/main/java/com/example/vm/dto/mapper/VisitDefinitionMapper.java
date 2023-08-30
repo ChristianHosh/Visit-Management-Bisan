@@ -53,7 +53,7 @@ public class VisitDefinitionMapper {
 
         if (definition.getLocation() != null) {
             response.setLocationId(definition.getId());
-            response.setAddress(definition.getName());
+            response.setAddress(definition.getLocation().getDetailedLocation());
         }
 
         return response;

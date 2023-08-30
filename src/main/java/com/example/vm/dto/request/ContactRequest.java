@@ -28,7 +28,6 @@ public class ContactRequest {
     @Pattern(regexp = "^[0-9\\s]*$", message = "Bad request: phone number must only contain numbers")
     String phoneNumber;
 
-    @NotBlank(message = "Bad request: email is blank")
     @NotNull(message = "Bad request: email is null")
     @Email(message = "Bad request: email is invalid")
     String email;
