@@ -18,6 +18,7 @@ public class CityRequest {
 
     @JsonCreator
     public CityRequest(String name) {
+
         this.name = name;
     }
 }
