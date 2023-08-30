@@ -1,10 +1,9 @@
 package com.example.vm.dto.mapper;
 
 import com.example.vm.dto.request.CustomerRequest;
-import com.example.vm.dto.response.AddressResponse;
+import com.example.vm.dto.response.LocationResponse;
 import com.example.vm.dto.response.CustomerResponse;
 import com.example.vm.model.Location;
-import com.example.vm.model.City;
 import com.example.vm.model.Customer;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,24 +38,21 @@ public class CustomerMapper {
                 .toList();
     }
 
-    private static AddressResponse getAddressResponse(Location customerLocation) {
+    private static LocationResponse getLocationResponse(Location customerLocation) {
         if (customerLocation == null) return null;
 
-        AddressResponse address = new AddressResponse();
+        LocationResponse response = new LocationResponse();
 
-        address.setAddressLine1(customerLocation.getAddressLine1());
-        address.setAddressLine2(customerLocation.getAddressLine2());
-        address.setZipcode(customerLocation.getZipcode());
-        address.setLongitude(customerLocation.getLongitude());
-        address.setLatitude(customerLocation.getLatitude());
-        address.setCityId(customerLocation.getCity().getId());
-        address.setCityName(customerLocation.getCity().getName());
+        response.setId(customerLocation.getId());
+        response.setAddress(customerLocation.getAddress());
+        response.setCityId(customerLocation.getCity().getId());
+        response.setCityName(customerLocation.getCity().getName());
 
-        address.setEnabled(customerLocation.getEnabled());
-        address.setLastModifiedTime(customerLocation.getLastModifiedTime());
-        address.setCreatedTime(customerLocation.getCreatedTime());
+        response.setEnabled(customerLocation.getEnabled());
+        response.setLastModifiedTime(customerLocation.getLastModifiedTime());
+        response.setCreatedTime(customerLocation.getCreatedTime());
 
-        return address;
+        return response;
     }
 
     @NotNull
@@ -65,7 +61,7 @@ public class CustomerMapper {
 
         response.setId(customer.getId());
         response.setName(customer.getName());
-        response.setAddress(getAddressResponse(customer.getLocation()));
+        response.setLocation(getLocationResponse(customer.getLocation()));
 
         response.setEnabled(customer.getEnabled());
         response.setCreatedTime(customer.getCreatedTime());
@@ -84,8 +80,10 @@ public class CustomerMapper {
 
     }
 
-    public static void update(Customer oldCustomer, CustomerRequest customerRequest, City foundCity) {
+    public static void update(Customer oldCustomer, CustomerRequest customerRequest, Location foundLocation) {
         oldCustomer.setName(customerRequest.getName());
-
+        oldCustomer.setLongitude(customerRequest.getLongitude());
+        oldCustomer.setLatitude(customerRequest.getLatitude());
+        oldCustomer.setLocation(foundLocation);
     }
 }

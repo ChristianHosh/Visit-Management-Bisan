@@ -11,7 +11,6 @@ import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.dto.response.ContactResponse;
 import com.example.vm.dto.response.CustomerResponse;
 import com.example.vm.model.*;
-import com.example.vm.repository.CityRepository;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.LocationRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
@@ -37,17 +36,15 @@ public class CustomerService {
     private static final String GEOLOCATION_KEY = "AIzaSyC1rCFrBqu32lHImkYyDBSyfmaxp5YCPao";
 
     private final CustomerRepository customerRepository;
-    private final CityRepository cityRepository;
     private final VisitTypeService visitTypeService;
     private final VisitAssignmentRepository visitAssignmentRepository;
     private final LocationRepository locationRepository;
 
     @Autowired
-    public CustomerService(CustomerRepository customerRepository, CityRepository cityRepository, VisitTypeService visitTypeService,
+    public CustomerService(CustomerRepository customerRepository, VisitTypeService visitTypeService,
                            VisitAssignmentRepository visitAssignmentRepository,
                            LocationRepository locationRepository) {
         this.customerRepository = customerRepository;
-        this.cityRepository = cityRepository;
         this.visitTypeService = visitTypeService;
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.locationRepository = locationRepository;
@@ -114,16 +111,14 @@ public class CustomerService {
 
         Date todayDate = new Date(System.currentTimeMillis());
 
-        List<VisitDefinition> visitDefinitionList = foundLocation.get();
-
+        List<VisitDefinition> visitDefinitionList = foundLocation.getVisitDefinitions();
         List<VisitAssignment> availableAssignments = new ArrayList<>();
 
-        for (VisitDefinition currentVisitDefinition : visitDefinitionList) {
-            List<VisitAssignment> visitAssignments = visitAssignmentRepository
-                    .findByVisitDefinitionAndDateAfter(currentVisitDefinition, todayDate);
+        visitDefinitionList
+                .forEach(currentDefinition -> availableAssignments
+                        .addAll(visitAssignmentRepository
+                                .findByVisitDefinitionAndDateAfter(currentDefinition, todayDate)));
 
-            availableAssignments.addAll(visitAssignments);
-        }
 
         Map<String, Object> map = new HashMap<>();
         map.put("customer", CustomerMapper.toListResponse(customerToSave));

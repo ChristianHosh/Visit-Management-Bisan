@@ -9,14 +9,8 @@ import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.response.ContactResponse;
 import com.example.vm.dto.response.VisitAssignmentResponse;
 import com.example.vm.dto.response.VisitFormResponse;
-import com.example.vm.model.City;
-import com.example.vm.model.Contact;
-import com.example.vm.model.Customer;
-import com.example.vm.model.User;
+import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.VisitAssignment;
-import com.example.vm.model.VisitForm;
-import com.example.vm.model.VisitType;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,7 +126,6 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
-    //TODO FIX REPORTS
     public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date before, Date after) {
         return ResponseEntity.ok(AssignmentReportListPayload.toPayload(
                 visitAssignmentRepository.findVisitAssignmentByDateBetween(before, after)));
@@ -148,13 +141,12 @@ public class VisitAssignmentService {
 
         VisitType assignmentVisitType = foundAssignment.getVisitDefinition().getType();
 
-        City assignmentCity = foundAssignment.getVisitDefinition().getCity();
+        Location assignmentLocation = foundAssignment.getVisitDefinition().getLocation();
 
         List<Contact> contactList = contactRepository
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
 
-
-        if (!foundCustomer.getLocation().getCity().equals(assignmentCity))
+        if (!foundCustomer.getLocation().equals(assignmentLocation))
             throw new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_IN_CITY);
 
         if (contactList.isEmpty())

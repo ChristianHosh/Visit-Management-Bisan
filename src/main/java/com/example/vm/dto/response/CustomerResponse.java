@@ -10,6 +10,6 @@ import java.util.List;
 public class CustomerResponse extends ModelAuditResponse {
     private Long id;
     private String name;
-    private AddressResponse address;
+    private LocationResponse location;
     private List<ContactResponse> contacts;
 }
