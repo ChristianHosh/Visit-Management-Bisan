@@ -40,12 +40,10 @@ public class VisitDefinition extends ModelAuditSuperclass {
     private Boolean allowRecurring;
 
     @OneToMany(mappedBy = "visitDefinition", cascade = CascadeType.ALL)
-    @JsonManagedReference
     private List<VisitAssignment> visitAssignments;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "location_id")
-    @JsonManagedReference
     private Location location;
 
     @Override

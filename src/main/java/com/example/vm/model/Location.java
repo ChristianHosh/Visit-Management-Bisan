@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -29,8 +30,10 @@ public class Location extends ModelAuditSuperclass {
     private City city;
 
     @OneToMany(mappedBy = "location", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JsonBackReference
-    private Customer customer;
+    private List<Customer> customers;
+
+    @OneToMany(mappedBy = "location", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    private List<VisitDefinition> visitDefinitions;
 
     @Override
     public final boolean equals(Object o) {

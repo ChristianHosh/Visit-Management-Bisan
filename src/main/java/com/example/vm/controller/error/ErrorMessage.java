@@ -3,7 +3,7 @@ package com.example.vm.controller.error;
 public enum ErrorMessage {
 
     // NOT FOUND MESSAGES
-    ADDRESS_NOT_FOUND("Entity not found: Address not found"),
+    LOCATION_NOT_FOUND("Entity not found: Location not found"),
     CITY_NOT_FOUND("Entity not found: City not found"),
     CONTACT_NOT_FOUND("Entity not found: Contact not found"),
     CUSTOMER_NOT_FOUND("Entity not found: Customer not Found"),

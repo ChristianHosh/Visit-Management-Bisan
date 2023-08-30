@@ -73,28 +73,19 @@ public class CustomerMapper {
         return response;
     }
 
-    public static Customer toEntity(CustomerRequest customerRequest, City foundCity) {
+    public static Customer toEntity(CustomerRequest customerRequest, Location foundLocation) {
         return Customer.builder()
                 .name(customerRequest.getName())
+                .longitude(customerRequest.getLongitude())
+                .latitude(customerRequest.getLatitude())
+                .location(foundLocation)
                 .visitAssignments(new ArrayList<>())
-                .location(Location.builder()
-                        .addressLine1(customerRequest.getAddressLine1())
-                        .addressLine2(customerRequest.getAddressLine2())
-                        .longitude(customerRequest.getLongitude())
-                        .latitude(customerRequest.getLatitude())
-                        .zipcode(customerRequest.getZipcode())
-                        .city(foundCity)
-                        .build())
                 .build();
+
     }
 
     public static void update(Customer oldCustomer, CustomerRequest customerRequest, City foundCity) {
         oldCustomer.setName(customerRequest.getName());
-
-        oldCustomer.getLocation().setAddressLine1(customerRequest.getAddressLine1());
-        oldCustomer.getLocation().setAddressLine2(customerRequest.getAddressLine2());
-        oldCustomer.getLocation().setZipcode(customerRequest.getZipcode());
-        oldCustomer.getLocation().setCity(foundCity);
 
     }
 }
