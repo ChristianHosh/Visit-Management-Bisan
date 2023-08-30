@@ -8,14 +8,8 @@ import com.example.vm.dto.mapper.VisitDefinitionMapper;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.dto.response.VisitDefinitionResponse;
-import com.example.vm.model.City;
-import com.example.vm.model.VisitAssignment;
-import com.example.vm.model.VisitDefinition;
-import com.example.vm.model.VisitType;
-import com.example.vm.repository.CityRepository;
-import com.example.vm.repository.VisitAssignmentRepository;
-import com.example.vm.repository.VisitDefinitionRepository;
-import com.example.vm.repository.VisitTypeRepository;
+import com.example.vm.model.*;
+import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,16 +24,16 @@ import java.util.List;
 public class VisitDefinitionService {
     private final VisitDefinitionRepository visitDefinitionRepository;
     private final VisitTypeRepository visitTypeRepository;
-    private final CityRepository cityRepository;
+    private final LocationRepository locationRepository;
     private final VisitAssignmentRepository visitAssignmentRepository;
 
     @Autowired
     public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository,
-                                  CityRepository cityRepository,
-                                  VisitAssignmentRepository visitAssignmentRepository) {
+                                  LocationRepository locationRepository, VisitAssignmentRepository visitAssignmentRepository) {
         this.visitDefinitionRepository = visitDefinitionRepository;
         this.visitTypeRepository = visitTypeRepository;
-        this.cityRepository = cityRepository;
+        this.locationRepository = locationRepository;
+
         this.visitAssignmentRepository = visitAssignmentRepository;
     }
 
@@ -69,10 +63,10 @@ public class VisitDefinitionService {
         VisitType foundVisitType = visitTypeRepository.findByIdAndEnabledTrue(visitDefinitionRequest.getTypeId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TYPE_NOT_FOUND));
 
-        City foundCity = cityRepository.findByIdAndEnabledTrue(visitDefinitionRequest.getCityId())
+        Location foundlocation = locationRepository.findByIdAndEnabledTrue(visitDefinitionRequest.getLocationId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
-        VisitDefinition visitDefinitionToSave = VisitDefinitionMapper.toEntity(visitDefinitionRequest, foundVisitType, foundCity);
+        VisitDefinition visitDefinitionToSave = VisitDefinitionMapper.toEntity(visitDefinitionRequest, foundVisitType, foundlocation);
 
         visitDefinitionToSave = visitDefinitionRepository.save(visitDefinitionToSave);
 
@@ -86,10 +80,11 @@ public class VisitDefinitionService {
         VisitType foundVisitType = visitTypeRepository.findByIdAndEnabledTrue(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TYPE_NOT_FOUND));
 
-        City foundCity = cityRepository.findByIdAndEnabledTrue(visitDefinitionRequest.getCityId())
+        Location foundlocation = locationRepository.findByIdAndEnabledTrue(visitDefinitionRequest.getLocationId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
-        VisitDefinitionMapper.update(foundDefinition, visitDefinitionRequest, foundVisitType, foundCity);
+
+        VisitDefinitionMapper.update(foundDefinition, visitDefinitionRequest, foundVisitType, foundlocation);
 
         foundDefinition = visitDefinitionRepository.save(foundDefinition);
 
