@@ -76,8 +76,7 @@ public class CustomerService {
     }
 
     public ResponseEntity<List<CustomerResponse>> searchByQuery(String query) {
-        List<Customer> queryResult = customerRepository
-                .findByNameContainsIgnoreCaseOrAddress_AddressLine1ContainsIgnoreCaseOrAddress_AddressLine2ContainsIgnoreCaseOrAddress_City_NameContainsIgnoreCase(query, query, query, query);
+        List<Customer> queryResult = customerRepository.findByNameContainsIgnoreCaseAndLocation_AddressContainsIgnoreCaseAndLocation_City_NameContainsIgnoreCase(query, query, query);
 
         return ResponseEntity.ok(CustomerMapper.listToResponseList(queryResult));
     }

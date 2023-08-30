@@ -2,14 +2,8 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
-import com.example.vm.model.City;
-import com.example.vm.model.Customer;
-import com.example.vm.model.User;
+import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.VisitAssignment;
-import com.example.vm.model.VisitDefinition;
-import com.example.vm.model.VisitForm;
-import com.example.vm.model.VisitType;
 import com.example.vm.payload.report.StatusReportListPayload;
 import com.example.vm.payload.report.*;
 import com.example.vm.repository.*;
@@ -26,19 +20,20 @@ public class ReportService {
     private final VisitAssignmentRepository visitAssignmentRepository;
     private final VisitTypeRepository visitTypeRepository;
     private final CustomerRepository customerRepository;
-    private final CityRepository cityRepository;
     private final UserRepository userRepository;
     private final VisitDefinitionRepository visitDefinitionRepository;
+    private final LocationRepository locationRepository;
 
     @Autowired
-    public ReportService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, VisitTypeRepository visitTypeRepository, CustomerRepository customerRepository, CityRepository cityRepository, UserRepository userRepository, VisitDefinitionRepository visitDefinitionRepository) {
+    public ReportService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, VisitTypeRepository visitTypeRepository, CustomerRepository customerRepository, UserRepository userRepository, VisitDefinitionRepository visitDefinitionRepository,
+                         LocationRepository locationRepository) {
         this.visitFormRepository = visitFormRepository;
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.visitTypeRepository = visitTypeRepository;
         this.customerRepository = customerRepository;
-        this.cityRepository = cityRepository;
         this.userRepository = userRepository;
         this.visitDefinitionRepository = visitDefinitionRepository;
+        this.locationRepository = locationRepository;
     }
 
     public ResponseEntity<List<FormReportListPayload>> getAllForms() {
@@ -75,20 +70,20 @@ public class ReportService {
     public ResponseEntity<List<NamePercentageMapPayload>> getCityCustomersPercentage() {
         ArrayList<NamePercentageMapPayload> area = new ArrayList<>();
 
-        List<City> cityList = cityRepository.findCitiesByEnabledTrue();
+        List<Location> cityList = locationRepository.findByEnabledTrue();
 
-        long count = customerRepository.countCustomerByEnabled(true);
+        long countOfEnabledCustomers = customerRepository.countByEnabledTrue();
 
-        for (City city : cityList) {
-            double countOfCustomer = customerRepository.countCustomerByAddress_CityAndEnabled(city, true);
+        for (Location location : cityList) {
+            double countOfCustomer = customerRepository.countByLocationAndEnabledTrue(location);
 
-            System.out.println(city.getName());
+            System.out.println(location.getAddress());
             System.out.println(countOfCustomer);
 
-            double percentage = countOfCustomer / count;
+            double percentage = countOfCustomer / countOfEnabledCustomers;
 
             if (percentage != 0)
-                area.add(new NamePercentageMapPayload(city.getName(), percentage * 100));
+                area.add(new NamePercentageMapPayload( location.getDetailedLocation(), percentage * 100));
 
         }
         return ResponseEntity.ok(area);

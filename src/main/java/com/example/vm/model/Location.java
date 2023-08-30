@@ -1,6 +1,5 @@
 package com.example.vm.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -49,5 +48,9 @@ public class Location extends ModelAuditSuperclass {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public String getDetailedLocation() {
+        return String.format("%s, %s", this.getCity().getName(), this.getAddress());
     }
 }
