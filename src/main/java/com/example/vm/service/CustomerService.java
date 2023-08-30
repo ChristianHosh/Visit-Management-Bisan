@@ -13,6 +13,7 @@ import com.example.vm.dto.response.CustomerResponse;
 import com.example.vm.model.*;
 import com.example.vm.repository.CityRepository;
 import com.example.vm.repository.CustomerRepository;
+import com.example.vm.repository.LocationRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -39,14 +40,17 @@ public class CustomerService {
     private final CityRepository cityRepository;
     private final VisitTypeService visitTypeService;
     private final VisitAssignmentRepository visitAssignmentRepository;
+    private final LocationRepository locationRepository;
 
     @Autowired
     public CustomerService(CustomerRepository customerRepository, CityRepository cityRepository, VisitTypeService visitTypeService,
-                           VisitAssignmentRepository visitAssignmentRepository) {
+                           VisitAssignmentRepository visitAssignmentRepository,
+                           LocationRepository locationRepository) {
         this.customerRepository = customerRepository;
         this.cityRepository = cityRepository;
         this.visitTypeService = visitTypeService;
         this.visitAssignmentRepository = visitAssignmentRepository;
+        this.locationRepository = locationRepository;
     }
 
     public ResponseEntity<List<CustomerResponse>> findAllCustomers() {
@@ -76,7 +80,7 @@ public class CustomerService {
 
     public ResponseEntity<List<CustomerResponse>> searchByQuery(String query) {
         List<Customer> queryResult = customerRepository
-                .findByNameContainsIgnoreCaseOrAddress_AddressLine1ContainsIgnoreCaseOrAddress_AddressLine2ContainsIgnoreCaseOrAddress_City_NameContainsIgnoreCase(query,query,query,query);
+                .findByNameContainsIgnoreCaseOrAddress_AddressLine1ContainsIgnoreCaseOrAddress_AddressLine2ContainsIgnoreCaseOrAddress_City_NameContainsIgnoreCase(query, query, query, query);
 
         return ResponseEntity.ok(CustomerMapper.listToResponseList(queryResult));
     }
@@ -89,16 +93,16 @@ public class CustomerService {
     }
 
     public ResponseEntity<Map<String, Object>> saveNewCustomer(CustomerRequest customerRequest) {
-        City foundCity = cityRepository.findById(customerRequest.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
+        Location foundLocation = locationRepository.findById(customerRequest.getLocationId())
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.LOCATION_NOT_FOUND));
 
-        Customer customerToSave = CustomerMapper.toEntity(customerRequest, foundCity);
+        Customer customerToSave = CustomerMapper.toEntity(customerRequest, foundLocation);
 
         if (isNotPreciseLocation(customerRequest)) {
             try {
-                Double[] geolocation = getGeolocation(customerRequest, foundCity.getName());
-                customerToSave.getLocation().setLatitude(geolocation[0]);
-                customerToSave.getLocation().setLongitude(geolocation[1]);
+                Double[] geolocation = getGeolocation(foundLocation);
+                customerToSave.setLatitude(geolocation[0]);
+                customerToSave.setLongitude(geolocation[1]);
             } catch (IOException | InterruptedException | ApiException e) {
                 throw new RuntimeException(e);
             } catch (LocationNotFoundException e) {
@@ -110,7 +114,7 @@ public class CustomerService {
 
         Date todayDate = new Date(System.currentTimeMillis());
 
-        List<VisitDefinition> visitDefinitionList = foundCity.getVisitDefinitions();
+        List<VisitDefinition> visitDefinitionList = foundLocation.get();
 
         List<VisitAssignment> availableAssignments = new ArrayList<>();
 
@@ -147,16 +151,16 @@ public class CustomerService {
         Customer customerToUpdate = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
-        City foundCity = cityRepository.findById(customerRequest.getCityId())
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
+        Location foundLocation = locationRepository.findById(customerRequest.getLocationId())
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.LOCATION_NOT_FOUND));
 
-        CustomerMapper.update(customerToUpdate, customerRequest, foundCity);
+        CustomerMapper.update(customerToUpdate, customerRequest, foundLocation);
 
         if (isNotPreciseLocation(customerRequest)) {
             try {
-                Double[] geolocation = getGeolocation(customerRequest, foundCity.getName());
-                customerToUpdate.getLocation().setLatitude(geolocation[0]);
-                customerToUpdate.getLocation().setLongitude(geolocation[1]);
+                Double[] geolocation = getGeolocation(foundLocation);
+                customerToUpdate.setLatitude(geolocation[0]);
+                customerToUpdate.setLongitude(geolocation[1]);
             } catch (IOException | InterruptedException | ApiException e) {
                 throw new RuntimeException(e);
             } catch (LocationNotFoundException e) {
@@ -184,15 +188,12 @@ public class CustomerService {
         return ResponseEntity.ok(CustomerMapper.toDetailedResponse(foundCustomer));
     }
 
-    private Double[] getGeolocation(CustomerRequest customerRequest, String city) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException, LocationNotFoundException {
+    private Double[] getGeolocation(Location location) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException, LocationNotFoundException {
         try (GeoApiContext context = new GeoApiContext.Builder().apiKey(GEOLOCATION_KEY).build()) {
             GeocodingResult[] geocodingResults = GeocodingApi
-                    .geocode(context,
-                            customerRequest.getAddressLine1() + " " +
-                                    customerRequest.getAddressLine2() + ", " +
-                                    city + " " +
-                                    customerRequest.getZipcode())
+                    .geocode(context, location.getAddress() + " " + location.getCity().getName())
                     .await();
+
             if (geocodingResults.length == 0)
                 throw new LocationNotFoundException();
 

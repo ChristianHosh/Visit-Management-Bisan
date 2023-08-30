@@ -25,7 +25,8 @@ public class City extends ModelAuditSuperclass {
     @Column(name = "name", nullable = false, unique = true, length = 30)
     private String name;
 
-
+    @OneToMany(mappedBy = "city")
+    private List<Location> locations;
 
     @Override
     public final boolean equals(Object o) {
