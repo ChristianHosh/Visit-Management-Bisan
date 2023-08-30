@@ -44,9 +44,9 @@ public class VisitDefinition extends ModelAuditSuperclass {
     private List<VisitAssignment> visitAssignments;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "city_id")
+    @JoinColumn(name = "location_id")
     @JsonManagedReference
-    private City city;
+    private Location location;
 
     @Override
     public final boolean equals(Object o) {

@@ -97,8 +97,8 @@ public class CustomerService {
         if (isNotPreciseLocation(customerRequest)) {
             try {
                 Double[] geolocation = getGeolocation(customerRequest, foundCity.getName());
-                customerToSave.getAddress().setLatitude(geolocation[0]);
-                customerToSave.getAddress().setLongitude(geolocation[1]);
+                customerToSave.getLocation().setLatitude(geolocation[0]);
+                customerToSave.getLocation().setLongitude(geolocation[1]);
             } catch (IOException | InterruptedException | ApiException e) {
                 throw new RuntimeException(e);
             } catch (LocationNotFoundException e) {
@@ -155,8 +155,8 @@ public class CustomerService {
         if (isNotPreciseLocation(customerRequest)) {
             try {
                 Double[] geolocation = getGeolocation(customerRequest, foundCity.getName());
-                customerToUpdate.getAddress().setLatitude(geolocation[0]);
-                customerToUpdate.getAddress().setLongitude(geolocation[1]);
+                customerToUpdate.getLocation().setLatitude(geolocation[0]);
+                customerToUpdate.getLocation().setLongitude(geolocation[1]);
             } catch (IOException | InterruptedException | ApiException e) {
                 throw new RuntimeException(e);
             } catch (LocationNotFoundException e) {

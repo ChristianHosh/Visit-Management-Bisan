@@ -8,7 +8,7 @@ import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.AssignmentCustomerRequest;
 import com.example.vm.dto.request.FormGeolocationRequest;
 import com.example.vm.dto.response.VisitFormResponse;
-import com.example.vm.model.Address;
+import com.example.vm.model.Location;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.enums.VisitStatus;
@@ -86,7 +86,7 @@ public class VisitFormService {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        validateDistance(formGeolocationRequest, foundForm.getCustomer().getAddress());
+        validateDistance(formGeolocationRequest, foundForm.getCustomer().getLocation());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.UNDERGOING))
@@ -109,7 +109,7 @@ public class VisitFormService {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        validateDistance(formGeolocationRequest, foundForm.getCustomer().getAddress());
+        validateDistance(formGeolocationRequest, foundForm.getCustomer().getLocation());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.NOT_STARTED))
@@ -123,8 +123,8 @@ public class VisitFormService {
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
-    private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Address customerAddress) {
-        double distance = distanceBetweenTwoPoints(customerAddress, formGeolocationRequest);
+    private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Location customerLocation) {
+        double distance = distanceBetweenTwoPoints(customerLocation, formGeolocationRequest);
 
         if (distance > 250)
             throw new LocationTooFarException();
@@ -134,9 +134,9 @@ public class VisitFormService {
         return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)) * 111 * 1000;
     }
 
-    private static double distanceBetweenTwoPoints(Address customerAddress, FormGeolocationRequest formGeolocationRequest) {
-        double customerLat = customerAddress.getLatitude();
-        double customerLng = customerAddress.getLongitude();
+    private static double distanceBetweenTwoPoints(Location customerLocation, FormGeolocationRequest formGeolocationRequest) {
+        double customerLat = customerLocation.getLatitude();
+        double customerLng = customerLocation.getLongitude();
 
         double userLat = formGeolocationRequest.getLatitude();
         double userLng = formGeolocationRequest.getLongitude();

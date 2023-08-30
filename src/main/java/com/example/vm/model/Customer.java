@@ -27,11 +27,16 @@ public class Customer extends ModelAuditSuperclass {
     @Column(name = "name", nullable = false, length = 30)
     private String name;
 
+    @Column(name = "longitude", nullable = false)
+    private Double longitude;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "address_id", nullable = false)
+    @Column(name = "latitude", nullable = false)
+    private Double latitude;
+
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "location_id", nullable = false)
     @JsonManagedReference
-    private Address address;
+    private Location location;
 
     @OneToMany(mappedBy = "customer", cascade = {CascadeType.ALL})
     @JsonManagedReference

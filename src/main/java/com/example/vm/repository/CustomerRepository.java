@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("""
             select c from Customer c
-            where upper(c.name) like upper(concat('%', ?1, '%')) or upper(c.address.addressLine1) like upper(concat('%', ?2, '%')) or upper(c.address.addressLine2) like upper(concat('%', ?3, '%')) or upper(c.address.city.name) like upper(concat('%', ?4, '%'))""")
+            where upper(c.name) like upper(concat('%', ?1, '%')) or upper(c.location.addressLine1) like upper(concat('%', ?2, '%')) or upper(c.location.addressLine2) like upper(concat('%', ?3, '%')) or upper(c.location.city.name) like upper(concat('%', ?4, '%'))""")
     List<Customer> findByNameContainsIgnoreCaseOrAddress_AddressLine1ContainsIgnoreCaseOrAddress_AddressLine2ContainsIgnoreCaseOrAddress_City_NameContainsIgnoreCase(String name, String addressLine1, String addressLine2, String name1);
     Optional<Customer> findByIdAndEnabledTrue(Long id);
 

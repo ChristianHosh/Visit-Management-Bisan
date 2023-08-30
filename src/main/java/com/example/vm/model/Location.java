@@ -11,36 +11,24 @@ import java.util.Objects;
 @Setter
 @Entity
 @Builder
-@Table(name = "address_model")
+@Table(name = "location_model")
 @NoArgsConstructor
 @AllArgsConstructor
-public class Address extends ModelAuditSuperclass {
+public class Location extends ModelAuditSuperclass {
 
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "address_line_1", nullable = false, length = 50)
-    private String addressLine1;
-
-    @Column(name = "address_line_2", length = 50)
-    private String addressLine2;
-
-    @Column(name = "longitude", nullable = false)
-    private Double longitude;
-
-    @Column(name = "latitude", nullable = false)
-    private Double latitude;
-
-    @Column(name = "zipcode", nullable = false, length = 5)
-    private String zipcode;
+    @Column(name = "address", nullable = false, length = 50)
+    private String address;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "city_id", nullable = false)
     private City city;
 
-    @OneToOne(mappedBy = "address", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToMany(mappedBy = "location", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JsonBackReference
     private Customer customer;
 
@@ -51,8 +39,8 @@ public class Address extends ModelAuditSuperclass {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        Address address = (Address) o;
-        return getId() != null && Objects.equals(getId(), address.getId());
+        Location location = (Location) o;
+        return getId() != null && Objects.equals(getId(), location.getId());
     }
 
     @Override

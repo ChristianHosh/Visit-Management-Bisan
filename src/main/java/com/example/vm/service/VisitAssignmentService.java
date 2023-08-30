@@ -154,7 +154,7 @@ public class VisitAssignmentService {
                 .findContactsByCustomerAndVisitTypesContaining(foundCustomer, assignmentVisitType);
 
 
-        if (!foundCustomer.getAddress().getCity().equals(assignmentCity))
+        if (!foundCustomer.getLocation().getCity().equals(assignmentCity))
             throw new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_IN_CITY);
 
         if (contactList.isEmpty())
