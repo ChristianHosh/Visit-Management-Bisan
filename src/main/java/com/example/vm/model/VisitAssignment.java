@@ -3,7 +3,6 @@ package com.example.vm.model;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.payload.report.UserAssignmentReportPayload;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -48,13 +47,14 @@ public class VisitAssignment extends ModelAuditSuperclass {
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "next_assignment_id")
     @ToString.Exclude
-    @JsonBackReference
     private VisitAssignment nextVisitAssignment;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "username")
-    @JsonManagedReference
     private User user;
+
+    @OneToMany(mappedBy = "visitAssignment", cascade = CascadeType.ALL)
+    private List<VisitForm> visitForms;
 
     public AssignmentReportListPayload toReportListPayload() {
         if (this.getUser() != null) {

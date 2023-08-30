@@ -6,6 +6,7 @@ import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.VisitDefinition;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class VisitAssignmentMapper {
@@ -57,6 +58,8 @@ public class VisitAssignmentMapper {
                 .builder()
                 .comment(assignmentRequest.getComment())
                 .date(assignmentRequest.getDate())
+                .customers(new ArrayList<>())
+                .visitForms(new ArrayList<>())
                 .visitDefinition(visitDefinition)
                 .build();
     }

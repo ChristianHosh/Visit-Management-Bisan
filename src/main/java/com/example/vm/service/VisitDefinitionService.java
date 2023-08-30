@@ -9,6 +9,7 @@ import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.dto.response.VisitDefinitionResponse;
 import com.example.vm.model.*;
+import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,15 +27,21 @@ public class VisitDefinitionService {
     private final VisitTypeRepository visitTypeRepository;
     private final LocationRepository locationRepository;
     private final VisitAssignmentRepository visitAssignmentRepository;
+    private final CustomerRepository customerRepository;
+    private final ContactRepository contactRepository;
 
     @Autowired
     public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository,
-                                  LocationRepository locationRepository, VisitAssignmentRepository visitAssignmentRepository) {
+                                  LocationRepository locationRepository, VisitAssignmentRepository visitAssignmentRepository,
+                                  CustomerRepository customerRepository,
+                                  ContactRepository contactRepository) {
         this.visitDefinitionRepository = visitDefinitionRepository;
         this.visitTypeRepository = visitTypeRepository;
         this.locationRepository = locationRepository;
 
         this.visitAssignmentRepository = visitAssignmentRepository;
+        this.customerRepository = customerRepository;
+        this.contactRepository = contactRepository;
     }
 
     public ResponseEntity<List<VisitDefinitionResponse>> findAllVisitDefinition() {
@@ -136,7 +143,7 @@ public class VisitDefinitionService {
 
     public ResponseEntity<VisitDefinitionResponse> saveNewVisitAssignmentToDefinition(Long id, VisitAssignmentRequest visitAssignmentRequest) {
 
-        VisitDefinition visitDefinition = visitDefinitionRepository.findById(id)
+        VisitDefinition foundVisitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
 
         // FIND DATE MAKE SURE IT HAS NOT REACHED THAT DATE
@@ -150,12 +157,40 @@ public class VisitDefinitionService {
         if (visitAssignmentRequest.getDate().before(todayDate))
             throw new InvalidDateException(ErrorMessage.DATE_IN_PAST);
 
-        VisitAssignment visitAssignment = VisitAssignmentMapper.toEntity(visitAssignmentRequest, visitDefinition);
+        VisitAssignment visitAssignmentToSave = VisitAssignmentMapper.toEntity(visitAssignmentRequest, foundVisitDefinition);
+
+        List<Customer> availableCustomersInLocation = customerRepository.findCustomerByEnabledTrueAndLocation(foundVisitDefinition.getLocation());
+
+        VisitDefinition definitionToCheck = foundVisitDefinition;
+
+        List<VisitForm> newVisitForms = new ArrayList<>();
+
+        availableCustomersInLocation = availableCustomersInLocation
+                .stream()
+                .filter(customer -> {
+                    List<Contact> customerContacts = contactRepository.findContactsByCustomerAndVisitTypesContaining(customer, definitionToCheck.getType());
+                    if (customerContacts.isEmpty())
+                        return false;
+
+                    VisitForm newForm = VisitForm.builder()
+                            .status(VisitStatus.NOT_STARTED)
+                            .customer(customer)
+                            .contacts(customerContacts)
+                            .visitAssignment(visitAssignmentToSave)
+                            .build();
+
+                    return newVisitForms.add(newForm);
+                })
+                .toList();
 
 
-        visitDefinition.getVisitAssignments().add(visitAssignment);
-        visitDefinition = visitDefinitionRepository.save(visitDefinition);
+        visitAssignmentToSave.getCustomers().addAll(availableCustomersInLocation);
+        visitAssignmentToSave.getVisitForms().addAll(newVisitForms);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(VisitDefinitionMapper.toDetailedResponse(visitDefinition));
+        foundVisitDefinition.getVisitAssignments().add(visitAssignmentToSave);
+
+        foundVisitDefinition = visitDefinitionRepository.save(foundVisitDefinition);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(VisitDefinitionMapper.toDetailedResponse(foundVisitDefinition));
     }
 }

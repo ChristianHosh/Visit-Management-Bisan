@@ -11,6 +11,8 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    List<Customer> findCustomerByEnabledTrueAndLocation(Location location);
+
     long countByEnabledTrue();
 
     long countByLocationAndEnabledTrue(Location location);
