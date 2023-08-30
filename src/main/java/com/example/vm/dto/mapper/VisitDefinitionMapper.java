@@ -2,10 +2,7 @@ package com.example.vm.dto.mapper;
 
 import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.dto.response.VisitDefinitionResponse;
-import com.example.vm.model.City;
-import com.example.vm.model.VisitAssignment;
-import com.example.vm.model.VisitDefinition;
-import com.example.vm.model.VisitType;
+import com.example.vm.model.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -54,9 +51,9 @@ public class VisitDefinitionMapper {
         response.setCreatedTime(definition.getCreatedTime());
         response.setLastModifiedTime(definition.getLastModifiedTime());
 
-        if (definition.getCity() != null) {
-            response.setCityId(definition.getCity().getId());
-            response.setCityName(definition.getCity().getName());
+        if (definition.getLocation() != null) {
+            response.setLocationId(definition.getId());
+            response.setAddress(definition.getName());
         }
 
         return response;
@@ -69,14 +66,14 @@ public class VisitDefinitionMapper {
                 .toList();
     }
 
-    public static VisitDefinition toEntity(VisitDefinitionRequest definitionRequest, VisitType type, City city) {
+    public static VisitDefinition toEntity(VisitDefinitionRequest definitionRequest, VisitType type, Location location) {
         return VisitDefinition
                 .builder()
                 .name(definitionRequest.getName())
                 .description(definitionRequest.getDescription())
                 .visitAssignments(new ArrayList<>())
                 .type(type)
-                .city(city)
+                .location(location)
                 .allowRecurring(definitionRequest.getAllowRecurring())
                 .frequency(definitionRequest.getAllowRecurring() ? definitionRequest.getFrequency() : 0)
                 .build();

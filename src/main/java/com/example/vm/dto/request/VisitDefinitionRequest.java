@@ -30,6 +30,6 @@ public class VisitDefinitionRequest {
     Long typeId;
 
     @NotNull(message = "Bad request: city id is null")
-    Long cityId;
+    Long locationId;
 
 }

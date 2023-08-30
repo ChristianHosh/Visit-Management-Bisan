@@ -8,13 +8,14 @@ import java.util.List;
 @Getter
 @Setter
 public class VisitDefinitionResponse extends ModelAuditResponse{
+
     private Long id;
     private String name;
     private String description;
     private Integer frequency;
     private Boolean allowRecurring;
-    private Long cityId;
-    private String cityName;
+    private Long locationId;
+    private String address;
 
     private VisitTypeResponse visitType;
     private List<VisitAssignmentResponse> visitAssignments;
