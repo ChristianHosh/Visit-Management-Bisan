@@ -86,7 +86,7 @@ public class VisitFormService {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        validateDistance(formGeolocationRequest, foundForm.getCustomer().getLocation());
+        validateDistance(formGeolocationRequest, foundForm.getCustomer());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.UNDERGOING))
@@ -109,7 +109,7 @@ public class VisitFormService {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        validateDistance(formGeolocationRequest, foundForm.getCustomer().getLocation());
+        validateDistance(formGeolocationRequest, foundForm.getCustomer());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.NOT_STARTED))
@@ -123,8 +123,8 @@ public class VisitFormService {
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
-    private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Location customerLocation) {
-        double distance = distanceBetweenTwoPoints(customerLocation, formGeolocationRequest);
+    private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Customer customer) {
+        double distance = distanceBetweenTwoPoints(customer, formGeolocationRequest);
 
         if (distance > 250)
             throw new LocationTooFarException();
@@ -134,7 +134,7 @@ public class VisitFormService {
         return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)) * 111 * 1000;
     }
 
-    private static double distanceBetweenTwoPoints(Location customerLocation, FormGeolocationRequest formGeolocationRequest) {
+    private static double distanceBetweenTwoPoints(Customer customerLocation, FormGeolocationRequest formGeolocationRequest) {
         double customerLat = customerLocation.getLatitude();
         double customerLng = customerLocation.getLongitude();
 
