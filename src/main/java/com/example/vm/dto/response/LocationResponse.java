@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LocationResponse extends ModelAuditResponse {
+public class LocationResponse extends ModelAuditResponse{
     private Long id;
     private String address;
     private Long cityId;

@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class CustomerResponse extends ModelAuditResponse {
+
     private Long id;
     private String name;
     private LocationResponse location;
