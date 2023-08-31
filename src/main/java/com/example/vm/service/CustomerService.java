@@ -14,6 +14,7 @@ import com.example.vm.model.*;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.LocationRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
+import com.example.vm.service.util.CalenderDate;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
@@ -24,7 +25,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -108,15 +108,13 @@ public class CustomerService {
 
         customerToSave = customerRepository.save(customerToSave);
 
-        Date todayDate = new Date(System.currentTimeMillis());
-
         List<VisitDefinition> visitDefinitionList = foundLocation.getVisitDefinitions();
         List<VisitAssignment> availableAssignments = new ArrayList<>();
 
         visitDefinitionList
                 .forEach(currentDefinition -> availableAssignments
                         .addAll(visitAssignmentRepository
-                                .findByVisitDefinitionAndDateAfter(currentDefinition, todayDate)));
+                                .findByVisitDefinitionAndDateAfter(currentDefinition, CalenderDate.getYesterdaySql())));
 
 
         Map<String, Object> map = new HashMap<>();

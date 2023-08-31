@@ -43,6 +43,11 @@ public class UserController {
         return userService.findUserByUsername(username);
     }
 
+    @GetMapping("/{username}/visit_assignments")
+    public ResponseEntity<?> getUserAssignments(@PathVariable @Valid String username){
+        return userService.findUserAssignments(username);
+    }
+
     @PostMapping("")
     public ResponseEntity<?> saveNewUser(@RequestBody @Valid UserPostRequest userRequest) {
         return userService.saveNewUser(userRequest);

@@ -1,4 +1,4 @@
-package com.example.vm.service.formatter;
+package com.example.vm.service.util;
 
 public class PhoneNumberFormatter {
     public static String formatPhone(String phoneNumber) {

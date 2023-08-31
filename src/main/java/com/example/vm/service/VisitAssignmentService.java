@@ -13,6 +13,7 @@ import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.repository.*;
+import com.example.vm.service.util.CalenderDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -94,18 +95,12 @@ public class VisitAssignmentService {
         // FIND DATE MAKE SURE IT HAS NOT REACHED THAT DATE
         Date currentAssignmentDate = foundAssignment.getDate();
 
-        Date todayDate = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(todayDate);
-        calendar.add(Calendar.DATE, -1);
-        todayDate.setTime(calendar.getTime().getTime());
-
         // VALIDATES THE DATE TO MAKE SURE IT IN THE PRESENT OR FUTURE
-        if (assignmentRequest.getDate().before(todayDate))
+        if (assignmentRequest.getDate().before(CalenderDate.getYesterdayUtil()))
             throw new InvalidDateException(ErrorMessage.DATE_IN_PAST);
 
         // VALIDATES THE CURRENT DATE TO MAKE SURE IT HAS NOT BEEN PASSED YET
-        if (currentAssignmentDate.before(todayDate))
+        if (currentAssignmentDate.before(CalenderDate.getYesterdayUtil()))
             throw new InvalidDateException(ErrorMessage.DATE_TOO_OLD);
 
         VisitAssignmentMapper.update(foundAssignment, assignmentRequest);

@@ -18,4 +18,7 @@ public class VisitAssignmentRequest {
     @Size(min = 5, max = 30, message = "Bad request: comment must be between 5 and 30 characters long")
     private String comment;
 
+    @NotNull(message = "Bad request: user is null")
+    private String username;
+
 }

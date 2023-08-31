@@ -2,6 +2,7 @@ package com.example.vm.dto.mapper;
 
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.response.VisitAssignmentResponse;
+import com.example.vm.model.User;
 import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.VisitDefinition;
 import org.jetbrains.annotations.NotNull;
@@ -53,11 +54,12 @@ public class VisitAssignmentMapper {
         return response;
     }
 
-    public static VisitAssignment toEntity(VisitAssignmentRequest assignmentRequest, VisitDefinition visitDefinition) {
+    public static VisitAssignment toEntity(VisitAssignmentRequest assignmentRequest, VisitDefinition visitDefinition, User userToAssign) {
         return VisitAssignment
                 .builder()
                 .comment(assignmentRequest.getComment())
                 .date(assignmentRequest.getDate())
+                .user(userToAssign)
                 .customers(new ArrayList<>())
                 .visitForms(new ArrayList<>())
                 .visitDefinition(visitDefinition)

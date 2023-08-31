@@ -11,14 +11,13 @@ import com.example.vm.dto.response.VisitDefinitionResponse;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.repository.*;
+import com.example.vm.service.util.CalenderDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -29,12 +28,14 @@ public class VisitDefinitionService {
     private final VisitAssignmentRepository visitAssignmentRepository;
     private final CustomerRepository customerRepository;
     private final ContactRepository contactRepository;
+    private final UserRepository userRepository;
 
     @Autowired
     public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository,
                                   LocationRepository locationRepository, VisitAssignmentRepository visitAssignmentRepository,
                                   CustomerRepository customerRepository,
-                                  ContactRepository contactRepository) {
+                                  ContactRepository contactRepository,
+                                  UserRepository userRepository) {
         this.visitDefinitionRepository = visitDefinitionRepository;
         this.visitTypeRepository = visitTypeRepository;
         this.locationRepository = locationRepository;
@@ -42,6 +43,7 @@ public class VisitDefinitionService {
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
+        this.userRepository = userRepository;
     }
 
     public ResponseEntity<List<VisitDefinitionResponse>> findAllVisitDefinition() {
@@ -142,36 +144,37 @@ public class VisitDefinitionService {
     }
 
     public ResponseEntity<VisitDefinitionResponse> saveNewVisitAssignmentToDefinition(Long id, VisitAssignmentRequest visitAssignmentRequest) {
-
         VisitDefinition foundVisitDefinition = visitDefinitionRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
 
-        // FIND DATE MAKE SURE IT HAS NOT REACHED THAT DATE
-        Date todayDate = new Date();
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(todayDate);
-        calendar.add(Calendar.DATE, -1);
-        todayDate.setTime(calendar.getTime().getTime());
+        User userToAssign = userRepository.findById(visitAssignmentRequest.getUsername())
+                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        // VALIDATES THE DATE TO MAKE SURE IT IN THE PRESENT OR FUTURE
-        if (visitAssignmentRequest.getDate().before(todayDate))
+        // VALIDATES THE DATE TO MAKE SURE IT IN THE TODAY OR IN THE FUTURE
+        if (visitAssignmentRequest.getDate().before(CalenderDate.getYesterdayUtil()))
             throw new InvalidDateException(ErrorMessage.DATE_IN_PAST);
 
-        VisitAssignment visitAssignmentToSave = VisitAssignmentMapper.toEntity(visitAssignmentRequest, foundVisitDefinition);
+        VisitAssignment visitAssignmentToSave = VisitAssignmentMapper.toEntity(visitAssignmentRequest, foundVisitDefinition, userToAssign);
+        // CREATES THE VISIT ASSIGNMENT ENTITY
 
         List<Customer> availableCustomersInLocation = customerRepository.findCustomerByEnabledTrueAndLocation(foundVisitDefinition.getLocation());
-
-        VisitDefinition definitionToCheck = foundVisitDefinition;
+        // LIST OF ALL CUSTOMERS THAT ARE IN THE ASSIGNMENT'S LOCATION
 
         List<VisitForm> newVisitForms = new ArrayList<>();
 
+
+        VisitDefinition definitionToCheck = foundVisitDefinition;
         availableCustomersInLocation = availableCustomersInLocation
                 .stream()
                 .filter(customer -> {
                     List<Contact> customerContacts = contactRepository.findContactsByCustomerAndVisitTypesContaining(customer, definitionToCheck.getType());
+                    // LIST OF CUSTOMER'S CONTACTS WHO HAVE THE SAME ASSIGNMENT'S TYPE
+                    // IF LIST IS EMPTY THEN WE CAN'T ASSIGN THIS CUSTOMER TO THE ASSIGNMENT
+                    // WE REMOVE THE CUSTOMER FROM THE AVAILABLE CUSTOMER LIST
                     if (customerContacts.isEmpty())
                         return false;
 
+                    // CREATES THE NEW FORM FOR THAT CUSTOMER
                     VisitForm newForm = VisitForm.builder()
                             .status(VisitStatus.NOT_STARTED)
                             .customer(customer)
@@ -179,6 +182,7 @@ public class VisitDefinitionService {
                             .visitAssignment(visitAssignmentToSave)
                             .build();
 
+                    // ADD THE NEW FORM TO THE LIST OF NEW FORMS TO ADD TO THE ASSIGNMENT
                     return newVisitForms.add(newForm);
                 })
                 .toList();
@@ -186,10 +190,13 @@ public class VisitDefinitionService {
 
         visitAssignmentToSave.getCustomers().addAll(availableCustomersInLocation);
         visitAssignmentToSave.getVisitForms().addAll(newVisitForms);
+        // SAVE CUSTOMERS AND FORMS TO ASSIGNMENT
 
         foundVisitDefinition.getVisitAssignments().add(visitAssignmentToSave);
+        // SAVE ASSIGNMENT TO DEFINITION
 
         foundVisitDefinition = visitDefinitionRepository.save(foundVisitDefinition);
+        // SAVE DEFINITION TO DATABASE
 
         return ResponseEntity.status(HttpStatus.CREATED).body(VisitDefinitionMapper.toDetailedResponse(foundVisitDefinition));
     }

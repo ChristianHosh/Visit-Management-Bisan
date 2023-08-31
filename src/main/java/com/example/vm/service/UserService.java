@@ -6,11 +6,15 @@ import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
 import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.dto.mapper.UserMapper;
+import com.example.vm.dto.mapper.VisitAssignmentMapper;
 import com.example.vm.dto.request.UserPostRequest;
 import com.example.vm.dto.request.UserRequest;
 import com.example.vm.dto.response.UserResponse;
 import com.example.vm.model.User;
+import com.example.vm.model.VisitAssignment;
 import com.example.vm.repository.UserRepository;
+import com.example.vm.repository.VisitAssignmentRepository;
+import com.example.vm.service.util.CalenderDate;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -22,10 +26,13 @@ import java.util.List;
 public class UserService {
 
     private final UserRepository repository;
+    private final VisitAssignmentRepository visitAssignmentRepository;
 
     @Autowired
-    public UserService(UserRepository repository) {
+    public UserService(UserRepository repository,
+                       VisitAssignmentRepository visitAssignmentRepository) {
         this.repository = repository;
+        this.visitAssignmentRepository = visitAssignmentRepository;
     }
 
     public ResponseEntity<List<UserResponse>> findAllUsers() {
@@ -94,5 +101,14 @@ public class UserService {
         foundUser = repository.save(foundUser);
 
         return ResponseEntity.ok(UserMapper.toListResponse(foundUser));
+    }
+
+    public ResponseEntity<?> findUserAssignments(String username) {
+        User foundUser = repository.findById(username)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
+
+        List<VisitAssignment> visitAssignments = visitAssignmentRepository.findByUserAndDateAfter(foundUser, CalenderDate.getYesterdaySql());
+
+        return ResponseEntity.ok(VisitAssignmentMapper.listToResponseList(visitAssignments));
     }
 }

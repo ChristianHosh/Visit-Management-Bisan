@@ -5,7 +5,7 @@ import com.example.vm.dto.response.ContactResponse;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.VisitType;
-import com.example.vm.service.formatter.PhoneNumberFormatter;
+import com.example.vm.service.util.PhoneNumberFormatter;
 
 import java.util.List;
 

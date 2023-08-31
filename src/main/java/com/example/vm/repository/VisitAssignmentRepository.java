@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @Repository
 public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment, Long> {
+    List<VisitAssignment> findByUserAndDateAfter(User user, java.sql.Date date);
     List<VisitAssignment> findByVisitDefinitionAndDateAfter(VisitDefinition visitDefinition, java.sql.Date date);
     Optional<VisitAssignment> findByIdAndEnabledTrue(Long id);
     @Query("SELECT u FROM VisitAssignment u WHERE u.visitDefinition.type =:visit")

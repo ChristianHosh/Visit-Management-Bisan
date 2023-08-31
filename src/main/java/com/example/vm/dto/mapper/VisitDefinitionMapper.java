@@ -52,8 +52,7 @@ public class VisitDefinitionMapper {
         response.setLastModifiedTime(definition.getLastModifiedTime());
 
         if (definition.getLocation() != null) {
-            response.setLocationId(definition.getId());
-            response.setAddress(definition.getLocation().getDetailedLocation());
+            response.setLocation(LocationMapper.toResponse(definition.getLocation()));
         }
 
         return response;
