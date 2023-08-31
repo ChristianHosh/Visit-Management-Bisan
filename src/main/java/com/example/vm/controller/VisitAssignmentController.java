@@ -29,8 +29,8 @@ public class VisitAssignmentController {
         return visitAssignmentService.findVisitAssignmentById(id);
     }
 
-    @GetMapping("/{assignmentId}/customer_contacts")
-    public ResponseEntity<?> getContactsByAssignmentType(@PathVariable Long assignmentId, @RequestBody @Valid Long customerId) {
+    @GetMapping("/{assignmentId}/customer/{customerId}/contacts")
+    public ResponseEntity<?> getContactsByAssignmentType(@PathVariable Long assignmentId, @PathVariable Long customerId) {
         return visitAssignmentService.findCustomerContactsByAssignmentType(assignmentId, customerId);
     }
     @GetMapping("/{assignmentId}/forms")
@@ -47,16 +47,23 @@ public class VisitAssignmentController {
         return visitAssignmentService.enableVisitAssignment(id);
     }
 
-    @PostMapping("/{id}/customers")
+    @PutMapping("/{id}/customers")
     public ResponseEntity<?> assignVisitToCustomer(@PathVariable(name = "id") Long assignmentId, @RequestBody @Valid Long customerId) {
         return visitAssignmentService.assignVisitToCustomer(assignmentId, customerId);
     }
 
-    @PostMapping("/{id}/users")
+    @DeleteMapping("/{id}/customers/{customerId}")
+    public ResponseEntity<?> deleteCustomerFromAssignment(@PathVariable(name = "id") Long assignmentId, @PathVariable Long customerId){
+        return visitAssignmentService.deleteCustomerFromAssignment(assignmentId, customerId);
+    }
+
+
+    @PutMapping("/{id}/users")
     public ResponseEntity<?> assignVisitToUser(@PathVariable Long id, @RequestBody @Valid String username) {
         System.out.println(username);
         return visitAssignmentService.assignVisitToUser(id, username);
     }
+
 
 
 }

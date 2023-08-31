@@ -18,10 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class VisitAssignmentService {
@@ -168,6 +165,33 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
+    public ResponseEntity<?> deleteCustomerFromAssignment(Long assignmentId, Long customerId) {
+        VisitAssignment foundAssignment = visitAssignmentRepository.findByIdAndEnabledTrue(assignmentId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
+
+        Customer foundCustomer = customerRepository.findByIdAndEnabledTrue(customerId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
+
+        if (!foundAssignment.getCustomers().contains(foundCustomer))
+            throw new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_ASSIGNED);
+
+        foundAssignment
+                .setCustomers(foundAssignment.getCustomers()
+                        .stream()
+                        .filter(customer -> !Objects.equals(customer.getId(), foundCustomer.getId()))
+                        .toList());
+
+        foundAssignment
+                .setVisitForms(foundAssignment.getVisitForms()
+                        .stream()
+                        .filter(visitForm -> !Objects.equals(visitForm.getCustomer().getId(), foundCustomer.getId()))
+                        .toList());
+
+        foundAssignment = visitAssignmentRepository.save(foundAssignment);
+
+        return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
+    }
+
     public ResponseEntity<VisitAssignmentResponse> assignVisitToUser(Long id, String username) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
@@ -247,6 +271,7 @@ public class VisitAssignmentService {
         } else
             throw new CustomerAlreadyAssignedException();
     }
+
 
 }
 

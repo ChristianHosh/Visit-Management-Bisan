@@ -80,4 +80,14 @@ public class VisitForm extends ModelAuditSuperclass {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "VisitForm{" +
+                "id=" + id +
+                ", status=" + status +
+                ", note='" + note + '\'' +
+                ", customer=" + customer +
+                '}';
+    }
 }

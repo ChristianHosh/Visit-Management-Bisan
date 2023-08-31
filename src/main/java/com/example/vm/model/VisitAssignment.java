@@ -2,7 +2,6 @@ package com.example.vm.model;
 
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.payload.report.UserAssignmentReportPayload;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -33,7 +32,6 @@ public class VisitAssignment extends ModelAuditSuperclass {
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "definition_id")
-    @JsonBackReference
     private VisitDefinition visitDefinition;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -46,7 +44,6 @@ public class VisitAssignment extends ModelAuditSuperclass {
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "next_assignment_id")
-    @ToString.Exclude
     private VisitAssignment nextVisitAssignment;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -93,5 +90,14 @@ public class VisitAssignment extends ModelAuditSuperclass {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "VisitAssignment{" +
+                "id=" + id +
+                ", date=" + date +
+                ", comment='" + comment + '\'' +
+                '}';
     }
 }

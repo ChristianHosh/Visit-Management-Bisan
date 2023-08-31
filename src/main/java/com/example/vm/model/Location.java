@@ -50,6 +50,14 @@ public class Location extends ModelAuditSuperclass {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "Location{" +
+                "id=" + id +
+                ", address='" + address + '\'' +
+                '}';
+    }
+
     public String getDetailedLocation() {
         return String.format("%s, %s", this.getCity().getName(), this.getAddress());
     }
