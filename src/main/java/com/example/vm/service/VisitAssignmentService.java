@@ -5,6 +5,7 @@ import com.example.vm.controller.error.exception.*;
 import com.example.vm.dto.mapper.ContactMapper;
 import com.example.vm.dto.mapper.VisitAssignmentMapper;
 import com.example.vm.dto.mapper.VisitFormMapper;
+import com.example.vm.dto.request.ContactRequest;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.response.ContactResponse;
 import com.example.vm.dto.response.VisitAssignmentResponse;
@@ -27,14 +28,16 @@ public class VisitAssignmentService {
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
     private final VisitFormRepository visitFormRepository;
+    private final VisitTypeService visitTypeService;
 
     @Autowired
-    public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository, VisitFormRepository visitFormRepository) {
+    public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository, VisitFormRepository visitFormRepository, VisitTypeService visitTypeService) {
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
         this.userRepository = userRepository;
         this.visitFormRepository = visitFormRepository;
+        this.visitTypeService = visitTypeService;
     }
 
     public ResponseEntity<List<VisitAssignmentResponse>> findAllVisitAssignments() {
@@ -165,6 +168,19 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
+    public ResponseEntity<?> createContactAndAssignCustomerToAssignment(Long assignmentId, Long customerId, ContactRequest contactRequest) {
+        Customer foundCustomer = customerRepository.findById(customerId)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
+
+        List<VisitType> visitTypes = visitTypeService.getVisitTypes(contactRequest.getVisitTypes());
+        Contact contactToSave = ContactMapper.toEntity(contactRequest, foundCustomer, visitTypes);
+
+        foundCustomer.getContacts().add(contactToSave);
+        customerRepository.save(foundCustomer);
+
+        return assignVisitToCustomer(assignmentId, customerId);
+    }
+
     public ResponseEntity<?> deleteCustomerFromAssignment(Long assignmentId, Long customerId) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findByIdAndEnabledTrue(assignmentId)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
@@ -175,18 +191,15 @@ public class VisitAssignmentService {
         if (!foundAssignment.getCustomers().contains(foundCustomer))
             throw new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_ASSIGNED);
 
-        foundAssignment
-                .setCustomers(foundAssignment.getCustomers()
-                        .stream()
-                        .filter(customer -> !Objects.equals(customer.getId(), foundCustomer.getId()))
-                        .toList());
+        System.out.println("LOOKING FOR FORM ===> ASSIGNMENT : " + foundAssignment.getId() + " | CUSTOMER : " + foundCustomer.getId());
+        VisitForm foundCustomerForm = visitFormRepository.findByCustomerAndVisitAssignment(foundCustomer, foundAssignment)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        foundAssignment
-                .setVisitForms(foundAssignment.getVisitForms()
-                        .stream()
-                        .filter(visitForm -> !Objects.equals(visitForm.getCustomer().getId(), foundCustomer.getId()))
-                        .toList());
 
+        foundAssignment.getCustomers().remove(foundCustomer);
+        foundAssignment.getVisitForms().remove(foundCustomerForm);
+
+        visitFormRepository.delete(foundCustomerForm);
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
@@ -271,6 +284,7 @@ public class VisitAssignmentService {
         } else
             throw new CustomerAlreadyAssignedException();
     }
+
 
 
 }

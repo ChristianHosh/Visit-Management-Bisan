@@ -13,24 +13,11 @@ public class CityMapper {
 
         response.setId(city.getId());
         response.setName(city.getName());
-
-        response.setEnabled(city.getEnabled());
-        response.setCreatedTime(city.getCreatedTime());
-        response.setLastModifiedTime(city.getLastModifiedTime());
-
-        return response;
-    }
-
-    public static CityResponse toDetailedResponse(City city) {
-        CityResponse response = new CityResponse();
-
-        response.setId(city.getId());
-        response.setName(city.getName());
-
-        response.setEnabled(city.getEnabled());
-        response.setCreatedTime(city.getCreatedTime());
-        response.setLastModifiedTime(city.getLastModifiedTime());
         response.setLocations(LocationMapper.toResponseList(city.getLocations()));
+
+        response.setEnabled(city.getEnabled());
+        response.setCreatedTime(city.getCreatedTime());
+        response.setLastModifiedTime(city.getLastModifiedTime());
 
         return response;
     }

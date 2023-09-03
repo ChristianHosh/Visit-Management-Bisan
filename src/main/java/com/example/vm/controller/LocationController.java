@@ -24,5 +24,10 @@ public class LocationController {
         return locationService.saveNewLocation(locationRequest);
     }
 
+    @GetMapping("/{id}/customers")
+    public ResponseEntity<?> findLocationCustomers(@PathVariable Long id){
+        return locationService.findLocationCustomers(id);
+    }
+
 }
 

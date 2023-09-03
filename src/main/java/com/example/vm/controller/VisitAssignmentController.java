@@ -1,5 +1,6 @@
 package com.example.vm.controller;
 
+import com.example.vm.dto.request.ContactRequest;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.service.VisitAssignmentService;
 import jakarta.validation.Valid;
@@ -15,10 +16,12 @@ public class VisitAssignmentController {
     public VisitAssignmentController(VisitAssignmentService visitAssignmentService) {
         this.visitAssignmentService = visitAssignmentService;
     }
+
     @GetMapping("")
     public ResponseEntity<?> getAllEnableVisitAssignment() {
         return visitAssignmentService.findAllEnabledVisitAssignments();
     }
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllVisitAssignment() {
         return visitAssignmentService.findAllVisitAssignments();
@@ -33,37 +36,43 @@ public class VisitAssignmentController {
     public ResponseEntity<?> getContactsByAssignmentType(@PathVariable Long assignmentId, @PathVariable Long customerId) {
         return visitAssignmentService.findCustomerContactsByAssignmentType(assignmentId, customerId);
     }
+
     @GetMapping("/{assignmentId}/forms")
-    public ResponseEntity<?> getFormForAnAssignment(@PathVariable Long assignmentId){
+    public ResponseEntity<?> getFormForAnAssignment(@PathVariable Long assignmentId) {
         return visitAssignmentService.getFormsByAssignment(assignmentId);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateAssignment(@PathVariable Long id,
                                               @RequestBody @Valid VisitAssignmentRequest visitAssignmentUpdate) {
         return visitAssignmentService.updateVisitAssignment(id, visitAssignmentUpdate);
     }
+
     @PutMapping("/{id}/endis")
     public ResponseEntity<?> enableVisitAssignment(@PathVariable Long id) {
         return visitAssignmentService.enableVisitAssignment(id);
     }
 
     @PutMapping("/{id}/customers")
-    public ResponseEntity<?> assignVisitToCustomer(@PathVariable(name = "id") Long assignmentId, @RequestBody @Valid Long customerId) {
+    public ResponseEntity<?> assignCustomerToAssignment(@PathVariable(name = "id") Long assignmentId, @RequestBody @Valid Long customerId) {
         return visitAssignmentService.assignVisitToCustomer(assignmentId, customerId);
     }
 
     @DeleteMapping("/{id}/customers/{customerId}")
-    public ResponseEntity<?> deleteCustomerFromAssignment(@PathVariable(name = "id") Long assignmentId, @PathVariable Long customerId){
+    public ResponseEntity<?> deleteCustomerFromAssignment(@PathVariable(name = "id") Long assignmentId, @PathVariable Long customerId) {
         return visitAssignmentService.deleteCustomerFromAssignment(assignmentId, customerId);
     }
 
+    @PostMapping("/{assignmentId}/customers/{customerId}/contacts")
+    public ResponseEntity<?> createContactAndAssignCustomerToAssignment(@PathVariable Long assignmentId, @PathVariable Long customerId, @RequestBody @Valid ContactRequest contactRequest){
+        return visitAssignmentService.createContactAndAssignCustomerToAssignment(assignmentId, customerId, contactRequest);
+    }
 
     @PutMapping("/{id}/users")
     public ResponseEntity<?> assignVisitToUser(@PathVariable Long id, @RequestBody @Valid String username) {
         System.out.println(username);
         return visitAssignmentService.assignVisitToUser(id, username);
     }
-
 
 
 }

@@ -109,7 +109,7 @@ public class ReportService {
 
             for (VisitAssignment visitAssignment : visitAssignmentList) {
                 List<VisitForm> visitFormList = visitFormRepository
-                        .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
+                        .findVisitFormByVisitAssignmentAndEnabledTrue(visitAssignment);
 
                 for (VisitForm visitForm : visitFormList) {
                     if (visitForm.getStatus().equals(VisitStatus.COMPLETED)) {
@@ -165,11 +165,11 @@ public class ReportService {
 
         ArrayList<StatusReportListPayload> countList = new ArrayList<>();
         ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
+
         for (VisitAssignment visitAssignment : visitAssignmentList) {
             List<VisitForm> visitFormList = visitFormRepository
-                    .findVisitFormByVisitAssignmentAndEnabled(visitAssignment, true);
+                    .findVisitFormByVisitAssignmentAndEnabledTrue(visitAssignment);
             totalFormsCount += visitFormList.size();
-
             for (VisitForm visitForm : visitFormList) {
                 switch (visitForm.getStatus()) {
                     case COMPLETED -> completedCount++;
