@@ -24,11 +24,11 @@ public class CalenderDate {
         return new Date();
     }
 
-    public static Date getTodayUtil(int days){
+    public static Date getTodayUtil(int offset){
         Date todayDate = new Date();
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(todayDate);
-        calendar.add(Calendar.DATE, days);
+        calendar.add(Calendar.DATE, offset);
         todayDate.setTime(calendar.getTime().getTime());
 
         return todayDate;
@@ -38,8 +38,8 @@ public class CalenderDate {
         return new java.sql.Date(getTodayUtil().getTime());
     }
 
-    public static java.sql.Date getTodaySql(int days){
-        return new java.sql.Date(getTodayUtil(days).getTime());
+    public static java.sql.Date getTodaySql(int offset){
+        return new java.sql.Date(getTodayUtil(offset).getTime());
     }
 
     public static Timestamp asTimestamp(java.sql.Date date){

@@ -1,5 +1,6 @@
 package com.example.vm.model;
 
+import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.payload.report.UserAssignmentReportPayload;
 import jakarta.persistence.*;
@@ -52,6 +53,10 @@ public class VisitAssignment extends ModelAuditSuperclass {
 
     @OneToMany(mappedBy = "visitAssignment", cascade = CascadeType.ALL)
     private List<VisitForm> visitForms;
+
+    @Enumerated
+    @Column(name = "status", nullable = false)
+    private VisitStatus status = VisitStatus.NOT_STARTED;
 
     public AssignmentReportListPayload toReportListPayload() {
         if (this.getUser() != null) {

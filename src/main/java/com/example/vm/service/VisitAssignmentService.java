@@ -147,7 +147,7 @@ public class VisitAssignmentService {
         if (contactList.isEmpty())
             throw new NoContactTypeException();
 
-        if (foundAssignment.getDate().before(new Date()))
+        if (foundAssignment.getDate().before(CalenderDate.getYesterdaySql()))
             throw new InvalidDateException(ErrorMessage.DATE_TOO_OLD);
 
         if (foundAssignment.getCustomers().contains(foundCustomer))
@@ -233,18 +233,15 @@ public class VisitAssignmentService {
 
             int frequency = currentAssignment.getVisitDefinition().getFrequency();
 
-            Date currentDate = currentAssignment.getDate();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(currentDate);
-            calendar.add(Calendar.DATE, frequency);
-            Date nextAssignmentDate = calendar.getTime();
+            java.sql.Date nextAssignmentDate = CalenderDate.getTodaySql(frequency);
 
             VisitAssignment nextAssignment = VisitAssignment.builder()
                     .visitDefinition(currentAssignment.getVisitDefinition())
                     .comment(currentAssignment.getComment())
                     .user(currentAssignment.getUser())
                     .customers(new ArrayList<>())
-                    .date(new java.sql.Date(nextAssignmentDate.getTime()))
+                    .status(VisitStatus.NOT_STARTED)
+                    .date(nextAssignmentDate)
                     .nextVisitAssignment(null)
                     .build();
 
@@ -266,25 +263,24 @@ public class VisitAssignmentService {
     }
 
     private void createNextAssignmentForm(Customer currentCustomer, VisitAssignment currentAssignment) {
-        if (!currentAssignment.getCustomers().contains(currentCustomer)) {
-            currentAssignment.getCustomers().add(currentCustomer);
-
-            VisitType visitType = currentAssignment.getVisitDefinition().getType();
-
-            List<Contact> contactList = contactRepository.findContactsByCustomerAndVisitTypesContaining(currentCustomer, visitType);
-
-            VisitForm newVisitForm = VisitForm.builder()
-                    .status(VisitStatus.NOT_STARTED)
-                    .customer(currentCustomer)
-                    .visitAssignment(currentAssignment)
-                    .contacts(contactList)
-                    .build();
-
-            visitFormRepository.save(newVisitForm);
-        } else
+        if (currentAssignment.getCustomers().contains(currentCustomer))
             throw new CustomerAlreadyAssignedException();
-    }
 
+        currentAssignment.getCustomers().add(currentCustomer);
+
+        VisitType visitType = currentAssignment.getVisitDefinition().getType();
+
+        List<Contact> contactList = contactRepository.findContactsByCustomerAndVisitTypesContaining(currentCustomer, visitType);
+
+        VisitForm newVisitForm = VisitForm.builder()
+                .status(VisitStatus.NOT_STARTED)
+                .customer(currentCustomer)
+                .visitAssignment(currentAssignment)
+                .contacts(contactList)
+                .build();
+
+        visitFormRepository.save(newVisitForm);
+    }
 
 
 }

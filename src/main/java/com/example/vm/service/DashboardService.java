@@ -1,9 +1,10 @@
 package com.example.vm.service;
 
-import com.example.vm.model.Customer;
+import com.example.vm.model.Location;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.payload.report.LabelYPayload;
 import com.example.vm.repository.CustomerRepository;
+import com.example.vm.repository.LocationRepository;
 import com.example.vm.repository.VisitFormRepository;
 import com.example.vm.service.util.CalenderDate;
 import org.springframework.http.ResponseEntity;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
 
@@ -19,11 +21,14 @@ public class DashboardService {
 
     private final VisitFormRepository visitFormRepository;
     private final CustomerRepository customerRepository;
+    private final LocationRepository locationRepository;
 
     public DashboardService(VisitFormRepository visitFormRepository,
-                            CustomerRepository customerRepository) {
+                            CustomerRepository customerRepository,
+                            LocationRepository locationRepository) {
         this.visitFormRepository = visitFormRepository;
         this.customerRepository = customerRepository;
+        this.locationRepository = locationRepository;
     }
 
     public ResponseEntity<?> topBarCounts() {
@@ -37,18 +42,16 @@ public class DashboardService {
         resultsMap.put("completedToday", completedFormsForToday);
 
         // THIS WEEK'S NUMBER OF CANCELED FORMS
-        long canceledFormsForThisWeek = visitFormRepository.countByVisitAssignment_DateBetweenAndStatus(CalenderDate.getTodaySql(-7), CalenderDate.getTodaySql(), VisitStatus.CANCELED);
+        long canceledFormsForThisWeek = visitFormRepository.countByVisitAssignment_DateBetweenAndStatus(CalenderDate.getTodaySql(-7), CalenderDate.getTodaySql(1), VisitStatus.CANCELED);
         resultsMap.put("canceledFormsThisWeek", canceledFormsForThisWeek);
 
         // THIS MONTH'S CUSTOMER GROWTH NUMBERS / INCREASE % SINCE LAST MONTH
         long newCustomersThisMonth = customerRepository.countByCreatedTimeBetween(CalenderDate.asTimestamp(CalenderDate.getTodaySql(-30)), CalenderDate.asTimestamp(CalenderDate.getTodaySql(1)));
-        List<Customer> customerList = customerRepository.findByCreatedTimeBetween(CalenderDate.asTimestamp(CalenderDate.getTodaySql(-30)), CalenderDate.asTimestamp(CalenderDate.getTodaySql(1)));
-
-        System.out.println("CUSTOMERS: TOTAL: " + newCustomersThisMonth);
-        customerList.forEach(System.out::println);
-
         resultsMap.put("newCustomersThisMonth", newCustomersThisMonth);
 
+        // CURRENTLY UNDERGOING
+        long currentlyUndergoingForms = visitFormRepository.countByStatus(VisitStatus.UNDERGOING);
+        resultsMap.put("currentlyUndergoing", currentlyUndergoingForms);
 
         return ResponseEntity.ok(resultsMap);
     }
@@ -58,27 +61,50 @@ public class DashboardService {
 
         List<LabelYPayload> totalDailyFormList = new ArrayList<>();
         List<LabelYPayload> completedDailyFormList = new ArrayList<>();
+        List<LabelYPayload> popularLocationList = new ArrayList<>();
 
+        // TOP 5 MOST POPULAR LOCATIONS
+        List<Location> locationList = locationRepository.findAll();
+        for (Location location: locationList){
+            long formsInLocation = visitFormRepository.countByVisitAssignment_VisitDefinition_Location(location);
+
+            popularLocationList.add(new LabelYPayload(
+                    location.getAddress(),
+                    formsInLocation
+            ));
+        }
+        popularLocationList.sort(Comparator.comparing(LabelYPayload::getY));
+        Collections.reverse(popularLocationList);
+
+        popularLocationList = popularLocationList.subList(0,5);
+
+
+
+        // NO OF PREVIOUS DAILY COMPLETED FORMS
         for (int i = 0; i < 7; i++) {
-            LocalDate currentDay = CalenderDate.getTodaySql(-i).toLocalDate();
-            long totalDailyFormsCount = visitFormRepository.countByVisitAssignment_Date(Date.valueOf(currentDay));
+            LocalDate currentDay = CalenderDate.getTodaySql(-i+1).toLocalDate();
             long completedDailyFormsCount = visitFormRepository.countByVisitAssignment_DateAndStatus(Date.valueOf(currentDay), VisitStatus.COMPLETED);
 
-            // NO OF DAILY FORMS
-            totalDailyFormList.add(new LabelYPayload(
-                    currentDay.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()),
-                    totalDailyFormsCount));
-
-            // NO OF DAILY COMPLETED FORMS
             completedDailyFormList.add(new LabelYPayload(
-                    currentDay.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()),
+                    currentDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()),
                     completedDailyFormsCount));
-
-            System.out.println("TODAY IS: " + currentDay + " | DAY: " + currentDay.getDayOfWeek());
         }
 
+        // NO OF NEXT MONTH TOTAL
+        for (int i = 0; i < 30; i++) {
+            LocalDate currentDay = CalenderDate.getTodaySql(i-3).toLocalDate();
+            long totalDailyFormsCount = visitFormRepository.countByVisitAssignment_Date(Date.valueOf(currentDay));
+
+            totalDailyFormList.add(new LabelYPayload(
+                    currentDay.format(DateTimeFormatter.ISO_DATE),
+                    totalDailyFormsCount));
+        }
+        Collections.reverse(completedDailyFormList);
+
+        // PUTTING ARRAYS OF DATA POINT
         resultsMap.put("total", totalDailyFormList);
         resultsMap.put("completed", completedDailyFormList);
+        resultsMap.put("locations", popularLocationList);
 
         return ResponseEntity.ok(resultsMap);
     }

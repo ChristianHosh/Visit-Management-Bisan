@@ -107,7 +107,7 @@ public class UserService {
         User foundUser = repository.findById(username)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        List<VisitAssignment> visitAssignments = visitAssignmentRepository.findByUserAndDateAfter(foundUser, CalenderDate.getYesterdaySql());
+        List<VisitAssignment> visitAssignments = visitAssignmentRepository.findByUserAndDateAfter(foundUser, CalenderDate.getTodaySql(-7));
 
         return ResponseEntity.ok(VisitAssignmentMapper.listToResponseList(visitAssignments));
     }

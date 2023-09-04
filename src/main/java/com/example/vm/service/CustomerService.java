@@ -183,7 +183,7 @@ public class CustomerService {
     private Double[] getGeolocation(Location location) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException, LocationNotFoundException {
         try (GeoApiContext context = new GeoApiContext.Builder().apiKey(GEOLOCATION_KEY).build()) {
             GeocodingResult[] geocodingResults = GeocodingApi
-                    .geocode(context, location.getAddress() + " " + location.getCity().getName())
+                    .geocode(context, location.getAddress() + " " + location.getCity().getName() + " West Bank, Palestine")
                     .await();
 
             if (geocodingResults.length == 0)

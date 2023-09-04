@@ -5,6 +5,7 @@ import com.example.vm.dto.response.VisitAssignmentResponse;
 import com.example.vm.model.User;
 import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.VisitDefinition;
+import com.example.vm.model.enums.VisitStatus;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class VisitAssignmentMapper {
         response.setId(assignment.getId());
         response.setDate(assignment.getDate());
         response.setComment(assignment.getComment());
+        response.setStatus(assignment.getStatus().toString());
         response.setUser(UserMapper.toListResponse(assignment.getUser()));
         response.setVisitType(VisitTypeMapper.toListResponse(assignment.getVisitDefinition().getType()));
 
@@ -62,6 +64,7 @@ public class VisitAssignmentMapper {
                 .user(userToAssign)
                 .customers(new ArrayList<>())
                 .visitForms(new ArrayList<>())
+                .status(VisitStatus.NOT_STARTED)
                 .visitDefinition(visitDefinition)
                 .build();
     }

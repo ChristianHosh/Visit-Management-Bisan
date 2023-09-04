@@ -92,11 +92,19 @@ public class VisitFormService {
         if (!foundForm.getStatus().equals(VisitStatus.UNDERGOING))
             throw new InvalidStatusUpdateException();
 
-
         foundForm.setStatus(VisitStatus.COMPLETED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
         foundForm.setNote(formGeolocationRequest.getNote());
 
+        VisitAssignment parentAssignment = foundForm.getVisitAssignment();
+        boolean areAllFormsCompleted = parentAssignment
+                .getVisitForms()
+                .stream()
+                .allMatch(visitForm -> visitForm.getStatus().equals(VisitStatus.COMPLETED));
+
+        parentAssignment.setStatus(areAllFormsCompleted ? VisitStatus.COMPLETED : VisitStatus.UNDERGOING);
+
+        visitAssignmentRepository.save(parentAssignment);
         foundForm = visitFormRepository.save(foundForm);
 
         visitAssignmentService.createNextVisitAssignment(foundForm.getVisitAssignment(), foundForm.getCustomer());
@@ -118,6 +126,10 @@ public class VisitFormService {
         foundForm.setStatus(VisitStatus.UNDERGOING);
         foundForm.setStartTime(Timestamp.from(Instant.now()));
 
+        VisitAssignment parentAssignment = foundForm.getVisitAssignment();
+        parentAssignment.setStatus(VisitStatus.UNDERGOING);
+
+        visitAssignmentRepository.save(parentAssignment);
         foundForm = visitFormRepository.save(foundForm);
 
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
@@ -147,7 +159,7 @@ public class VisitFormService {
 
     public ResponseEntity<?> findFormContactsByFormId(Long id) {
         VisitForm foundVisitForm = visitFormRepository.findById(id)
-                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
         List<Contact> formContactList = foundVisitForm.getContacts();
 
