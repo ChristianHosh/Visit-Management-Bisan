@@ -25,5 +25,4 @@ public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment
 
     List<VisitAssignment> findVisitAssignmentByUserAndEnabledTrue(User user);
 
-
 }
