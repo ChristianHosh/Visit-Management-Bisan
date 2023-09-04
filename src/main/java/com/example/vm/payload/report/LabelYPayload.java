@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class StatusReportListPayload {
+public class LabelYPayload {
 
   private String label;
 

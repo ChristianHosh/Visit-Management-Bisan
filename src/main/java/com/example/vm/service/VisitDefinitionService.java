@@ -63,7 +63,7 @@ public class VisitDefinitionService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
 
         List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.
-                findByVisitDefinitionAndDateAfter(foundVisitDefinition, new java.sql.Date(System.currentTimeMillis()));
+                findByVisitDefinitionAndDateAfter(foundVisitDefinition, CalenderDate.getYesterdaySql());
 
         return ResponseEntity.ok(VisitDefinitionMapper.toDetailedResponse(foundVisitDefinition, visitAssignmentList));
     }
@@ -148,7 +148,7 @@ public class VisitDefinitionService {
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.DEFINITION_NOT_FOUND));
 
         User userToAssign = userRepository.findById(visitAssignmentRequest.getUsername())
-                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         // VALIDATES THE DATE TO MAKE SURE IT IN THE TODAY OR IN THE FUTURE
         if (visitAssignmentRequest.getDate().before(CalenderDate.getYesterdayUtil()))

@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 
-public class NamePercentageMapPayload {
+public class NameYPayload {
 
     private String name;
 

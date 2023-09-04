@@ -6,11 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    List<Customer> findByCreatedTimeBetween(Timestamp createdTimeStart, Timestamp createdTimeEnd);
+    long countByCreatedTimeBetween(Timestamp createdTimeStart, Timestamp createdTimeEnd);
     List<Customer> findByLocation(Location location);
     List<Customer> findCustomerByEnabledTrueAndLocation(Location location);
 

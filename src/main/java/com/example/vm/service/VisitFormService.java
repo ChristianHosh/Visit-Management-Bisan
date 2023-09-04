@@ -4,11 +4,11 @@ import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.InvalidStatusUpdateException;
 import com.example.vm.controller.error.exception.LocationTooFarException;
+import com.example.vm.dto.mapper.ContactMapper;
 import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.AssignmentCustomerRequest;
 import com.example.vm.dto.request.FormGeolocationRequest;
 import com.example.vm.dto.response.VisitFormResponse;
-import com.example.vm.model.Location;
 import com.example.vm.model.Contact;
 import com.example.vm.model.Customer;
 import com.example.vm.model.enums.VisitStatus;
@@ -145,4 +145,12 @@ public class VisitFormService {
     }
 
 
+    public ResponseEntity<?> findFormContactsByFormId(Long id) {
+        VisitForm foundVisitForm = visitFormRepository.findById(id)
+                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
+
+        List<Contact> formContactList = foundVisitForm.getContacts();
+
+        return ResponseEntity.ok(ContactMapper.listToResponseList(formContactList));
+    }
 }

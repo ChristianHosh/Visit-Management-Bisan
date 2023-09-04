@@ -4,7 +4,7 @@ import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.payload.report.StatusReportListPayload;
+import com.example.vm.payload.report.LabelYPayload;
 import com.example.vm.payload.report.*;
 import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,8 +44,8 @@ public class ReportService {
         return ResponseEntity.ok(FormReportListPayload.toPayload(visitFormRepository.findVisitFormByStatus(status)));
     }
 
-    public ResponseEntity<List<NamePercentageMapPayload>> getTypesPercentages() {
-        ArrayList<NamePercentageMapPayload> customerCountList = new ArrayList<>();
+    public ResponseEntity<List<NameYPayload>> getTypesPercentages() {
+        ArrayList<NameYPayload> customerCountList = new ArrayList<>();
 
         List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabledTrue();
 
@@ -62,13 +62,13 @@ public class ReportService {
 
             if (percentage == 0) continue;
 
-            customerCountList.add(new NamePercentageMapPayload(visitType.getName(), percentage * 100));
+            customerCountList.add(new NameYPayload(visitType.getName(), percentage * 100));
         }
         return ResponseEntity.ok(customerCountList);
     }
 
-    public ResponseEntity<List<NamePercentageMapPayload>> getCityCustomersPercentage() {
-        ArrayList<NamePercentageMapPayload> area = new ArrayList<>();
+    public ResponseEntity<List<NameYPayload>> getCityCustomersPercentage() {
+        ArrayList<NameYPayload> area = new ArrayList<>();
 
         List<Location> cityList = locationRepository.findByEnabledTrue();
 
@@ -83,7 +83,7 @@ public class ReportService {
             double percentage = countOfCustomer / countOfEnabledCustomers;
 
             if (percentage != 0)
-                area.add(new NamePercentageMapPayload( location.getDetailedLocation(), percentage * 100));
+                area.add(new NameYPayload( location.getDetailedLocation(), percentage * 100));
 
         }
         return ResponseEntity.ok(area);
@@ -95,10 +95,10 @@ public class ReportService {
         return UserAssignmentReportPayload.toPayload(foundCustomer);
     }
 
-    public ResponseEntity<List<NamePercentageMapPayload>> findAverageTimeForAllUsers() {
+    public ResponseEntity<List<NameYPayload>> findAverageTimeForAllUsers() {
         List<User> users = userRepository.searchUsersByAccessLevelAndEnabledTrue(0);
 
-        ArrayList<NamePercentageMapPayload> userAverage = new ArrayList<>();
+        ArrayList<NameYPayload> userAverage = new ArrayList<>();
         for (User user : users) {
 
             int completedFormsCounter = 0;
@@ -121,7 +121,7 @@ public class ReportService {
             }
             System.out.println(user.getUsername() + " : " + sumOfTime + " / " + completedFormsCounter + " = " + (sumOfTime / completedFormsCounter));
 
-            userAverage.add(new NamePercentageMapPayload(user.getUsername(), (sumOfTime / completedFormsCounter) / 1000));
+            userAverage.add(new NameYPayload(user.getUsername(), (sumOfTime / completedFormsCounter) / 1000));
 
         }
 
@@ -163,8 +163,8 @@ public class ReportService {
         long canceledCount = 0;
         long totalFormsCount = 0;
 
-        ArrayList<StatusReportListPayload> countList = new ArrayList<>();
-        ArrayList<NamePercentageMapPayload> percentageList = new ArrayList<>();
+        ArrayList<LabelYPayload> countList = new ArrayList<>();
+        ArrayList<NameYPayload> percentageList = new ArrayList<>();
 
         for (VisitAssignment visitAssignment : visitAssignmentList) {
             List<VisitForm> visitFormList = visitFormRepository
@@ -187,13 +187,13 @@ public class ReportService {
             VisitStatus status = statusIterator.next();
             Long count = statusCountIterator.next();
 
-            countList.add(new StatusReportListPayload(String.valueOf(status), count));
+            countList.add(new LabelYPayload(String.valueOf(status), count));
 
             double percentage = (((double) count / (double) totalFormsCount) * 100);
 
             if (percentage == 0 || totalFormsCount == 0) continue;
 
-            percentageList.add(new NamePercentageMapPayload(String.valueOf(status), percentage));
+            percentageList.add(new NameYPayload(String.valueOf(status), percentage));
 
         }
 
@@ -203,11 +203,11 @@ public class ReportService {
         return result;
     }
 
-    public List<NamePercentageMapPayload> calculateTypePercentageForCustomer(Long id) {
+    public List<NameYPayload> calculateTypePercentageForCustomer(Long id) {
         Customer foundCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CUSTOMER_NOT_FOUND));
 
-        ArrayList<NamePercentageMapPayload> customerCountList = new ArrayList<>();
+        ArrayList<NameYPayload> customerCountList = new ArrayList<>();
 
         List<VisitAssignment> customerAssignmentList = foundCustomer.getVisitAssignments();
         long customerAssignmentListSize = customerAssignmentList.size();
@@ -229,7 +229,7 @@ public class ReportService {
 
             if (percentage == 0 || customerAssignmentListSize == 0) continue;
 
-            customerCountList.add(new NamePercentageMapPayload(visitType.getName(), percentage * 100));
+            customerCountList.add(new NameYPayload(visitType.getName(), percentage * 100));
 
         }
         return customerCountList;
@@ -237,7 +237,7 @@ public class ReportService {
 
     public ResponseEntity<Map<String, Object>> customerReport(Long id) {
         List<UserAssignmentReportPayload> details = findUserAssignmentByCustomer(id);
-        List<NamePercentageMapPayload> percentagesForType = calculateTypePercentageForCustomer(id);
+        List<NameYPayload> percentagesForType = calculateTypePercentageForCustomer(id);
         Map<String, Object> result = new HashMap<>();
         result.put("details", details);
         result.put("percentagesForType", percentagesForType);

@@ -26,7 +26,7 @@ public class VisitDefinitionController {
 
         return visitDefinitionService.findAllVisitDefinition();
     }
-////////////////////////////////////////////////////////////////////////////////////////////////
+
     @GetMapping("/{id}")
     public ResponseEntity<? > getVisitDefinitionById(@PathVariable Long id) {
       return visitDefinitionService.findVisitDefinitionByID(id);

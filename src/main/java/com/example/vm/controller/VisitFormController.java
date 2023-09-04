@@ -25,6 +25,11 @@ public class VisitFormController {
         return visitFormService.createNewForm(assignmentCustomerRequest);
     }
 
+    @GetMapping("{id}/contacts")
+    public ResponseEntity<?> getFormContactsByFormId(@PathVariable Long id){
+        return visitFormService.findFormContactsByFormId(id);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getFormById(@PathVariable Long id) {
         return visitFormService.findVisitFormById(id);
