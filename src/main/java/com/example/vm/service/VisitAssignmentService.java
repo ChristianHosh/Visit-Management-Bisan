@@ -232,8 +232,8 @@ public class VisitAssignmentService {
         if (currentAssignment.getNextVisitAssignment() == null) {
             int frequency = currentAssignment.getVisitDefinition().getFrequency();
 
-            java.sql.Date nextAssignmentDate = CalenderDate.getTodaySql(frequency + 1);
-            
+            java.sql.Date nextAssignmentDate = CalenderDate.getDateWithOffsetSql(currentAssignment.getDate(), frequency);
+
             VisitAssignment nextAssignment = VisitAssignment.builder()
                     .visitDefinition(currentAssignment.getVisitDefinition())
                     .comment(currentAssignment.getComment())

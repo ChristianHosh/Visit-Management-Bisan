@@ -141,7 +141,7 @@ public class VisitFormService {
         System.out.println("COMPARING LOCATION: \n" +
                 "CUSTOMER:\n" +
                 "\t GEO: \" + " + customer.getLatitude() + ", " + customer.getLongitude() +
-                "USER:\n" +
+                "\nUSER:\n" +
                 "\t GEO: \" + " + formGeolocationRequest.getLatitude() + ", " + formGeolocationRequest.getLongitude() +
                 "\n DST: " + distance);
 

@@ -45,4 +45,14 @@ public class CalenderDate {
     public static Timestamp asTimestamp(java.sql.Date date){
         return Timestamp.valueOf(date.toLocalDate().atStartOfDay());
     }
+
+    public static java.sql.Date getDateWithOffsetSql(java.sql.Date date, int frequency) {
+        Date todayDate = new Date();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.DATE, frequency);
+        todayDate.setTime(calendar.getTime().getTime());
+
+        return new java.sql.Date(todayDate.getTime());
+    }
 }
