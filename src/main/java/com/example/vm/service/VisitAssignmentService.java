@@ -230,11 +230,10 @@ public class VisitAssignmentService {
             return;
 
         if (currentAssignment.getNextVisitAssignment() == null) {
-
             int frequency = currentAssignment.getVisitDefinition().getFrequency();
 
-            java.sql.Date nextAssignmentDate = CalenderDate.getTodaySql(frequency);
-
+            java.sql.Date nextAssignmentDate = CalenderDate.getTodaySql(frequency + 1);
+            
             VisitAssignment nextAssignment = VisitAssignment.builder()
                     .visitDefinition(currentAssignment.getVisitDefinition())
                     .comment(currentAssignment.getComment())
@@ -254,6 +253,7 @@ public class VisitAssignmentService {
 
         } else {
             VisitAssignment nextAssignment = currentAssignment.getNextVisitAssignment();
+            nextAssignment.setStatus(VisitStatus.UNDERGOING);
 
             createNextAssignmentForm(currentCustomer, nextAssignment);
 

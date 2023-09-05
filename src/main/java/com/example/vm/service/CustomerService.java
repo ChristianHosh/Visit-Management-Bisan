@@ -20,6 +20,7 @@ import com.google.maps.GeocodingApi;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,7 +34,8 @@ import java.util.Map;
 @Service
 public class CustomerService {
 
-    private static final String GEOLOCATION_KEY = "AIzaSyC1rCFrBqu32lHImkYyDBSyfmaxp5YCPao";
+    @Value("bisan.google.key")
+    private String GEOLOCATION_KEY;
 
     private final CustomerRepository customerRepository;
     private final VisitTypeService visitTypeService;

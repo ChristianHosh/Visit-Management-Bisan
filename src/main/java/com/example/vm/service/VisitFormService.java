@@ -138,6 +138,13 @@ public class VisitFormService {
     private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Customer customer) {
         double distance = distanceBetweenTwoPoints(customer, formGeolocationRequest);
 
+        System.out.println("COMPARING LOCATION: \n" +
+                "CUSTOMER:\n" +
+                "\t GEO: \" + " + customer.getLatitude() + ", " + customer.getLongitude() +
+                "USER:\n" +
+                "\t GEO: \" + " + formGeolocationRequest.getLatitude() + ", " + formGeolocationRequest.getLongitude() +
+                "\n DST: " + distance);
+
         if (distance > 250)
             throw new LocationTooFarException();
     }

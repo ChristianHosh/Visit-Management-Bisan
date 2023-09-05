@@ -36,7 +36,6 @@ public class User extends ModelAuditSuperclass {
     private Integer accessLevel;
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.ALL})
-    @JsonBackReference
     private List<VisitAssignment> visitAssignments;
 
     @Override
