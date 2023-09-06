@@ -28,13 +28,12 @@ public class AuthService {
         this.passwordResetRepository = passwordResetRepository;
     }
 
-    public ResponseEntity<?> changePassword(PasswordResetRequest passwordResetRequest) {
+    public ResponseEntity<?> requestPasswordReset(PasswordResetRequest passwordResetRequest) {
         User user = userRepository.findById(passwordResetRequest.getUsername())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         if (!passwordResetRequest.getPassword().equals(passwordResetRequest.getConfirmPassword()))
             throw new PasswordDoesntMatchException();
-
         PasswordReset passwordReset = PasswordResetMapper.toEntity(passwordResetRequest, user);
         passwordReset = passwordResetRepository.save(passwordReset);
 

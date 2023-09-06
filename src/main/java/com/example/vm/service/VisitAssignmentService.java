@@ -126,8 +126,7 @@ public class VisitAssignmentService {
     public ResponseEntity<VisitAssignmentResponse> createUnplannedVisit(Long id, UnplannedVisitRequest unplanned) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
-
-        VisitDefinition definition = foundAssignment.getVisitDefinition();
+        VisitDefinition parentDefinition = foundAssignment.getVisitDefinition();
 
         GeoCoordinates geoCoordinates = GeoCoordinates
                 .builder()
@@ -138,25 +137,26 @@ public class VisitAssignmentService {
         Customer customerToSave = Customer.builder()
                 .name(unplanned.getName())
                 .geoCoordinates(geoCoordinates)
+                .location(parentDefinition.getLocation())
                 .contacts(new ArrayList<>())
                 .build();
 
+        List<VisitType> contactTypeList = new ArrayList<>();
+        contactTypeList.add(parentDefinition.getType());
 
         Contact contactToSave = Contact.builder()
                 .firstName(unplanned.getFirstName())
                 .lastName(unplanned.getLastName())
                 .phoneNumber(PhoneNumberFormatter.formatPhone(unplanned.getPhoneNumber()))
                 .email(unplanned.getEmail().isBlank() ? null : unplanned.getEmail().trim())
-                .visitTypes(List.of(definition.getType()))
+                .visitTypes(contactTypeList)
                 .customer(customerToSave)
                 .build();
 
         customerToSave.getContacts().add(contactToSave);
         customerToSave = customerRepository.save(customerToSave);
 
-        assignVisitToCustomer(id, customerToSave.getId());
-
-        return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
+        return assignVisitToCustomer(id, customerToSave.getId());
     }
 
     public ResponseEntity<List<AssignmentReportListPayload>> reportAssignmentByDate(Date before, Date after) {
