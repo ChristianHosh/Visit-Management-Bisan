@@ -68,8 +68,8 @@ public class VisitDefinitionMapper {
     public static VisitDefinition toEntity(VisitDefinitionRequest definitionRequest, VisitType type, Location location) {
         return VisitDefinition
                 .builder()
-                .name(definitionRequest.getName())
-                .description(definitionRequest.getDescription())
+                .name(definitionRequest.getName().trim())
+                .description(definitionRequest.getDescription().trim())
                 .visitAssignments(new ArrayList<>())
                 .type(type)
                 .location(location)
@@ -79,8 +79,8 @@ public class VisitDefinitionMapper {
     }
 
     public static void update(VisitDefinition oldDefinition, VisitDefinitionRequest definitionRequest, VisitType type, Location location) {
-        oldDefinition.setName(definitionRequest.getName());
-        oldDefinition.setDescription(definitionRequest.getDescription());
+        oldDefinition.setName(definitionRequest.getName().trim());
+        oldDefinition.setDescription(definitionRequest.getDescription().trim());
         oldDefinition.setType(type);
         oldDefinition.setLocation(location);
         oldDefinition.setAllowRecurring(definitionRequest.getAllowRecurring());

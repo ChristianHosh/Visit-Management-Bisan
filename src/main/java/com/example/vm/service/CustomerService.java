@@ -2,7 +2,6 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
-import com.example.vm.controller.error.exception.LocationNotFoundException;
 import com.example.vm.dto.mapper.ContactMapper;
 import com.example.vm.dto.mapper.CustomerMapper;
 import com.example.vm.dto.mapper.VisitAssignmentMapper;
@@ -15,11 +14,7 @@ import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.LocationRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
 import com.example.vm.service.util.CalenderDate;
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.model.GeocodingResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -31,9 +26,6 @@ import java.util.Map;
 
 @Service
 public class CustomerService {
-
-    @Value("bisan.google.key")
-    private String GEOLOCATION_KEY;
 
     private final CustomerRepository customerRepository;
     private final VisitTypeService visitTypeService;
@@ -94,18 +86,6 @@ public class CustomerService {
 
         Customer customerToSave = CustomerMapper.toEntity(customerRequest, foundLocation);
 
-//        if (isNotPreciseLocation(customerRequest)) {
-//            try {
-//                Double[] geolocation = getGeolocation(foundLocation);
-//                customerToSave.setLatitude(geolocation[0]);
-//                customerToSave.setLongitude(geolocation[1]);
-//            } catch (IOException | InterruptedException | ApiException e) {
-//                throw new RuntimeException(e);
-//            } catch (LocationNotFoundException e) {
-//                throw new LocationNotFoundException();
-//            }
-//        }
-
         customerToSave = customerRepository.save(customerToSave);
 
         List<VisitDefinition> visitDefinitionList = foundLocation.getVisitDefinitions();
@@ -148,18 +128,6 @@ public class CustomerService {
 
         CustomerMapper.update(customerToUpdate, customerRequest, foundLocation);
 
-//        if (isNotPreciseLocation(customerRequest)) {
-//            try {
-//                Double[] geolocation = getGeolocation(foundLocation);
-//                customerToUpdate.setLatitude(geolocation[0]);
-//                customerToUpdate.setLongitude(geolocation[1]);
-//            } catch (IOException | InterruptedException | ApiException e) {
-//                throw new RuntimeException(e);
-//            } catch (LocationNotFoundException e) {
-//                throw new LocationNotFoundException();
-//            }
-//        }
-
         customerToUpdate = customerRepository.save(customerToUpdate);
 
         return ResponseEntity.ok(CustomerMapper.toDetailedResponse(customerToUpdate));
@@ -180,25 +148,6 @@ public class CustomerService {
         return ResponseEntity.ok(CustomerMapper.toDetailedResponse(foundCustomer));
     }
 
-    private Double[] getGeolocation(Location location) throws com.google.maps.errors.ApiException, InterruptedException, java.io.IOException, LocationNotFoundException {
-        try (GeoApiContext context = new GeoApiContext.Builder().apiKey(GEOLOCATION_KEY).build()) {
-            GeocodingResult[] geocodingResults = GeocodingApi
-                    .geocode(context, location.getAddress() + " " + location.getCity().getName() + " West Bank, Palestine")
-                    .await();
-
-            if (geocodingResults.length == 0)
-                throw new LocationNotFoundException();
-
-            return new Double[]{
-                    geocodingResults[0].geometry.location.lat,
-                    geocodingResults[0].geometry.location.lng,
-            };
-        }
-    }
-
-    private boolean isNotPreciseLocation(CustomerRequest customerRequest) {
-        return customerRequest.getLongitude() == 0.0 && customerRequest.getLatitude() == 0.0;
-    }
 
 
 }

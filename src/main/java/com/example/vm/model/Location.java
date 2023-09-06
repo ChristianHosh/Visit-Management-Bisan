@@ -34,6 +34,10 @@ public class Location extends ModelAuditSuperclass {
     @OneToMany(mappedBy = "location", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private List<VisitDefinition> visitDefinitions;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "geo_coordinates_id", unique = true)
+    private GeoCoordinates geoCoordinates;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) return true;

@@ -13,7 +13,7 @@ public class PasswordResetMapper {
     public static PasswordReset toEntity(PasswordResetRequest passwordResetRequest, User user) {
         return PasswordReset
                 .builder()
-                .password(passwordResetRequest.getPassword())
+                .password(passwordResetRequest.getPassword().trim())
                 .user(user)
                 .status(PasswordStatus.PENDING)
                 .build();

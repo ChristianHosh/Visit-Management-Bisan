@@ -31,7 +31,7 @@ public class CityMapper {
 
     public static City toEntity(CityRequest request){
         return City.builder()
-                .name(request.getName())
+                .name(request.getName().trim())
                 .build();
     }
 

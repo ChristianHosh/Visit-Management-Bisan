@@ -7,6 +7,7 @@ import com.example.vm.dto.request.CityRequest;
 import com.example.vm.dto.response.CityResponse;
 import com.example.vm.model.City;
 import com.example.vm.repository.CityRepository;
+import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,9 @@ public class CityService {
     }
 
     public ResponseEntity<CityResponse> saveNewCity(CityRequest cityRequest) {
+        if (cityRepository.existsByNameIgnoreCase(cityRequest.getName().trim()))
+            throw new EntityExistsException();
+
         City cityToSave = CityMapper.toEntity(cityRequest);
 
         cityToSave = cityRepository.save(cityToSave);

@@ -31,11 +31,11 @@ public class VisitTypeMapper {
     public static VisitType toEntity(VisitTypeRequest typeRequest){
         return VisitType
                 .builder()
-                .name(typeRequest.getName())
+                .name(typeRequest.getName().trim())
                 .build();
     }
 
     public static void update(VisitType oldType, VisitTypeRequest typeRequest){
-        oldType.setName(typeRequest.getName());
+        oldType.setName(typeRequest.getName().trim());
     }
 }

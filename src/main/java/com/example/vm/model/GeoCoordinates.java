@@ -15,14 +15,17 @@ import java.util.Objects;
 @Table(name = "geo_coordinates_model")
 public class GeoCoordinates extends ModelAuditSuperclass {
 
+    @ToString.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @ToString.Include
     @Column(name = "longitude", nullable = false)
     private Double longitude;
 
+    @ToString.Include
     @Column(name = "latitude", nullable = false)
     private Double latitude;
 
@@ -40,5 +43,13 @@ public class GeoCoordinates extends ModelAuditSuperclass {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" +
+                "id = " + id + ", " +
+                "longitude = " + longitude + ", " +
+                "latitude = " + latitude + ")";
     }
 }

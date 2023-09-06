@@ -52,4 +52,15 @@ public class LocationService {
 
         return ResponseEntity.ok(CustomerMapper.listToResponseList(customerList));
     }
+
+    public ResponseEntity<LocationResponse> updateLocationCoordinates(Long id){
+        Location foundLocation = locationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.LOCATION_NOT_FOUND));
+
+        LocationMapper.updateGeoCoordinates(foundLocation);
+        System.out.println(foundLocation.getGeoCoordinates());
+        locationRepository.save(foundLocation);
+
+        return ResponseEntity.ok(LocationMapper.toResponse(foundLocation));
+    }
 }

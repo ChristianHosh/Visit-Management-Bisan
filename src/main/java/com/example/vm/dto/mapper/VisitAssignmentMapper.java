@@ -59,7 +59,7 @@ public class VisitAssignmentMapper {
     public static VisitAssignment toEntity(VisitAssignmentRequest assignmentRequest, VisitDefinition visitDefinition, User userToAssign) {
         return VisitAssignment
                 .builder()
-                .comment(assignmentRequest.getComment())
+                .comment(assignmentRequest.getComment().trim())
                 .date(assignmentRequest.getDate())
                 .user(userToAssign)
                 .customers(new ArrayList<>())

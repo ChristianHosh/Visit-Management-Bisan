@@ -41,20 +41,20 @@ public class ContactMapper {
 
     public static Contact toEntity(ContactRequest contactRequest, Customer customer, List<VisitType> visitTypes) {
         return Contact.builder()
-                .firstName(contactRequest.getFirstName())
-                .lastName(contactRequest.getLastName())
-                .email(contactRequest.getEmail().isBlank() ? null : contactRequest.getEmail())
-                .phoneNumber(PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber()))
+                .firstName(contactRequest.getFirstName().trim())
+                .lastName(contactRequest.getLastName().trim())
+                .email(contactRequest.getEmail().isBlank() ? null : contactRequest.getEmail().trim())
+                .phoneNumber(PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber()).trim())
                 .visitTypes(visitTypes)
                 .customer(customer)
                 .build();
     }
 
     public static void update(Contact contactToUpdate, ContactRequest contactRequest, List<VisitType> visitTypes) {
-        contactToUpdate.setFirstName(contactRequest.getFirstName());
-        contactToUpdate.setLastName(contactRequest.getLastName());
-        contactToUpdate.setPhoneNumber(PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber()));
-        contactToUpdate.setEmail(contactRequest.getEmail().isBlank() ? null : contactRequest.getEmail());
+        contactToUpdate.setFirstName(contactRequest.getFirstName().trim());
+        contactToUpdate.setLastName(contactRequest.getLastName().trim());
+        contactToUpdate.setPhoneNumber(PhoneNumberFormatter.formatPhone(contactRequest.getPhoneNumber().trim()).trim());
+        contactToUpdate.setEmail(contactRequest.getEmail().isBlank() ? null : contactRequest.getEmail().trim());
         contactToUpdate.setVisitTypes(visitTypes);
     }
 }

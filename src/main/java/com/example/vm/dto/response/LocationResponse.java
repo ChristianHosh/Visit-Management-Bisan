@@ -10,4 +10,6 @@ public class LocationResponse extends ModelAuditResponse{
     private String address;
     private Long cityId;
     private String cityName;
+    private Double longitude;
+    private Double latitude;
 }

@@ -38,17 +38,17 @@ public class UserMapper {
 
     public static User toEntity(UserPostRequest userRequest) {
         return User.builder()
-                .username(userRequest.getUsername().toLowerCase())
-                .firstName(userRequest.getFirstName())
-                .lastName(userRequest.getLastName())
-                .password(userRequest.getPassword())
+                .username(userRequest.getUsername().toLowerCase().trim())
+                .firstName(userRequest.getFirstName().trim())
+                .lastName(userRequest.getLastName().trim())
+                .password(userRequest.getPassword().trim())
                 .accessLevel(userRequest.getAccessLevel())
                 .build();
     }
 
     public static void update(User oldUser, UserRequest userRequest) {
-        oldUser.setFirstName(userRequest.getFirstName());
-        oldUser.setLastName(userRequest.getLastName());
+        oldUser.setFirstName(userRequest.getFirstName().trim());
+        oldUser.setLastName(userRequest.getLastName().trim());
         oldUser.setAccessLevel(userRequest.getAccessLevel());
 
     }

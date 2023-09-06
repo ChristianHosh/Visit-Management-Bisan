@@ -20,13 +20,18 @@ public class LocationController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveNewUser(@RequestBody @Valid LocationRequest locationRequest) {
+    public ResponseEntity<?> saveNewLocation(@RequestBody @Valid LocationRequest locationRequest) {
         return locationService.saveNewLocation(locationRequest);
     }
 
     @GetMapping("/{id}/customers")
     public ResponseEntity<?> findLocationCustomers(@PathVariable Long id){
         return locationService.findLocationCustomers(id);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateLocationCoordinates(@PathVariable Long id){
+        return locationService.updateLocationCoordinates(id);
     }
 
 }
