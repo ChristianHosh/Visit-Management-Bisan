@@ -20,7 +20,6 @@ public class LocationMapper {
 
     public static LocationResponse toResponse(Location location) {
         LocationResponse response = new LocationResponse();
-
         response.setId(location.getId());
         response.setAddress(location.getAddress());
         response.setCityName(location.getCity().getName());

@@ -3,9 +3,12 @@ package com.example.vm.service;
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.*;
 import com.example.vm.dto.mapper.ContactMapper;
+import com.example.vm.dto.mapper.CustomerMapper;
 import com.example.vm.dto.mapper.VisitAssignmentMapper;
 import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.ContactRequest;
+import com.example.vm.dto.request.CustomerRequest;
+import com.example.vm.dto.request.UnplannedVisitRequest;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.response.ContactResponse;
 import com.example.vm.dto.response.VisitAssignmentResponse;
@@ -15,6 +18,7 @@ import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.repository.*;
 import com.example.vm.service.util.CalenderDate;
+import com.example.vm.service.util.PhoneNumberFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -118,6 +122,38 @@ public class VisitAssignmentService {
 
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
 
+        return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
+    }
+
+    public ResponseEntity<VisitAssignmentResponse> UnplannedAssignment(Long id, UnplannedVisitRequest unplanned) {
+        VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
+
+        VisitDefinition definition = foundAssignment.getVisitDefinition();
+
+        GeoCoordinates geoCoordinates = GeoCoordinates
+                .builder()
+                .latitude(unplanned.getLatitude())
+                .longitude(unplanned.getLongitude())
+                .build();
+
+        Customer customerToSave = Customer.builder()
+                .name(unplanned.getName())
+                .geoCoordinates(geoCoordinates)
+                .build();
+
+
+        Contact contactToSave = Contact.builder()
+                .firstName(unplanned.getFirstName())
+                .lastName(unplanned.getLastName())
+                .phoneNumber(PhoneNumberFormatter.formatPhone(unplanned.getPhoneNumber()))
+                .email(unplanned.getEmail().isBlank() ? null : unplanned.getEmail().trim())
+                .visitTypes(List.of(definition.getType()))
+                .customer(customerToSave)
+                .build();
+
+        customerToSave = customerRepository.save(customerToSave);
+         assignVisitToCustomer(id,customerToSave.getId());
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 

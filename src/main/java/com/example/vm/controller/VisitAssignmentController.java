@@ -1,6 +1,7 @@
 package com.example.vm.controller;
 
 import com.example.vm.dto.request.ContactRequest;
+import com.example.vm.dto.request.UnplannedVisitRequest;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.service.VisitAssignmentService;
 import jakarta.validation.Valid;
@@ -66,6 +67,10 @@ public class VisitAssignmentController {
     @PostMapping("/{assignmentId}/customers/{customerId}/contacts")
     public ResponseEntity<?> createContactAndAssignCustomerToAssignment(@PathVariable Long assignmentId, @PathVariable Long customerId, @RequestBody @Valid ContactRequest contactRequest){
         return visitAssignmentService.createContactAndAssignCustomerToAssignment(assignmentId, customerId, contactRequest);
+    }
+    @PostMapping("/{assignmentId}")
+    public ResponseEntity<?> UnplannedAssignment(@PathVariable Long assignmentId, @RequestBody @Valid UnplannedVisitRequest unplannedVisit){
+        return visitAssignmentService.UnplannedAssignment(assignmentId,unplannedVisit);
     }
 
     @PutMapping("/{id}/users")
