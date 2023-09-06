@@ -1,6 +1,6 @@
 package com.example.vm.dto.mapper;
 
-import com.example.vm.dto.request.CityRequest;
+import com.example.vm.dto.request.SimpleNameRequest;
 import com.example.vm.dto.response.CityResponse;
 import com.example.vm.model.City;
 
@@ -29,7 +29,7 @@ public class CityMapper {
                 .toList();
     }
 
-    public static City toEntity(CityRequest request){
+    public static City toEntity(SimpleNameRequest request){
         return City.builder()
                 .name(request.getName().trim())
                 .build();

@@ -1,6 +1,6 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.request.VisitTypeRequest;
+import com.example.vm.dto.request.SimpleNameRequest;
 import com.example.vm.service.VisitTypeService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +26,15 @@ public class VisitTypeController {
         return visitTypeService.findAll();
     }
     @PostMapping("")
-    public ResponseEntity<?> saveNewVisitType(@RequestBody @Valid VisitTypeRequest visitTypeRequest) {
-        System.out.println("---->" + visitTypeRequest);
-        return visitTypeService.saveNewVisitType(visitTypeRequest);
+    public ResponseEntity<?> saveNewVisitType(@RequestBody @Valid SimpleNameRequest simpleNameRequest) {
+        System.out.println("---->" + simpleNameRequest);
+        return visitTypeService.saveNewVisitType(simpleNameRequest);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateVisitType(@PathVariable Long id, @RequestBody @Valid VisitTypeRequest visitTypeRequest) {
-        System.out.println("---->" + visitTypeRequest);
-        return visitTypeService.updateVisitType(id, visitTypeRequest);
+    public ResponseEntity<?> updateVisitType(@PathVariable Long id, @RequestBody @Valid SimpleNameRequest simpleNameRequest) {
+        System.out.println("---->" + simpleNameRequest);
+        return visitTypeService.updateVisitType(id, simpleNameRequest);
     }
 
 }

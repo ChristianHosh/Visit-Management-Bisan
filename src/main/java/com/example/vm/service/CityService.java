@@ -2,17 +2,16 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.controller.error.exception.UserAlreadyExistsException;
 import com.example.vm.dto.mapper.CityMapper;
 import com.example.vm.dto.mapper.LocationMapper;
-import com.example.vm.dto.request.CityRequest;
-import com.example.vm.dto.request.LocationRequest;
+import com.example.vm.dto.request.SimpleNameRequest;
 import com.example.vm.dto.response.CityResponse;
 import com.example.vm.dto.response.LocationResponse;
 import com.example.vm.model.City;
 import com.example.vm.model.Location;
 import com.example.vm.repository.CityRepository;
 import com.example.vm.repository.LocationRepository;
-import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -50,9 +49,9 @@ public class CityService {
         return ResponseEntity.ok(CityMapper.toListResponse(foundCity));
     }
 
-    public ResponseEntity<CityResponse> saveNewCity(CityRequest cityRequest) {
+    public ResponseEntity<CityResponse> saveNewCity(SimpleNameRequest cityRequest) {
         if (cityRepository.existsByNameIgnoreCase(cityRequest.getName().trim()))
-            throw new EntityExistsException();
+            throw new UserAlreadyExistsException();
 
         City cityToSave = CityMapper.toEntity(cityRequest);
 
@@ -61,11 +60,14 @@ public class CityService {
         return ResponseEntity.ok(CityMapper.toListResponse(cityToSave));
     }
 
-    public ResponseEntity<LocationResponse> saveNewLocationToCity(Long id, LocationRequest locationRequest) {
+    public ResponseEntity<LocationResponse> saveNewLocationToCity(Long id, SimpleNameRequest simpleNameRequest) {
         City foundCity = cityRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
 
-        Location locationToSave = LocationMapper.toEntity(locationRequest, foundCity);
+        if (locationRepository.existsByCityAndAddressIgnoreCase(foundCity, simpleNameRequest.getName().trim()))
+            throw new UserAlreadyExistsException();
+
+        Location locationToSave = LocationMapper.toEntity(simpleNameRequest, foundCity);
 
         locationToSave = locationRepository.save(locationToSave);
 

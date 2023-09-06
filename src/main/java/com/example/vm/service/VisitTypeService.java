@@ -3,7 +3,7 @@ package com.example.vm.service;
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.mapper.VisitTypeMapper;
-import com.example.vm.dto.request.VisitTypeRequest;
+import com.example.vm.dto.request.SimpleNameRequest;
 import com.example.vm.dto.response.VisitTypeResponse;
 import com.example.vm.model.VisitType;
 import com.example.vm.repository.VisitTypeRepository;
@@ -37,19 +37,19 @@ public class VisitTypeService {
         return ResponseEntity.ok(VisitTypeMapper.listToResponseList(queryResult));
     }
 
-    public ResponseEntity<VisitTypeResponse> saveNewVisitType(VisitTypeRequest visitTypeRequest) {
-        VisitType visitTypeToSave = VisitTypeMapper.toEntity(visitTypeRequest);
+    public ResponseEntity<VisitTypeResponse> saveNewVisitType(SimpleNameRequest simpleNameRequest) {
+        VisitType visitTypeToSave = VisitTypeMapper.toEntity(simpleNameRequest);
 
         visitTypeToSave = repository.save(visitTypeToSave);
 
         return ResponseEntity.ok(VisitTypeMapper.toListResponse(visitTypeToSave));
     }
 
-    public ResponseEntity<VisitTypeResponse> updateVisitType(Long id, VisitTypeRequest visitTypeRequest) {
+    public ResponseEntity<VisitTypeResponse> updateVisitType(Long id, SimpleNameRequest simpleNameRequest) {
         VisitType foundVisitType = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
-        VisitTypeMapper.update(foundVisitType, visitTypeRequest);
+        VisitTypeMapper.update(foundVisitType, simpleNameRequest);
 
         foundVisitType = repository.save(foundVisitType);
 

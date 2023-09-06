@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 
 @Getter
-public class VisitTypeRequest {
+public class SimpleNameRequest {
 
     @NotBlank(message = "Bad request: name is blank")
     @NotNull(message = "Bad request: name is null")
@@ -17,7 +17,7 @@ public class VisitTypeRequest {
     private String name;
 
     @JsonCreator
-    public VisitTypeRequest(String name) {
+    public SimpleNameRequest(String name) {
         this.name = name;
     }
 }

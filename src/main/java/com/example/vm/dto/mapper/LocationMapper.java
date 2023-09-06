@@ -1,7 +1,7 @@
 package com.example.vm.dto.mapper;
 
 import com.example.vm.controller.error.exception.LocationNotFoundException;
-import com.example.vm.dto.request.LocationRequest;
+import com.example.vm.dto.request.SimpleNameRequest;
 import com.example.vm.dto.response.LocationResponse;
 import com.example.vm.model.City;
 import com.example.vm.model.GeoCoordinates;
@@ -45,9 +45,9 @@ public class LocationMapper {
                 .toList();
     }
 
-    public static Location toEntity(LocationRequest request, City city) {
+    public static Location toEntity(SimpleNameRequest request, City city) {
         try {
-            Double[] latLngLiteral = getGeoCoordinates(request.getAddress() + " " + city.getName());
+            Double[] latLngLiteral = getGeoCoordinates(request.getName() + " " + city.getName());
 
             GeoCoordinates geoCoordinates = GeoCoordinates
                     .builder()
@@ -56,7 +56,7 @@ public class LocationMapper {
                     .build();
 
             return Location.builder()
-                    .address(request.getAddress().trim())
+                    .address(request.getName().trim())
                     .geoCoordinates(geoCoordinates)
                     .city(city)
                     .build();

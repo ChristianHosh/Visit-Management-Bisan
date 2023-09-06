@@ -1,7 +1,6 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.request.CityRequest;
-import com.example.vm.dto.request.LocationRequest;
+import com.example.vm.dto.request.SimpleNameRequest;
 import com.example.vm.service.CityService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +34,12 @@ public class CityController {
     }
 
     @PostMapping("")
-    public ResponseEntity<?> saveNewCity(@RequestBody @Valid CityRequest cityRequest) {
+    public ResponseEntity<?> saveNewCity(@RequestBody @Valid SimpleNameRequest cityRequest) {
         return cityService.saveNewCity(cityRequest);
     }
 
     @PostMapping("/{id}")
-    public ResponseEntity<?> saveLocationToCity(@PathVariable Long id, @RequestBody @Valid LocationRequest locationRequest){
+    public ResponseEntity<?> saveLocationToCity(@PathVariable Long id, @RequestBody @Valid SimpleNameRequest locationRequest) {
         return cityService.saveNewLocationToCity(id, locationRequest);
     }
 }
