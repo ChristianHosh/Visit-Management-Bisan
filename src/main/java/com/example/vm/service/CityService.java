@@ -3,10 +3,15 @@ package com.example.vm.service;
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.mapper.CityMapper;
+import com.example.vm.dto.mapper.LocationMapper;
 import com.example.vm.dto.request.CityRequest;
+import com.example.vm.dto.request.LocationRequest;
 import com.example.vm.dto.response.CityResponse;
+import com.example.vm.dto.response.LocationResponse;
 import com.example.vm.model.City;
+import com.example.vm.model.Location;
 import com.example.vm.repository.CityRepository;
+import com.example.vm.repository.LocationRepository;
 import jakarta.persistence.EntityExistsException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +22,13 @@ import java.util.List;
 @Service
 public class CityService {
     private final CityRepository cityRepository;
+    private final LocationRepository locationRepository;
 
     @Autowired
-    public CityService(CityRepository cityRepository) {
+    public CityService(CityRepository cityRepository,
+                       LocationRepository locationRepository) {
         this.cityRepository = cityRepository;
+        this.locationRepository = locationRepository;
     }
 
     public ResponseEntity<List<CityResponse>> findAllEnabledCities() {
@@ -53,4 +61,14 @@ public class CityService {
         return ResponseEntity.ok(CityMapper.toListResponse(cityToSave));
     }
 
+    public ResponseEntity<LocationResponse> saveNewLocationToCity(Long id, LocationRequest locationRequest) {
+        City foundCity = cityRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
+
+        Location locationToSave = LocationMapper.toEntity(locationRequest, foundCity);
+
+        locationToSave = locationRepository.save(locationToSave);
+
+        return ResponseEntity.ok(LocationMapper.toResponse(locationToSave));
+    }
 }

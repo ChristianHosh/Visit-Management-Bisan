@@ -1,6 +1,7 @@
 package com.example.vm.controller;
 
 import com.example.vm.dto.request.CityRequest;
+import com.example.vm.dto.request.LocationRequest;
 import com.example.vm.service.CityService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +30,17 @@ public class CityController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getCityById(@PathVariable @Valid Long id){
+    public ResponseEntity<?> getCityById(@PathVariable @Valid Long id) {
         return cityService.findById(id);
     }
+
     @PostMapping("")
     public ResponseEntity<?> saveNewCity(@RequestBody @Valid CityRequest cityRequest) {
         return cityService.saveNewCity(cityRequest);
+    }
+
+    @PostMapping("/{id}")
+    public ResponseEntity<?> saveLocationToCity(@PathVariable Long id, @RequestBody @Valid LocationRequest locationRequest){
+        return cityService.saveNewLocationToCity(id, locationRequest);
     }
 }

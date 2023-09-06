@@ -1,8 +1,6 @@
 package com.example.vm.controller;
 
-import com.example.vm.dto.request.LocationRequest;
 import com.example.vm.service.LocationService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,18 +17,14 @@ public class LocationController {
         this.locationService = locationService;
     }
 
-    @PostMapping("")
-    public ResponseEntity<?> saveNewLocation(@RequestBody @Valid LocationRequest locationRequest) {
-        return locationService.saveNewLocation(locationRequest);
-    }
 
     @GetMapping("/{id}/customers")
-    public ResponseEntity<?> findLocationCustomers(@PathVariable Long id){
+    public ResponseEntity<?> findLocationCustomers(@PathVariable Long id) {
         return locationService.findLocationCustomers(id);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateLocationCoordinates(@PathVariable Long id){
+    public ResponseEntity<?> updateLocationCoordinates(@PathVariable Long id) {
         return locationService.updateLocationCoordinates(id);
     }
 

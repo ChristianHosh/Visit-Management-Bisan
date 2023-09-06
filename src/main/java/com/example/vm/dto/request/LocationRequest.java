@@ -9,12 +9,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class LocationRequest {
+
     @NotBlank(message = "Bad request: address is blank")
     @NotNull(message = "Bad request: address is null")
     @Size(min = 3, max = 30, message = "Bad request: address must be between 3 and 30 characters long")
     String address;
 
-
-    @NotNull(message = "Bad request: city id is null")
-    Long cityId;
 }
