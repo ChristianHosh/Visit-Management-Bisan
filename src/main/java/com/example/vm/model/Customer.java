@@ -1,7 +1,6 @@
 package com.example.vm.model;
 
 import com.example.vm.payload.report.CustomerReportListPayload;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -29,11 +28,9 @@ public class Customer extends ModelAuditSuperclass {
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "location_id", nullable = false)
-    @JsonManagedReference
     private Location location;
 
     @OneToMany(mappedBy = "customer", cascade = {CascadeType.ALL})
-    @JsonManagedReference
     private List<Contact> contacts;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

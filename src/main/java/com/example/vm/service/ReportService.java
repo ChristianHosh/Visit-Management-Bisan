@@ -2,15 +2,20 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.dto.mapper.UserMapper;
+import com.example.vm.dto.report.UserPerformanceResponse;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.payload.report.LabelYPayload;
 import com.example.vm.payload.report.*;
 import com.example.vm.repository.*;
+import com.example.vm.service.util.CalenderDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -83,7 +88,7 @@ public class ReportService {
             double percentage = countOfCustomer / countOfEnabledCustomers;
 
             if (percentage != 0)
-                area.add(new NameYPayload( location.getDetailedLocation(), percentage * 100));
+                area.add(new NameYPayload(location.getDetailedLocation(), percentage * 100));
 
         }
         return ResponseEntity.ok(area);
@@ -245,4 +250,63 @@ public class ReportService {
         return ResponseEntity.ok(result);
     }
 
+    public ResponseEntity<List<UserPerformanceResponse>> generateUserPerformanceReport(Date startDate, Date endDate) {
+        List<User> employeeUserList = userRepository.findByAccessLevelAndEnabledTrue(0);
+        List<UserPerformanceResponse> userPerformanceReport = new ArrayList<>(employeeUserList.size());
+
+        for (User currentUser : employeeUserList) {
+            long totalUserAssignmentsCount = visitAssignmentRepository.countByUserAndDateBetweenAndEnabledTrue(currentUser, startDate, endDate);
+            long notStartedUserAssignmentsCount = visitAssignmentRepository.countByUserAndDateBetweenAndStatusAndEnabledTrue(currentUser, startDate, endDate, VisitStatus.NOT_STARTED);
+            long undergoingUserAssignmentsCount = visitAssignmentRepository.countByUserAndDateBetweenAndStatusAndEnabledTrue(currentUser, startDate, endDate, VisitStatus.UNDERGOING);
+            long completedUserAssignmentsCount = visitAssignmentRepository.countByUserAndDateBetweenAndStatusAndEnabledTrue(currentUser, startDate, endDate, VisitStatus.COMPLETED);
+
+            long totalUserFormsCount = visitFormRepository.countByVisitAssignment_UserAndVisitAssignment_DateBetweenAndEnabledTrueAndVisitAssignment_EnabledTrue(currentUser, startDate, endDate);
+            long notStartedUserFormsCount = visitFormRepository.countByVisitAssignment_UserAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(currentUser, startDate, endDate, VisitStatus.NOT_STARTED);
+            long undergoingUserFormsCount = visitFormRepository.countByVisitAssignment_UserAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(currentUser, startDate, endDate, VisitStatus.UNDERGOING);
+            long canceledUserFormsCount = visitFormRepository.countByVisitAssignment_UserAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(currentUser, startDate, endDate, VisitStatus.CANCELED);
+            long completedUserFormsCount = visitFormRepository.countByVisitAssignment_UserAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(currentUser, startDate, endDate, VisitStatus.COMPLETED);
+
+            double notStartedUserFormsPercentage = ((double) notStartedUserFormsCount / totalUserFormsCount) * 100;
+            double undergoingUserFormsPercentage = ((double) undergoingUserFormsCount / totalUserFormsCount) * 100;
+            double canceledUserFormsPercentage = ((double) canceledUserFormsCount / totalUserFormsCount) * 100;
+            double completedUserFormsPercentage = ((double) completedUserFormsCount / totalUserFormsCount) * 100;
+
+            long totalTimeCompletingForms = 0;
+            List<VisitForm> userCompletedFormList = visitFormRepository.findByVisitAssignment_UserAndVisitAssignment_DateBetweenAndVisitAssignment_EnabledTrueAndEnabledTrueAndStatus(currentUser, startDate, endDate, VisitStatus.COMPLETED);
+            for (VisitForm currentForm : userCompletedFormList) {
+                totalTimeCompletingForms += currentForm.getEndTime().getTime() - currentForm.getStartTime().getTime();
+            }
+            double averageTimeCompletingForms = ((double) totalTimeCompletingForms / completedUserFormsCount) / 1000;
+
+            long lateUserFormsCount = 0;
+            List<VisitAssignment> userAssignmentList = visitAssignmentRepository.findByUserAndDateBetweenAndEnabledTrue(currentUser, startDate, endDate);
+            for (VisitAssignment currentAssignment : userAssignmentList) {
+                Date lateDate = CalenderDate.getDateWithOffsetSql(currentAssignment.getDate(), 1);
+                Timestamp lateTimestamp = new Timestamp(lateDate.getTime());
+
+                lateUserFormsCount += visitFormRepository.countByVisitAssignmentAndStartTimeAfterAndEnabledTrue(currentAssignment, lateTimestamp);
+            }
+
+            userPerformanceReport.add(UserPerformanceResponse.builder()
+                    .totalAssignments(totalUserAssignmentsCount)
+                    .notStartedAssignments(notStartedUserAssignmentsCount)
+                    .undergoingAssignments(undergoingUserAssignmentsCount)
+                    .completedAssignments(completedUserAssignmentsCount)
+                    .totalForms(totalUserFormsCount)
+                    .notStartedForms(notStartedUserFormsCount)
+                    .undergoingForms(undergoingUserFormsCount)
+                    .canceledForms(canceledUserFormsCount)
+                    .completedForms(completedUserFormsCount)
+                    .notStartedFormsPer(notStartedUserFormsPercentage)
+                    .undergoingFormsPer(undergoingUserFormsPercentage)
+                    .canceledFormsPer(canceledUserFormsPercentage)
+                    .completedFormsPer(completedUserFormsPercentage)
+                    .averageCompletionTime(averageTimeCompletingForms)
+                    .lateFormsCount(lateUserFormsCount)
+                    .user(UserMapper.toListResponse(currentUser))
+                    .build());
+        }
+
+        return ResponseEntity.ok(userPerformanceReport);
+    }
 }

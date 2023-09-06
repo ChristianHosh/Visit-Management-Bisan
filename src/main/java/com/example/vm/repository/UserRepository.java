@@ -9,6 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
+    List<User> findByAccessLevelAndEnabledTrue(Integer accessLevel);
 
     List<User> searchUsersByFirstNameContainingOrLastNameContainingOrUsernameContaining(String firstName, String lastName, String username);
     Optional<User> findUserByUsernameAndEnabledTrue(String username);

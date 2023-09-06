@@ -4,6 +4,7 @@ import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.service.ReportService;
 import com.example.vm.service.VisitAssignmentService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,6 +87,13 @@ public class ReportController {
     }
 
 
+    // REMOVE ABOVE REPORTS
+    @GetMapping("/user_performance")
+    public ResponseEntity<?> generateUserPerformanceReport(
+            @RequestParam(name = "from") String startDate,
+            @RequestParam(name = "to") String endDate) {
+        return reportService.generateUserPerformanceReport(Date.valueOf(startDate), Date.valueOf(endDate));
+    }
 
 
 }
