@@ -68,8 +68,8 @@ public class VisitAssignmentController {
     public ResponseEntity<?> createContactAndAssignCustomerToAssignment(@PathVariable Long assignmentId, @PathVariable Long customerId, @RequestBody @Valid ContactRequest contactRequest){
         return visitAssignmentService.createContactAndAssignCustomerToAssignment(assignmentId, customerId, contactRequest);
     }
-    @PostMapping("/{assignmentId}")
-    public ResponseEntity<?> UnplannedAssignment(@PathVariable Long assignmentId, @RequestBody @Valid UnplannedVisitRequest unplannedVisit){
+    @PostMapping("/{assignmentId}/new_visit")
+    public ResponseEntity<?> UnplannedVisit(@PathVariable Long assignmentId, @RequestBody @Valid UnplannedVisitRequest unplannedVisit){
         return visitAssignmentService.createUnplannedVisit(assignmentId,unplannedVisit);
     }
 
