@@ -3,11 +3,9 @@ package com.example.vm.service;
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.*;
 import com.example.vm.dto.mapper.ContactMapper;
-import com.example.vm.dto.mapper.CustomerMapper;
 import com.example.vm.dto.mapper.VisitAssignmentMapper;
 import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.ContactRequest;
-import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.dto.request.UnplannedVisitRequest;
 import com.example.vm.dto.request.VisitAssignmentRequest;
 import com.example.vm.dto.response.ContactResponse;
@@ -125,7 +123,7 @@ public class VisitAssignmentService {
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 
-    public ResponseEntity<VisitAssignmentResponse> UnplannedAssignment(Long id, UnplannedVisitRequest unplanned) {
+    public ResponseEntity<VisitAssignmentResponse> createUnplannedVisit(Long id, UnplannedVisitRequest unplanned) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
@@ -140,6 +138,7 @@ public class VisitAssignmentService {
         Customer customerToSave = Customer.builder()
                 .name(unplanned.getName())
                 .geoCoordinates(geoCoordinates)
+                .contacts(new ArrayList<>())
                 .build();
 
 
@@ -152,8 +151,11 @@ public class VisitAssignmentService {
                 .customer(customerToSave)
                 .build();
 
+        customerToSave.getContacts().add(contactToSave);
         customerToSave = customerRepository.save(customerToSave);
-         assignVisitToCustomer(id,customerToSave.getId());
+
+        assignVisitToCustomer(id, customerToSave.getId());
+
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
     }
 

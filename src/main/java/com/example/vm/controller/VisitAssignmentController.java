@@ -70,7 +70,7 @@ public class VisitAssignmentController {
     }
     @PostMapping("/{assignmentId}")
     public ResponseEntity<?> UnplannedAssignment(@PathVariable Long assignmentId, @RequestBody @Valid UnplannedVisitRequest unplannedVisit){
-        return visitAssignmentService.UnplannedAssignment(assignmentId,unplannedVisit);
+        return visitAssignmentService.createUnplannedVisit(assignmentId,unplannedVisit);
     }
 
     @PutMapping("/{id}/users")
