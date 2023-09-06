@@ -27,12 +27,6 @@ public class Customer extends ModelAuditSuperclass {
     @Column(name = "name", nullable = false, length = 30)
     private String name;
 
-    @Column(name = "longitude", nullable = false)
-    private Double longitude;
-
-    @Column(name = "latitude", nullable = false)
-    private Double latitude;
-
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "location_id", nullable = false)
     @JsonManagedReference
@@ -49,6 +43,10 @@ public class Customer extends ModelAuditSuperclass {
             inverseJoinColumns = @JoinColumn(name = "assignment_id")
     )
     private List<VisitAssignment> visitAssignments;
+
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "geo_coordinates_id", unique = true)
+    private GeoCoordinates geoCoordinates;
 
     public CustomerReportListPayload toListPayloadReport() {
         return new CustomerReportListPayload(this.getId(), this.getName());

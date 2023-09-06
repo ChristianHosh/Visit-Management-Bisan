@@ -56,7 +56,7 @@ public class CustomerController {
     }
 
     @PostMapping("/{id}/contacts")
-    public ResponseEntity<?> SaveContactToCustomer(@PathVariable Long id, @RequestBody @Valid ContactRequest contactRequest) {
+    public ResponseEntity<?> saveContactToCustomer(@PathVariable Long id, @RequestBody @Valid ContactRequest contactRequest) {
         return customerService.saveContactToCustomer(id, contactRequest);
     }
 

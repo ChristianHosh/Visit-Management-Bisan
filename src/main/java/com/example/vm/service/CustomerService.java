@@ -17,7 +17,6 @@ import com.example.vm.repository.VisitAssignmentRepository;
 import com.example.vm.service.util.CalenderDate;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
-import com.google.maps.errors.ApiException;
 import com.google.maps.model.GeocodingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,17 +94,17 @@ public class CustomerService {
 
         Customer customerToSave = CustomerMapper.toEntity(customerRequest, foundLocation);
 
-        if (isNotPreciseLocation(customerRequest)) {
-            try {
-                Double[] geolocation = getGeolocation(foundLocation);
-                customerToSave.setLatitude(geolocation[0]);
-                customerToSave.setLongitude(geolocation[1]);
-            } catch (IOException | InterruptedException | ApiException e) {
-                throw new RuntimeException(e);
-            } catch (LocationNotFoundException e) {
-                throw new LocationNotFoundException();
-            }
-        }
+//        if (isNotPreciseLocation(customerRequest)) {
+//            try {
+//                Double[] geolocation = getGeolocation(foundLocation);
+//                customerToSave.setLatitude(geolocation[0]);
+//                customerToSave.setLongitude(geolocation[1]);
+//            } catch (IOException | InterruptedException | ApiException e) {
+//                throw new RuntimeException(e);
+//            } catch (LocationNotFoundException e) {
+//                throw new LocationNotFoundException();
+//            }
+//        }
 
         customerToSave = customerRepository.save(customerToSave);
 
@@ -150,17 +148,17 @@ public class CustomerService {
 
         CustomerMapper.update(customerToUpdate, customerRequest, foundLocation);
 
-        if (isNotPreciseLocation(customerRequest)) {
-            try {
-                Double[] geolocation = getGeolocation(foundLocation);
-                customerToUpdate.setLatitude(geolocation[0]);
-                customerToUpdate.setLongitude(geolocation[1]);
-            } catch (IOException | InterruptedException | ApiException e) {
-                throw new RuntimeException(e);
-            } catch (LocationNotFoundException e) {
-                throw new LocationNotFoundException();
-            }
-        }
+//        if (isNotPreciseLocation(customerRequest)) {
+//            try {
+//                Double[] geolocation = getGeolocation(foundLocation);
+//                customerToUpdate.setLatitude(geolocation[0]);
+//                customerToUpdate.setLongitude(geolocation[1]);
+//            } catch (IOException | InterruptedException | ApiException e) {
+//                throw new RuntimeException(e);
+//            } catch (LocationNotFoundException e) {
+//                throw new LocationNotFoundException();
+//            }
+//        }
 
         customerToUpdate = customerRepository.save(customerToUpdate);
 

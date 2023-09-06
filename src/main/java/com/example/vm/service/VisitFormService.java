@@ -9,12 +9,8 @@ import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.AssignmentCustomerRequest;
 import com.example.vm.dto.request.FormGeolocationRequest;
 import com.example.vm.dto.response.VisitFormResponse;
-import com.example.vm.model.Contact;
-import com.example.vm.model.Customer;
+import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.VisitAssignment;
-import com.example.vm.model.VisitForm;
-import com.example.vm.model.VisitType;
 import com.example.vm.repository.ContactRepository;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
@@ -136,11 +132,11 @@ public class VisitFormService {
     }
 
     private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Customer customer) {
-        double distance = distanceBetweenTwoPoints(customer, formGeolocationRequest);
+        double distance = distanceBetweenTwoPoints(customer.getGeoCoordinates(), formGeolocationRequest);
 
         System.out.println("COMPARING LOCATION: \n" +
                 "CUSTOMER:\n" +
-                "\t GEO: \" + " + customer.getLatitude() + ", " + customer.getLongitude() +
+                "\t GEO: \" + " + customer.getGeoCoordinates().getLatitude() + ", " + customer.getGeoCoordinates().getLongitude() +
                 "\nUSER:\n" +
                 "\t GEO: \" + " + formGeolocationRequest.getLatitude() + ", " + formGeolocationRequest.getLongitude() +
                 "\n DST: " + distance);
@@ -153,9 +149,9 @@ public class VisitFormService {
         return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)) * 111 * 1000;
     }
 
-    private static double distanceBetweenTwoPoints(Customer customerLocation, FormGeolocationRequest formGeolocationRequest) {
-        double customerLat = customerLocation.getLatitude();
-        double customerLng = customerLocation.getLongitude();
+    private static double distanceBetweenTwoPoints(GeoCoordinates coordinates, FormGeolocationRequest formGeolocationRequest) {
+        double customerLat = coordinates.getLatitude();
+        double customerLng = coordinates.getLongitude();
 
         double userLat = formGeolocationRequest.getLatitude();
         double userLng = formGeolocationRequest.getLongitude();

@@ -3,6 +3,7 @@ package com.example.vm.dto.mapper;
 import com.example.vm.dto.request.CustomerRequest;
 import com.example.vm.dto.response.LocationResponse;
 import com.example.vm.dto.response.CustomerResponse;
+import com.example.vm.model.GeoCoordinates;
 import com.example.vm.model.Location;
 import com.example.vm.model.Customer;
 import org.jetbrains.annotations.NotNull;
@@ -61,8 +62,8 @@ public class CustomerMapper {
 
         response.setId(customer.getId());
         response.setName(customer.getName());
-        response.setLongitude(customer.getLongitude());
-        response.setLatitude(customer.getLatitude());
+        response.setLatitude(customer.getGeoCoordinates().getLatitude());
+        response.setLongitude(customer.getGeoCoordinates().getLongitude());
         response.setLocation(getLocationResponse(customer.getLocation()));
 
         response.setEnabled(customer.getEnabled());
@@ -72,10 +73,15 @@ public class CustomerMapper {
     }
 
     public static Customer toEntity(CustomerRequest customerRequest, Location foundLocation) {
+        GeoCoordinates geoCoordinates = GeoCoordinates
+                .builder()
+                .latitude(customerRequest.getLatitude())
+                .longitude(customerRequest.getLongitude())
+                .build();
+
         return Customer.builder()
                 .name(customerRequest.getName())
-                .longitude(customerRequest.getLongitude())
-                .latitude(customerRequest.getLatitude())
+                .geoCoordinates(geoCoordinates)
                 .location(foundLocation)
                 .visitAssignments(new ArrayList<>())
                 .build();
@@ -83,9 +89,12 @@ public class CustomerMapper {
     }
 
     public static void update(Customer oldCustomer, CustomerRequest customerRequest, Location foundLocation) {
+        if (oldCustomer.getGeoCoordinates() == null)
+            oldCustomer.setGeoCoordinates(new GeoCoordinates());
+
         oldCustomer.setName(customerRequest.getName());
-        oldCustomer.setLongitude(customerRequest.getLongitude());
-        oldCustomer.setLatitude(customerRequest.getLatitude());
+        oldCustomer.getGeoCoordinates().setLongitude(customerRequest.getLongitude());
+        oldCustomer.getGeoCoordinates().setLatitude(customerRequest.getLatitude());
         oldCustomer.setLocation(foundLocation);
     }
 }
