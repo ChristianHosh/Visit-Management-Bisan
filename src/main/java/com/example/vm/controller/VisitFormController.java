@@ -1,7 +1,7 @@
 package com.example.vm.controller;
 
 import com.example.vm.dto.request.AssignmentCustomerRequest;
-import com.example.vm.dto.request.FormGeolocationRequest;
+import com.example.vm.dto.request.FormUpdateRequest;
 import com.example.vm.service.VisitFormService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,18 +36,18 @@ public class VisitFormController {
     }
 
     @PutMapping("/{id}/start")
-    public ResponseEntity<?> updateFormStatusUndergoing(@PathVariable Long id, @RequestBody @Valid FormGeolocationRequest geolocationDTO) {
-        return visitFormService.startForm(id, geolocationDTO);
+    public ResponseEntity<?> updateFormStatusUndergoing(@PathVariable Long id, @RequestBody @Valid FormUpdateRequest formUpdateRequest) {
+        return visitFormService.startForm(id, formUpdateRequest);
     }
 
     @PutMapping("/{id}/complete")
-    public ResponseEntity<?> updateFormStatusComplete(@PathVariable Long id, @RequestBody @Valid FormGeolocationRequest geolocationDTO) {
-        return visitFormService.completeForm(id, geolocationDTO);
+    public ResponseEntity<?> updateFormStatusComplete(@PathVariable Long id, @RequestBody @Valid FormUpdateRequest formUpdateRequest) {
+        return visitFormService.completeForm(id, formUpdateRequest);
     }
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<?> updateFormStatusCancel(@PathVariable Long id, @RequestBody @Valid FormGeolocationRequest geolocationRequest) {
-        return visitFormService.cancelForm(id, geolocationRequest);
+    public ResponseEntity<?> updateFormStatusCancel(@PathVariable Long id, @RequestBody @Valid FormUpdateRequest formUpdateRequest) {
+        return visitFormService.cancelForm(id, formUpdateRequest);
     }
 
 

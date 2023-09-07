@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class FormGeolocationRequest {
+public class FormUpdateRequest {
 
     @NotNull
     private Double longitude;
@@ -15,4 +15,11 @@ public class FormGeolocationRequest {
     private Double latitude;
 
     private String note;
+
+    private String answer1;
+
+    private String answer2;
+
+    private String answer3;
+
 }

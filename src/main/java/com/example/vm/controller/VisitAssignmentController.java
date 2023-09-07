@@ -75,13 +75,12 @@ public class VisitAssignmentController {
     }
 
     @PostMapping("/{assignmentId}/new_visit")
-    public ResponseEntity<?> UnplannedVisit(@PathVariable Long assignmentId, @RequestBody @Valid UnplannedVisitRequest unplannedVisit) {
+    public ResponseEntity<?> createUnplannedVisit(@PathVariable Long assignmentId, @RequestBody @Valid UnplannedVisitRequest unplannedVisit) {
         return visitAssignmentService.createUnplannedVisit(assignmentId, unplannedVisit);
     }
 
     @PutMapping("/{id}/users")
     public ResponseEntity<?> assignVisitToUser(@PathVariable Long id, @RequestBody @Valid String username) {
-        System.out.println(username);
         return visitAssignmentService.assignVisitToUser(id, username);
     }
 
