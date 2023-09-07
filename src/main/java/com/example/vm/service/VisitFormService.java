@@ -88,9 +88,16 @@ public class VisitFormService {
         if (!foundForm.getStatus().equals(VisitStatus.UNDERGOING))
             throw new InvalidStatusUpdateException();
 
+
         foundForm.setStatus(VisitStatus.COMPLETED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
         foundForm.setNote(formGeolocationRequest.getNote());
+        if (foundForm.getGeoCoordinates() == null)
+            foundForm.setGeoCoordinates(new GeoCoordinates());
+
+        foundForm.getGeoCoordinates().setLongitude(formGeolocationRequest.getLongitude());
+        foundForm.getGeoCoordinates().setLatitude(formGeolocationRequest.getLatitude());
+
 
         VisitAssignment parentAssignment = foundForm.getVisitAssignment();
         boolean areAllFormsCompleted = parentAssignment
@@ -108,7 +115,6 @@ public class VisitFormService {
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
-
     public ResponseEntity<VisitFormResponse> startForm(Long id, FormGeolocationRequest formGeolocationRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
@@ -121,6 +127,11 @@ public class VisitFormService {
 
         foundForm.setStatus(VisitStatus.UNDERGOING);
         foundForm.setStartTime(Timestamp.from(Instant.now()));
+        if (foundForm.getGeoCoordinates() == null)
+            foundForm.setGeoCoordinates(new GeoCoordinates());
+
+        foundForm.getGeoCoordinates().setLatitude(formGeolocationRequest.getLatitude());
+        foundForm.getGeoCoordinates().setLongitude(formGeolocationRequest.getLongitude());
 
         VisitAssignment parentAssignment = foundForm.getVisitAssignment();
         parentAssignment.setStatus(VisitStatus.UNDERGOING);
@@ -129,6 +140,34 @@ public class VisitFormService {
         foundForm = visitFormRepository.save(foundForm);
 
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
+    }
+
+    public ResponseEntity<?> cancelForm(Long id, FormGeolocationRequest formGeolocationRequest) {
+        VisitForm foundForm = visitFormRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
+
+        if (foundForm.getStatus().equals(VisitStatus.COMPLETED))
+            throw new InvalidStatusUpdateException();
+
+        foundForm.setStatus(VisitStatus.CANCELED);
+        if (foundForm.getGeoCoordinates() == null)
+            foundForm.setGeoCoordinates(new GeoCoordinates());
+
+        foundForm.getGeoCoordinates().setLatitude(formGeolocationRequest.getLatitude());
+        foundForm.getGeoCoordinates().setLongitude(formGeolocationRequest.getLongitude());
+
+        foundForm = visitFormRepository.save(foundForm);
+
+        return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
+    }
+
+    public ResponseEntity<?> findFormContactsByFormId(Long id) {
+        VisitForm foundVisitForm = visitFormRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
+
+        List<Contact> formContactList = foundVisitForm.getContacts();
+
+        return ResponseEntity.ok(ContactMapper.listToResponseList(formContactList));
     }
 
     private static void validateDistance(FormGeolocationRequest formGeolocationRequest, Customer customer) {
@@ -160,12 +199,4 @@ public class VisitFormService {
     }
 
 
-    public ResponseEntity<?> findFormContactsByFormId(Long id) {
-        VisitForm foundVisitForm = visitFormRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
-
-        List<Contact> formContactList = foundVisitForm.getContacts();
-
-        return ResponseEntity.ok(ContactMapper.listToResponseList(formContactList));
-    }
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/visit_definitions")
 public class VisitDefinitionController {
+
     private final VisitDefinitionService visitDefinitionService;
 
     public VisitDefinitionController(VisitDefinitionService visitDefinitionService) {
@@ -47,8 +48,7 @@ public class VisitDefinitionController {
        return visitDefinitionService.saveNewVisitDefinition(visitDefinitionRequest);
     }
 
-
-    @PostMapping("/{id}/assignments")
+    @PostMapping("/{id}/visit_assignments")
     public ResponseEntity<?> saveNewVisitAssignmentToDefinition(@PathVariable Long id, @RequestBody @Valid VisitAssignmentRequest visitAssignmentRequest) {
         return visitDefinitionService.saveNewVisitAssignmentToDefinition(id, visitAssignmentRequest);
     }

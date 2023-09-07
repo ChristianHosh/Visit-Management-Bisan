@@ -66,7 +66,7 @@ public class DashboardService {
         // TOP 5 MOST POPULAR LOCATIONS
         List<Location> locationList = locationRepository.findAll();
         for (Location location: locationList){
-            long formsInLocation = visitFormRepository.countByVisitAssignment_VisitDefinition_Location(location);
+            long formsInLocation = visitFormRepository.countByVisitAssignment_VisitDefinition_LocationAndVisitAssignment_DateBetweenAndVisitAssignment_EnabledTrueAndEnabledTrue(location, CalenderDate.getTodaySql(-14), CalenderDate.getTodaySql(1));
 
             popularLocationList.add(new LabelYPayload(
                     location.getAddress(),

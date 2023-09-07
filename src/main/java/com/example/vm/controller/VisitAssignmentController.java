@@ -33,6 +33,11 @@ public class VisitAssignmentController {
         return visitAssignmentService.findVisitAssignmentById(id);
     }
 
+    @GetMapping("{id}/questions")
+    public ResponseEntity<?> getVisitAssignmentQuestions(@PathVariable Long id) {
+        return visitAssignmentService.getQuestions(id);
+    }
+
     @GetMapping("/{assignmentId}/customer/{customerId}/contacts")
     public ResponseEntity<?> getContactsByAssignmentType(@PathVariable Long assignmentId, @PathVariable Long customerId) {
         return visitAssignmentService.findCustomerContactsByAssignmentType(assignmentId, customerId);
@@ -65,12 +70,13 @@ public class VisitAssignmentController {
     }
 
     @PostMapping("/{assignmentId}/customers/{customerId}/contacts")
-    public ResponseEntity<?> createContactAndAssignCustomerToAssignment(@PathVariable Long assignmentId, @PathVariable Long customerId, @RequestBody @Valid ContactRequest contactRequest){
+    public ResponseEntity<?> createContactAndAssignCustomerToAssignment(@PathVariable Long assignmentId, @PathVariable Long customerId, @RequestBody @Valid ContactRequest contactRequest) {
         return visitAssignmentService.createContactAndAssignCustomerToAssignment(assignmentId, customerId, contactRequest);
     }
+
     @PostMapping("/{assignmentId}/new_visit")
-    public ResponseEntity<?> UnplannedVisit(@PathVariable Long assignmentId, @RequestBody @Valid UnplannedVisitRequest unplannedVisit){
-        return visitAssignmentService.createUnplannedVisit(assignmentId,unplannedVisit);
+    public ResponseEntity<?> UnplannedVisit(@PathVariable Long assignmentId, @RequestBody @Valid UnplannedVisitRequest unplannedVisit) {
+        return visitAssignmentService.createUnplannedVisit(assignmentId, unplannedVisit);
     }
 
     @PutMapping("/{id}/users")

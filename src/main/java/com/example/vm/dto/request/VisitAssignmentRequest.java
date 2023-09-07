@@ -21,4 +21,10 @@ public class VisitAssignmentRequest {
     @NotNull(message = "Bad request: username is null")
     private String username;
 
+    private String question1;
+
+    private String question2;
+
+    private String question3;
+
 }

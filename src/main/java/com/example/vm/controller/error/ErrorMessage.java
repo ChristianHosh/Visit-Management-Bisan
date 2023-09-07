@@ -13,7 +13,7 @@ public enum ErrorMessage {
     TYPE_NOT_FOUND("Entity not found: Visit Type not found"),
     FORM_NOT_FOUND("Entity not found: Visit Form not found"),
     CUSTOMER_NOT_ASSIGNED("Entity not found: Customer is not assigned"),
-
+    SURVEY_NOT_FOUND("Not found: Survey Template not found"),
 
     // NOT ENABLED MESSAGES
     CITY_NOT_ENABLED("Entity not enabled: City not enabled"),
@@ -39,7 +39,6 @@ public enum ErrorMessage {
     // CONFLICT EXCEPTIONS
     USER_ALREADY_EXISTS("Conflict: Username already exists"),
     CUSTOMER_ALREADY_ASSIGNED("Conflict: Customer is already assigned");
-
 
 
     public final String message;

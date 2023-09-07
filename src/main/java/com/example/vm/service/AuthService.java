@@ -10,6 +10,7 @@ import com.example.vm.model.PasswordReset;
 import com.example.vm.model.User;
 import com.example.vm.repository.PasswordResetRepository;
 import com.example.vm.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordResetRepository passwordResetRepository;
 
+    @Autowired
     public AuthService(UserRepository userRepository,
                        PasswordResetRepository passwordResetRepository) {
         this.userRepository = userRepository;
@@ -34,6 +36,7 @@ public class AuthService {
 
         if (!passwordResetRequest.getPassword().equals(passwordResetRequest.getConfirmPassword()))
             throw new PasswordDoesntMatchException();
+
         PasswordReset passwordReset = PasswordResetMapper.toEntity(passwordResetRequest, user);
         passwordReset = passwordResetRepository.save(passwordReset);
 

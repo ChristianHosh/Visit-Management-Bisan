@@ -7,7 +7,6 @@ import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,6 +38,10 @@ public class VisitForm extends ModelAuditSuperclass {
     @Column(name = "note")
     private String note;
 
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "geo_coordinates_id", unique = true)
+    private GeoCoordinates geoCoordinates;
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "customer_id")
     private Customer customer;
@@ -54,7 +57,6 @@ public class VisitForm extends ModelAuditSuperclass {
             inverseJoinColumns = @JoinColumn(name = "contact_id")
     )
     private List<Contact> contacts;
-
 
     public FormReportListPayload toListPayloadReport() {
         return new FormReportListPayload(

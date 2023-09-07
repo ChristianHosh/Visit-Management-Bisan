@@ -12,6 +12,8 @@ import java.util.Optional;
 
 @Repository
 public interface VisitFormRepository extends JpaRepository<VisitForm, Long> {
+    List<VisitForm> findByVisitAssignment_UserAndVisitAssignment_DateBetweenAndVisitAssignment_EnabledTrueAndEnabledTrue(User user, Date dateStart, Date dateEnd);
+    long countByVisitAssignment_VisitDefinition_LocationAndVisitAssignment_DateBetweenAndVisitAssignment_EnabledTrueAndEnabledTrue(Location location, Date dateStart, Date dateEnd);
     long countByVisitAssignmentAndStartTimeAfterAndEnabledTrue(VisitAssignment visitAssignment, Timestamp startTime);
 
     List<VisitForm> findByVisitAssignment_UserAndVisitAssignment_DateBetweenAndVisitAssignment_EnabledTrueAndEnabledTrueAndStatus(User user, Date dateStart, Date dateEnd, VisitStatus status);
@@ -19,8 +21,6 @@ public interface VisitFormRepository extends JpaRepository<VisitForm, Long> {
     long countByVisitAssignment_UserAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(User user, Date dateStart, Date dateEnd, VisitStatus status);
 
     long countByVisitAssignment_UserAndVisitAssignment_DateBetweenAndEnabledTrueAndVisitAssignment_EnabledTrue(User user, Date dateStart, Date dateEnd);
-
-    long countByVisitAssignment_VisitDefinition_Location(Location location);
 
     long countByStatus(VisitStatus status);
 

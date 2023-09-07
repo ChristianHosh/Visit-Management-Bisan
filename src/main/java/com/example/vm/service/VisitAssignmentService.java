@@ -3,6 +3,7 @@ package com.example.vm.service;
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.*;
 import com.example.vm.dto.mapper.ContactMapper;
+import com.example.vm.dto.mapper.SurveyMapper;
 import com.example.vm.dto.mapper.VisitAssignmentMapper;
 import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.ContactRequest;
@@ -13,6 +14,7 @@ import com.example.vm.dto.response.VisitAssignmentResponse;
 import com.example.vm.dto.response.VisitFormResponse;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
+import com.example.vm.model.templates.SurveyTemplate;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.repository.*;
 import com.example.vm.service.util.CalenderDate;
@@ -31,15 +33,18 @@ public class VisitAssignmentService {
     private final UserRepository userRepository;
     private final VisitFormRepository visitFormRepository;
     private final VisitTypeService visitTypeService;
+    private final SurveyTemplateRepository surveyTemplateRepository;
 
     @Autowired
-    public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository, VisitFormRepository visitFormRepository, VisitTypeService visitTypeService) {
+    public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository, VisitFormRepository visitFormRepository, VisitTypeService visitTypeService,
+                                  SurveyTemplateRepository surveyTemplateRepository) {
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
         this.userRepository = userRepository;
         this.visitFormRepository = visitFormRepository;
         this.visitTypeService = visitTypeService;
+        this.surveyTemplateRepository = surveyTemplateRepository;
     }
 
     public ResponseEntity<List<VisitAssignmentResponse>> findAllVisitAssignments() {
@@ -282,10 +287,26 @@ public class VisitAssignmentService {
                     .nextVisitAssignment(null)
                     .build();
 
+            SurveyTemplate surveyTemplate = null;
+            if (isSurvey(currentAssignment.getVisitDefinition())){
+                SurveyTemplate survey = surveyTemplateRepository.findByVisitAssignment(currentAssignment)
+                        .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
+
+                surveyTemplate = SurveyTemplate.builder()
+                        .question1(survey.getQuestion1())
+                        .question2(survey.getQuestion2())
+                        .question3(survey.getQuestion3())
+                        .visitAssignment(nextAssignment)
+                        .build();
+            }
+
             currentAssignment.setNextVisitAssignment(nextAssignment);
 
             visitAssignmentRepository.save(nextAssignment);
             visitAssignmentRepository.save(currentAssignment);
+            if (surveyTemplate != null)
+                surveyTemplateRepository.save(surveyTemplate);
+
 
             createNextAssignmentForm(currentCustomer, nextAssignment);
 
@@ -298,6 +319,10 @@ public class VisitAssignmentService {
             visitAssignmentRepository.save(nextAssignment);
         }
 
+    }
+
+    private boolean isSurvey(VisitDefinition visitDefinition) {
+        return visitDefinition.getType().getName().equalsIgnoreCase("Survey");
     }
 
     private void createNextAssignmentForm(Customer currentCustomer, VisitAssignment currentAssignment) {
@@ -321,5 +346,14 @@ public class VisitAssignmentService {
     }
 
 
+    public ResponseEntity<?> getQuestions(Long id) {
+        VisitAssignment visitAssignment = visitAssignmentRepository.findById(id)
+                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
+
+        SurveyTemplate surveyTemplate = surveyTemplateRepository.findByVisitAssignment(visitAssignment)
+                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.SURVEY_NOT_FOUND));
+
+        return ResponseEntity.ok(SurveyMapper.toResponse(surveyTemplate));
+    }
 }
 

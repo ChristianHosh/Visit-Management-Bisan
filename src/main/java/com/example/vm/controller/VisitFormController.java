@@ -45,5 +45,10 @@ public class VisitFormController {
         return visitFormService.completeForm(id, geolocationDTO);
     }
 
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<?> updateFormStatusCancel(@PathVariable Long id, @RequestBody @Valid FormGeolocationRequest geolocationRequest) {
+        return visitFormService.cancelForm(id, geolocationRequest);
+    }
+
 
 }
