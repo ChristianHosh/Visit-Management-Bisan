@@ -13,7 +13,9 @@ import java.util.Objects;
 @Setter
 @Entity
 @Builder
-@Table(name = "customer_model")
+@Table(name = "customer_model", uniqueConstraints = {
+        @UniqueConstraint(name = "uc_customer_name_location_id", columnNames = {"name", "location_id"})
+})
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer extends ModelAuditSuperclass {

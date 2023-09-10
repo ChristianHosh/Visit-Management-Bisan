@@ -5,6 +5,7 @@ import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
 import com.example.vm.dto.mapper.PasswordResetMapper;
+import com.example.vm.dto.mapper.UserMapper;
 import com.example.vm.dto.request.LoginRequest;
 import com.example.vm.dto.request.PasswordResetRequest;
 import com.example.vm.dto.response.PasswordResetResponse;
@@ -42,9 +43,10 @@ public class AuthService {
             throw new PasswordDoesntMatchException();
 
         PasswordReset passwordReset = PasswordResetMapper.toEntity(passwordResetRequest, user);
+
         passwordReset = passwordResetRepository.save(passwordReset);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(PasswordResetMapper.toResponse(passwordReset));
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(PasswordResetMapper.toResponse(passwordReset));
     }
 
     public ResponseEntity<?> findAllPasswordResetRequest() {
@@ -56,7 +58,8 @@ public class AuthService {
     }
 
     public ResponseEntity<?> loginUser(@Valid LoginRequest loginRequest) {
-        Optional<User> userOptional = userRepository.findByUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword());
+        System.out.println("LOGGING IN: USERNAME: (" + loginRequest.getUsername() + ") PASSWORD: (" + loginRequest.getPassword() + ")");
+        Optional<User> userOptional = userRepository.findByUsernameAndPassword(loginRequest.getUsername().trim(), loginRequest.getPassword().trim());
 
         if (userOptional.isEmpty()) {
             return ResponseEntity
@@ -66,6 +69,14 @@ public class AuthService {
         }
 
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(userOptional.get());
+                .body(UserMapper.toListResponse(userOptional.get()));
+    }
+
+    public ResponseEntity<?> acceptResetPasswordRequest(Long requestId) {
+        return null;
+    }
+
+    public ResponseEntity<?> rejectResetPasswordRequest(Long requestId) {
+        return null;
     }
 }

@@ -48,16 +48,10 @@ public class ReportController {
         return reportService.customerReport(id);
     }
 
-   /* @GetMapping("/customers/{id}/types")
-    public ResponseEntity<?> getTypesPercentagesForSpecificCustomer(@PathVariable Long id) {
-        return reportService.calculateTypePercentageForCustomer(id);
-    }*/
-
     @GetMapping("/customers/count_by_type")
     public ResponseEntity<?> getTypesPercentages() {
         return reportService.getTypesPercentages();
     }
-
 
     @GetMapping("/customers/count_by_area")
     public ResponseEntity<?> countCustomersInAnArea() {

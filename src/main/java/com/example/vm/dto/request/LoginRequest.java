@@ -7,6 +7,7 @@ import lombok.Getter;
 
 @Getter
 public class LoginRequest {
+
     @NotBlank(message = "Bad request: username is blank")
     @NotNull(message = "Bad request: username is null")
     @Size(min = 3, max = 30, message = "Bad request: username must be between 3 and 30 characters long")

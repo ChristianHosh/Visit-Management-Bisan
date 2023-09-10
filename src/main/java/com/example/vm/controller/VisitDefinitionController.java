@@ -20,17 +20,17 @@ public class VisitDefinitionController {
 
     @GetMapping("")
     public ResponseEntity<?> getAllEnableVisitDefinition() {
-       return visitDefinitionService.findAllEnabledVisitDefinitions();
+        return visitDefinitionService.findAllEnabledVisitDefinitions();
     }
+
     @GetMapping("/all")
     public ResponseEntity<?> getAllVisitDefinition() {
-
         return visitDefinitionService.findAllVisitDefinition();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<? > getVisitDefinitionById(@PathVariable Long id) {
-      return visitDefinitionService.findVisitDefinitionByID(id);
+    public ResponseEntity<?> getVisitDefinitionById(@PathVariable Long id) {
+        return visitDefinitionService.findVisitDefinitionByID(id);
 
     }
 
@@ -39,13 +39,15 @@ public class VisitDefinitionController {
         return visitDefinitionService.searchByQuery(query);
 
     }
+
     @GetMapping(value = "/search", params = "type")
-    public ResponseEntity<?> searchByType(@RequestParam("id") Long id){
+    public ResponseEntity<?> searchByType(@RequestParam("id") Long id) {
         return visitDefinitionService.searchByType(id);
     }
+
     @PostMapping("")
     public ResponseEntity<?> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionRequest visitDefinitionRequest) {
-       return visitDefinitionService.saveNewVisitDefinition(visitDefinitionRequest);
+        return visitDefinitionService.saveNewVisitDefinition(visitDefinitionRequest);
     }
 
     @PostMapping("/{id}/visit_assignments")
@@ -60,8 +62,7 @@ public class VisitDefinitionController {
 
     @PutMapping("/{id}/endis")
     public ResponseEntity<?> enableVisitDefinition(@PathVariable Long id) {
-        return  visitDefinitionService.enableVisitDefinition(id);
-
+        return visitDefinitionService.enableVisitDefinition(id);
     }
 
 

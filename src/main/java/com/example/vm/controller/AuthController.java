@@ -20,12 +20,22 @@ public class AuthController {
         this.authService = authService;
     }
 
-    @GetMapping("reset_password")
+    @GetMapping("/reset_password")
     public ResponseEntity<?> findAllPasswordResetRequests() {
         return authService.findAllPasswordResetRequest();
     }
 
-    @PostMapping("reset_password")
+    @PutMapping("/reset_password/{id}")
+    public ResponseEntity<?> acceptResetPassword(@PathVariable(name = "id") Long requestId){
+        return authService.acceptResetPasswordRequest(requestId);
+    }
+
+    @DeleteMapping("/reset_password/{id}")
+    public ResponseEntity<?> rejectResetPassword(@PathVariable(name = "id") Long requestId){
+        return authService.rejectResetPasswordRequest(requestId);
+    }
+
+    @PostMapping("/reset_password")
     public ResponseEntity<?> requestResetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest) {
         return authService.requestPasswordReset(passwordResetRequest);
     }
