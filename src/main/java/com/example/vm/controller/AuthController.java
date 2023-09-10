@@ -1,5 +1,6 @@
 package com.example.vm.controller;
 
+import com.example.vm.dto.request.LoginRequest;
 import com.example.vm.dto.request.PasswordResetRequest;
 import com.example.vm.service.AuthService;
 import jakarta.validation.Valid;
@@ -27,5 +28,10 @@ public class AuthController {
     @PostMapping("reset_password")
     public ResponseEntity<?> requestResetPassword(@RequestBody @Valid PasswordResetRequest passwordResetRequest) {
         return authService.requestPasswordReset(passwordResetRequest);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody @Valid LoginRequest loginRequest ){
+        return authService.loginUser(loginRequest);
     }
 }
