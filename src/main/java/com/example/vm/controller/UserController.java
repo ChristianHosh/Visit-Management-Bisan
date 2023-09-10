@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+
 @CrossOrigin
 @RestController
 @RequestMapping("/users")
@@ -24,12 +26,14 @@ public class UserController {
     public ResponseEntity<?> getAllUsers() {
         return userService.findAllUsers();
     }
+
     @GetMapping("")
     public ResponseEntity<?> getAllEnableUsers() {
         return userService.findAllEnableUsers();
     }
+
     @GetMapping("/employees")
-    public ResponseEntity<?> findEmployeeUsers(){
+    public ResponseEntity<?> findEmployeeUsers() {
         return userService.findEmployeeUsers();
     }
 
@@ -38,13 +42,20 @@ public class UserController {
         return userService.searchUsersByQuery(query);
     }
 
+    @GetMapping(value = "/search")
+    public ResponseEntity<?> searchUsers(@RequestParam(value = "name", required = false) String name,
+                                         @RequestParam(value = "enabled", required = false) Boolean enabled,
+                                         @RequestParam(value = "role", required = false) Integer role) {
+        return userService.searchUsers(name, enabled, role);
+    }
+
     @GetMapping("/{username}")
     public ResponseEntity<?> getByUsername(@PathVariable @Valid String username) {
         return userService.findUserByUsername(username);
     }
 
     @GetMapping("/{username}/visit_assignments")
-    public ResponseEntity<?> getUserAssignments(@PathVariable @Valid String username){
+    public ResponseEntity<?> getUserAssignments(@PathVariable @Valid String username) {
         return userService.findUserAssignments(username);
     }
 

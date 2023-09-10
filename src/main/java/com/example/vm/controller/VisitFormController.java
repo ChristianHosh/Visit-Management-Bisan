@@ -1,7 +1,9 @@
 package com.example.vm.controller;
 
 import com.example.vm.dto.request.AssignmentCustomerRequest;
-import com.example.vm.dto.request.FormUpdateRequest;
+import com.example.vm.dto.request.form.FormCollectionRequest;
+import com.example.vm.dto.request.form.FormRequest;
+import com.example.vm.dto.request.form.FormSurveyRequest;
 import com.example.vm.service.VisitFormService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,19 +38,24 @@ public class VisitFormController {
     }
 
     @PutMapping("/{id}/start")
-    public ResponseEntity<?> updateFormStatusUndergoing(@PathVariable Long id, @RequestBody @Valid FormUpdateRequest formUpdateRequest) {
-        return visitFormService.startForm(id, formUpdateRequest);
+    public ResponseEntity<?> startForm(@PathVariable Long id, @RequestBody @Valid FormRequest formRequest) {
+        return visitFormService.startForm(id, formRequest);
     }
 
-    @PutMapping("/{id}/complete")
-    public ResponseEntity<?> updateFormStatusComplete(@PathVariable Long id, @RequestBody @Valid FormUpdateRequest formUpdateRequest) {
-        return visitFormService.completeForm(id, formUpdateRequest);
+    @PutMapping("/{id}/complete/collection")
+    public ResponseEntity<?> completeForm(@PathVariable Long id, @RequestBody @Valid FormCollectionRequest formRequest) {
+        return visitFormService.completeForm(id, formRequest);
     }
+
+    @PutMapping("{id}/complete/survey")
+    public ResponseEntity<?> completeForm(@PathVariable Long id, @RequestBody @Valid FormSurveyRequest formRequest) {
+        return visitFormService.completeForm(id, formRequest);
+    }
+
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<?> updateFormStatusCancel(@PathVariable Long id, @RequestBody @Valid FormUpdateRequest formUpdateRequest) {
-        return visitFormService.cancelForm(id, formUpdateRequest);
+    public ResponseEntity<?> updateFormStatusCancel(@PathVariable Long id, @RequestBody @Valid FormSurveyRequest formSurveyRequest) {
+        return visitFormService.cancelForm(id, formSurveyRequest);
     }
-
 
 }

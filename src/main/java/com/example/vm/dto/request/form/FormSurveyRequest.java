@@ -8,13 +8,10 @@ import lombok.Setter;
 @Setter
 public class FormSurveyRequest extends FormRequest {
 
-    @NotNull
     private String answer1;
 
-    @NotNull
     private String answer2;
 
-    @NotNull
     private String answer3;
 
 }

@@ -7,17 +7,16 @@ import com.example.vm.controller.error.exception.LocationTooFarException;
 import com.example.vm.dto.mapper.ContactMapper;
 import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.AssignmentCustomerRequest;
-import com.example.vm.dto.request.FormUpdateRequest;
+import com.example.vm.dto.request.form.FormCollectionRequest;
+import com.example.vm.dto.request.form.FormRequest;
+import com.example.vm.dto.request.form.FormSurveyRequest;
 import com.example.vm.dto.response.VisitFormResponse;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.templates.SurveyAnswers;
-import com.example.vm.repository.SurveyAnswersRepository;
-import com.example.vm.repository.ContactRepository;
-import com.example.vm.repository.CustomerRepository;
-import com.example.vm.repository.VisitAssignmentRepository;
-import com.example.vm.repository.VisitFormRepository;
+import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -34,16 +33,17 @@ public class VisitFormService {
     private final ContactRepository contactRepository;
     private final VisitAssignmentService visitAssignmentService;
     private final SurveyAnswersRepository surveyAnswersRepository;
-
+    private final CollectionReceiptRepository collectionReceiptRepository;
     @Autowired
     public VisitFormService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, VisitAssignmentService visitAssignmentService,
-                            SurveyAnswersRepository surveyAnswersRepository) {
+                            SurveyAnswersRepository surveyAnswersRepository, CollectionReceiptRepository collectionReceiptRepository) {
         this.visitFormRepository = visitFormRepository;
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
         this.visitAssignmentService = visitAssignmentService;
         this.surveyAnswersRepository = surveyAnswersRepository;
+        this.collectionReceiptRepository = collectionReceiptRepository;
     }
 
     public ResponseEntity<VisitFormResponse> findVisitFormById(Long id) {
@@ -83,31 +83,65 @@ public class VisitFormService {
 
     }
 
-    public ResponseEntity<VisitFormResponse> completeForm(Long id, FormUpdateRequest formUpdateRequest) {
+    public ResponseEntity<VisitFormResponse> completeCollectionForm(VisitForm form, FormCollectionRequest formCollectionRequest) {
+
+        /*CollectionReceipt collectionReceipt =CollectionReceipt
+                .builder()
+                .amount(formCollectionRequest.getAmount())
+                .paymentType(formCollectionRequest.getType())
+                .visitForm(form)
+                .build();*/
+
+        completeAssignmentIfAllFormsCompleted(form);
+        form = visitFormRepository.save(form);
+
+      //  collectionReceiptRepository.save(collectionReceipt);
+
+        visitAssignmentService.createNextVisitAssignment(form.getVisitAssignment(), form.getCustomer());
+
+    //    return ResponseEntity.ok(VisitFormMapper.toListResponse(form));
+
+        return null;
+    }
+
+    public ResponseEntity<?> completeForm(Long id, FormRequest formRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
-
-        validateDistance(formUpdateRequest, foundForm.getCustomer());
-        // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.UNDERGOING))
             throw new InvalidStatusUpdateException();
 
+        validateDistance(formRequest, foundForm.getCustomer());
+        // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         foundForm.setStatus(VisitStatus.COMPLETED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
-        foundForm.setNote(formUpdateRequest.getNote());
+        foundForm.setNote(formRequest.getNote());
         if (foundForm.getGeoCoordinates() == null)
             foundForm.setGeoCoordinates(new GeoCoordinates());
 
-        foundForm.getGeoCoordinates().setLongitude(formUpdateRequest.getLongitude());
-        foundForm.getGeoCoordinates().setLatitude(formUpdateRequest.getLatitude());
+        foundForm.getGeoCoordinates().setLongitude(formRequest.getLongitude());
+        foundForm.getGeoCoordinates().setLatitude(formRequest.getLatitude());
+
+        if (formRequest instanceof FormSurveyRequest) {
+            System.out.println("INSTANCE OF SURVEY");
+            return completeSurveyForm(foundForm, (FormSurveyRequest) formRequest);
+        } else if (formRequest instanceof FormCollectionRequest) {
+            System.out.println("INSTANCE OF COLLECTION");
+            return completeCollectionForm(foundForm, (FormCollectionRequest) formRequest);
+        }
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SOMETHING WENT WRONG");
+    }
+
+    public ResponseEntity<VisitFormResponse> completeSurveyForm(VisitForm foundForm, FormSurveyRequest formSurveyRequest) {
+
 
         SurveyAnswers surveyAnswers = SurveyAnswers
                 .builder()
-                .answer1(formUpdateRequest.getAnswer1())
-                .answer2(formUpdateRequest.getAnswer2())
-                .answer3(formUpdateRequest.getAnswer3())
+                .answer1(formSurveyRequest.getAnswer1())
+                .answer2(formSurveyRequest.getAnswer2())
+                .answer3(formSurveyRequest.getAnswer3())
                 .visitForm(foundForm)
                 .build();
 
@@ -121,22 +155,11 @@ public class VisitFormService {
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
-    private void completeAssignmentIfAllFormsCompleted(VisitForm foundForm) {
-        VisitAssignment parentAssignment = foundForm.getVisitAssignment();
-        boolean areAllFormsCompleted = parentAssignment
-                .getVisitForms()
-                .stream()
-                .allMatch(visitForm -> visitForm.getStatus().equals(VisitStatus.COMPLETED));
-
-        parentAssignment.setStatus(areAllFormsCompleted ? VisitStatus.COMPLETED : VisitStatus.UNDERGOING);
-        visitAssignmentRepository.save(parentAssignment);
-    }
-
-    public ResponseEntity<VisitFormResponse> startForm(Long id, FormUpdateRequest formUpdateRequest) {
+    public ResponseEntity<VisitFormResponse> startForm(Long id, FormRequest formRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        validateDistance(formUpdateRequest, foundForm.getCustomer());
+        validateDistance(formRequest, foundForm.getCustomer());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.NOT_STARTED))
@@ -147,8 +170,8 @@ public class VisitFormService {
         if (foundForm.getGeoCoordinates() == null)
             foundForm.setGeoCoordinates(new GeoCoordinates());
 
-        foundForm.getGeoCoordinates().setLatitude(formUpdateRequest.getLatitude());
-        foundForm.getGeoCoordinates().setLongitude(formUpdateRequest.getLongitude());
+        foundForm.getGeoCoordinates().setLatitude(formRequest.getLatitude());
+        foundForm.getGeoCoordinates().setLongitude(formRequest.getLongitude());
 
         VisitAssignment parentAssignment = foundForm.getVisitAssignment();
         parentAssignment.setStatus(VisitStatus.UNDERGOING);
@@ -159,7 +182,7 @@ public class VisitFormService {
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
-    public ResponseEntity<?> cancelForm(Long id, FormUpdateRequest formUpdateRequest) {
+    public ResponseEntity<?> cancelForm(Long id, FormRequest formRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
@@ -169,9 +192,8 @@ public class VisitFormService {
         foundForm.setStatus(VisitStatus.CANCELED);
         if (foundForm.getGeoCoordinates() == null)
             foundForm.setGeoCoordinates(new GeoCoordinates());
-
-        foundForm.getGeoCoordinates().setLatitude(formUpdateRequest.getLatitude());
-        foundForm.getGeoCoordinates().setLongitude(formUpdateRequest.getLongitude());
+        foundForm.getGeoCoordinates().setLatitude(formRequest.getLatitude());
+        foundForm.getGeoCoordinates().setLongitude(formRequest.getLongitude());
 
         foundForm = visitFormRepository.save(foundForm);
 
@@ -187,15 +209,19 @@ public class VisitFormService {
         return ResponseEntity.ok(ContactMapper.listToResponseList(formContactList));
     }
 
-    private static void validateDistance(FormUpdateRequest formUpdateRequest, Customer customer) {
-        double distance = distanceBetweenTwoPoints(customer.getGeoCoordinates(), formUpdateRequest);
+    private void completeAssignmentIfAllFormsCompleted(VisitForm foundForm) {
+        VisitAssignment parentAssignment = foundForm.getVisitAssignment();
+        boolean areAllFormsCompleted = parentAssignment
+                .getVisitForms()
+                .stream()
+                .allMatch(visitForm -> visitForm.getStatus().equals(VisitStatus.COMPLETED));
 
-        System.out.println("COMPARING LOCATION: \n" +
-                "CUSTOMER:\n" +
-                "\t GEO: \" + " + customer.getGeoCoordinates().getLatitude() + ", " + customer.getGeoCoordinates().getLongitude() +
-                "\nUSER:\n" +
-                "\t GEO: \" + " + formUpdateRequest.getLatitude() + ", " + formUpdateRequest.getLongitude() +
-                "\n DST: " + distance);
+        parentAssignment.setStatus(areAllFormsCompleted ? VisitStatus.COMPLETED : VisitStatus.UNDERGOING);
+        visitAssignmentRepository.save(parentAssignment);
+    }
+
+    private static void validateDistance(FormRequest formRequest, Customer customer) {
+        double distance = distanceBetweenTwoPoints(customer.getGeoCoordinates(), formRequest);
 
         if (distance > 250)
             throw new LocationTooFarException();
@@ -205,12 +231,12 @@ public class VisitFormService {
         return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)) * 111 * 1000;
     }
 
-    private static double distanceBetweenTwoPoints(GeoCoordinates coordinates, FormUpdateRequest formUpdateRequest) {
+    private static double distanceBetweenTwoPoints(GeoCoordinates coordinates, FormRequest formSurveyRequest) {
         double customerLat = coordinates.getLatitude();
         double customerLng = coordinates.getLongitude();
 
-        double userLat = formUpdateRequest.getLatitude();
-        double userLng = formUpdateRequest.getLongitude();
+        double userLat = formSurveyRequest.getLatitude();
+        double userLng = formSurveyRequest.getLongitude();
 
         return distanceBetweenTwoPoints(customerLat, customerLng, userLat, userLng);
     }
