@@ -24,7 +24,7 @@ public class CustomerController {
     public ResponseEntity<?> getAllCustomers() {
         return customerService.findAllCustomers();
     }
-    
+
     @GetMapping("")
     public ResponseEntity<?> getAllEnableCustomers() {
         return customerService.findAllEnabledCustomers();
@@ -35,9 +35,14 @@ public class CustomerController {
         return customerService.findAllCustomersWhoHasAssignment();
     }
 
-    @GetMapping(value = "/search", params = "query")
-    public ResponseEntity<?> searchByQuery(@RequestParam("query") String name) {
-        return customerService.searchByQuery(name);
+    @GetMapping(value = "/search")
+    public ResponseEntity<?> searchCustomers(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "enabled", required = false) Boolean enabled,
+            @RequestParam(value = "city", required = false) Long cityId,
+            @RequestParam(value = "location", required = false) Long locationId
+    ) {
+        return customerService.searchCustomers(name, enabled, cityId, locationId);
     }
 
     @GetMapping("/{id}")

@@ -67,10 +67,10 @@ public class CustomerService {
         return ResponseEntity.ok(CustomerMapper.toDetailedResponse(foundCustomer));
     }
 
-    public ResponseEntity<List<CustomerResponse>> searchByQuery(String query) {
-        List<Customer> queryResult = customerRepository.findByNameContainsIgnoreCaseAndLocation_AddressContainsIgnoreCaseAndLocation_City_NameContainsIgnoreCase(query, query, query);
+    public ResponseEntity<?> searchCustomers(String name, Boolean enabled, Long cityId, Long locationId) {
+        List<Customer> customerList = customerRepository.searchCustomers(name, enabled, cityId, locationId);
 
-        return ResponseEntity.ok(CustomerMapper.listToResponseList(queryResult));
+        return ResponseEntity.ok(CustomerMapper.listToResponseList(customerList));
     }
 
     public ResponseEntity<List<ContactResponse>> getCustomerContacts(Long id) {
@@ -147,6 +147,7 @@ public class CustomerService {
 
         return ResponseEntity.ok(CustomerMapper.toDetailedResponse(foundCustomer));
     }
+
 
 
 }

@@ -107,12 +107,7 @@ public class UserService {
     }
 
     public ResponseEntity<?> searchUsers(String name, Boolean enabled, Integer role) {
-        System.out.println("NAME PARAM: " + name);
-        System.out.println("ENAB PARAM: " + enabled);
-        System.out.println("ROLE PARAM: " + role);
         List<User> userList = repository.searchUsers(name, enabled, role);
-
-        System.out.println(userList);
 
         return ResponseEntity.ok(UserMapper.listToResponseList(userList));
     }
