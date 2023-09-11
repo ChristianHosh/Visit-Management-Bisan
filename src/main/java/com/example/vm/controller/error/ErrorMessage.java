@@ -14,6 +14,7 @@ public enum ErrorMessage {
     FORM_NOT_FOUND("Entity not found: Visit Form not found"),
     CUSTOMER_NOT_ASSIGNED("Entity not found: Customer is not assigned"),
     SURVEY_NOT_FOUND("Not found: Survey Template not found"),
+    PASSWORD_RESET_NOT_FOUND("Not found: password reset request not found"),
 
     // NOT ENABLED MESSAGES
     CITY_NOT_ENABLED("Entity not enabled: City not enabled"),
