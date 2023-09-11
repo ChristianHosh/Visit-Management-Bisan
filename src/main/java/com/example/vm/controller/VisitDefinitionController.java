@@ -31,13 +31,11 @@ public class VisitDefinitionController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getVisitDefinitionById(@PathVariable Long id) {
         return visitDefinitionService.findVisitDefinitionByID(id);
-
     }
 
     @GetMapping(value = "/search", params = "query")
     public ResponseEntity<?> searchByQuery(@RequestParam("query") String query) {
         return visitDefinitionService.searchByQuery(query);
-
     }
 
     @GetMapping(value = "/search", params = "type")

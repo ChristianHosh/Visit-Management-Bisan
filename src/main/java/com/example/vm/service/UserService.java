@@ -16,12 +16,10 @@ import com.example.vm.repository.UserRepository;
 import com.example.vm.repository.VisitAssignmentRepository;
 import com.example.vm.service.util.CalenderDate;
 import jakarta.validation.Valid;
-import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -58,12 +56,6 @@ public class UserService {
 
     public ResponseEntity<List<UserResponse>> findEmployeeUsers() {
         List<User> queryResult = repository.searchUsersByAccessLevelAndEnabledTrue(0);
-
-        return ResponseEntity.ok(UserMapper.listToResponseList(queryResult));
-    }
-
-    public ResponseEntity<List<UserResponse>> searchUsersByQuery(String query) {
-        List<User> queryResult = repository.searchUsersByFirstNameContainingOrLastNameContainingOrUsernameContaining(query, query, query);
 
         return ResponseEntity.ok(UserMapper.listToResponseList(queryResult));
     }
@@ -114,23 +106,14 @@ public class UserService {
         return ResponseEntity.ok(VisitAssignmentMapper.listToResponseList(visitAssignments));
     }
 
-    public ResponseEntity<?> searchUsers(HashMap<String, String> params) {
-        System.out.println("PARAMS: " + params.keySet());
-        System.out.println("VALUES: " + params.values());
-
-        return ResponseEntity.ok(params);
-    }
-
     public ResponseEntity<?> searchUsers(String name, Boolean enabled, Integer role) {
-//        List<User> userNameList = repository.findByUsernameContainsOrFirstNameContainsOrLastNameContainsAllIgnoreCase(name, name, name);
-//        List<User> userEnabledList = repository.findByEnabled(enabled);
-//        List<User> userRoleList = repository.findByAccessLevel(role);
-//
-//        List<User> finalList = ListUtils.intersection(userNameList, userEnabledList);
-//        finalList = ListUtils.intersection(finalList, userRoleList);
+        System.out.println("NAME PARAM: " + name);
+        System.out.println("ENAB PARAM: " + enabled);
+        System.out.println("ROLE PARAM: " + role);
+        List<User> userList = repository.searchUsers(name, enabled, role);
 
-//        return ResponseEntity.ok(UserMapper.listToResponseList(finalList));
+        System.out.println(userList);
 
-        return null;
+        return ResponseEntity.ok(UserMapper.listToResponseList(userList));
     }
 }
