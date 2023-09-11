@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-
 @CrossOrigin
 @RestController
 @RequestMapping("/users")
@@ -35,11 +33,6 @@ public class UserController {
     @GetMapping("/employees")
     public ResponseEntity<?> findEmployeeUsers() {
         return userService.findEmployeeUsers();
-    }
-
-    @GetMapping(value = "/search", params = "query")
-    public ResponseEntity<?> searchUsersByQuery(@RequestParam("query") String query) {
-        return userService.searchUsersByQuery(query);
     }
 
     @GetMapping(value = "/search")
