@@ -33,15 +33,18 @@ public class VisitDefinitionController {
         return visitDefinitionService.findVisitDefinitionByID(id);
     }
 
-    @GetMapping(value = "/search", params = "query")
-    public ResponseEntity<?> searchByQuery(@RequestParam("query") String query) {
-        return visitDefinitionService.searchByQuery(query);
+    @GetMapping(value = "/search")
+    public ResponseEntity<?> searchVisitDefinitions(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "enabled", required = false) Boolean enabled,
+            @RequestParam(value = "recurring", required = false) Boolean recurring,
+            @RequestParam(value = "type", required = false) Long typeId,
+            @RequestParam(value = "city", required = false) Long cityId,
+            @RequestParam(value = "location", required = false) Long locationId
+    ) {
+        return visitDefinitionService.searchVisitDefinitions(name, enabled, recurring, typeId, cityId, locationId);
     }
 
-    @GetMapping(value = "/search", params = "type")
-    public ResponseEntity<?> searchByType(@RequestParam("id") Long id) {
-        return visitDefinitionService.searchByType(id);
-    }
 
     @PostMapping("")
     public ResponseEntity<?> saveNewVisitDefinition(@RequestBody @Valid VisitDefinitionRequest visitDefinitionRequest) {

@@ -13,7 +13,9 @@ import java.util.Optional;
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
     long countByCreatedTimeBetween(Timestamp createdTimeStart, Timestamp createdTimeEnd);
+
     List<Customer> findByLocation(Location location);
+
     List<Customer> findCustomerByEnabledTrueAndLocation(Location location);
 
     long countByEnabledTrue();
@@ -30,13 +32,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     List<Customer> findCustomerByEnabledTrue();
 
-//
-//    @Query("SELECT u FROM User u " +
-//            "WHERE ((:name IS NULL OR u.username like concat('%', :name, '%'))" +
-//            "OR (:name IS NULL OR u.firstName like concat('%', :name, '%'))" +
-//            "OR (:name IS NULL OR u.lastName like concat('%', :name, '%')))" +
-//            "AND (:role IS NULL OR u.accessLevel = :role)" +
-//            "AND (:enabled IS NULL OR u.enabled = :enabled)")
     @Query("SELECT c FROM Customer c " +
             "WHERE (:name IS NULL OR c.name like concat('%', :name, '%')) " +
             "AND (:enabled IS NULL OR c.enabled = :enabled) " +

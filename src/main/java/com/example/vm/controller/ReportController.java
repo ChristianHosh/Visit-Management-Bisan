@@ -98,5 +98,12 @@ public class ReportController {
         return reportService.generateUserDetailedReport(Date.valueOf(startDate), Date.valueOf(endDate), username);
     }
 
+    @GetMapping("/customer_performance")
+    public ResponseEntity<?> generateCustomerDetailedReport(
+            @RequestParam(name = "from") String startDate,
+            @RequestParam(name = "to") String endDate
+    ) {
+        return reportService.generateCustomerPerformanceReport(Date.valueOf(startDate), Date.valueOf(endDate));
+    }
 
 }

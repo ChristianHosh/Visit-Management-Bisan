@@ -2,7 +2,9 @@ package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.dto.mapper.CustomerMapper;
 import com.example.vm.dto.mapper.UserMapper;
+import com.example.vm.dto.report.CustomerPerformanceResponse;
 import com.example.vm.dto.report.UserInteractionResponse;
 import com.example.vm.dto.report.UserPerformanceResponse;
 import com.example.vm.model.*;
@@ -278,6 +280,15 @@ public class ReportService {
         return ResponseEntity.ok(userDetailedReport);
     }
 
+    public ResponseEntity<?> generateCustomerPerformanceReport(Date startDate, Date endDate) {
+        List<CustomerPerformanceResponse> customerPerformanceReport = customerRepository.findCustomerByEnabledTrue()
+                .stream()
+                .map(customer -> generateCustomerPerformanceResponse(customer, startDate, endDate))
+                .toList();
+
+        return ResponseEntity.ok(customerPerformanceReport);
+    }
+
     private UserInteractionResponse generateUserInteractionResponse(VisitForm visitForm) {
         long duration = 0L;
         if (visitForm.getStartTime() != null && visitForm.getEndTime() != null)
@@ -285,7 +296,7 @@ public class ReportService {
 
         double longitude = 0L;
         double latitude = 0L;
-        if (visitForm.getGeoCoordinates() != null){
+        if (visitForm.getGeoCoordinates() != null) {
             longitude = visitForm.getGeoCoordinates().getLongitude();
             latitude = visitForm.getGeoCoordinates().getLatitude();
         }
@@ -355,4 +366,49 @@ public class ReportService {
                 .user(UserMapper.toListResponse(currentUser))
                 .build();
     }
+
+    private CustomerPerformanceResponse generateCustomerPerformanceResponse(Customer customer, Date startDate, Date endDate) {
+        long totalCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndCustomer_EnabledTrueAndEnabledTrue(customer, startDate, endDate);
+        long notStartedCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(customer, startDate, endDate, VisitStatus.NOT_STARTED);
+        long undergoingCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(customer, startDate, endDate, VisitStatus.UNDERGOING);
+        long canceledCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(customer, startDate, endDate, VisitStatus.CANCELED);
+        long completedCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(customer, startDate, endDate, VisitStatus.COMPLETED);
+
+        double notStartedCustomerFormsPercentage = ((double) notStartedCustomerFormsCount / totalCustomerFormsCount) * 100;
+        double undergoingCustomerFormsPercentage = ((double) undergoingCustomerFormsCount / totalCustomerFormsCount) * 100;
+        double canceledCustomerFormsPercentage = ((double) canceledCustomerFormsCount / totalCustomerFormsCount) * 100;
+        double completedCustomerFormsPercentage = ((double) completedCustomerFormsCount / totalCustomerFormsCount) * 100;
+
+        long totalTimeCompletingForms = 0;
+        List<VisitForm> customerCompletedForms = visitFormRepository.findByCustomerAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(customer, startDate, endDate, VisitStatus.COMPLETED);
+        for (VisitForm currentForm : customerCompletedForms) {
+            totalTimeCompletingForms += currentForm.getEndTime().getTime() - currentForm.getStartTime().getTime();
+        }
+        double averageTimeCompletingForms = ((double) totalTimeCompletingForms / completedCustomerFormsCount) / 1000;
+
+        List<VisitForm> customerForms = visitFormRepository.findByCustomerAndVisitAssignment_DateBetweenAndEnabledTrueAndVisitAssignment_EnabledTrueAndStartTimeNotNull(customer, startDate, endDate);
+        long totalLateCustomerFormsCount = customerForms.stream().filter(currentForm -> {
+            Date lateDate = CalenderDate.getDateWithOffsetSql(currentForm.getVisitAssignment().getDate(), 1);
+            Timestamp lateTimestamp = new Timestamp(lateDate.getTime());
+
+            return currentForm.getStartTime().after(lateTimestamp);
+        }).count();
+
+
+        return CustomerPerformanceResponse.builder()
+                .customer(CustomerMapper.toListResponse(customer))
+                .totalForms(totalCustomerFormsCount)
+                .notStartedForms(notStartedCustomerFormsCount)
+                .undergoingForms(undergoingCustomerFormsCount)
+                .canceledForms(canceledCustomerFormsCount)
+                .completedForms(completedCustomerFormsCount)
+                .notStartedFormsPer(notStartedCustomerFormsPercentage)
+                .undergoingFormsPer(undergoingCustomerFormsPercentage)
+                .canceledFormsPer(canceledCustomerFormsPercentage)
+                .completedFormsPer(completedCustomerFormsPercentage)
+                .averageCompletionTime(averageTimeCompletingForms)
+                .lateFormsCount(totalLateCustomerFormsCount)
+                .build();
+    }
+
 }

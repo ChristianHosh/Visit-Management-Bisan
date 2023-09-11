@@ -36,9 +36,11 @@ public class UserController {
     }
 
     @GetMapping(value = "/search")
-    public ResponseEntity<?> searchUsers(@RequestParam(value = "name", required = false) String name,
-                                         @RequestParam(value = "enabled", required = false) Boolean enabled,
-                                         @RequestParam(value = "role", required = false) Integer role) {
+    public ResponseEntity<?> searchUsers(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "enabled", required = false) Boolean enabled,
+            @RequestParam(value = "role", required = false) Integer role
+    ) {
         return userService.searchUsers(name, enabled, role);
     }
 

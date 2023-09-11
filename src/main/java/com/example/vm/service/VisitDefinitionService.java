@@ -121,28 +121,8 @@ public class VisitDefinitionService {
 
     }
 
-    public ResponseEntity<List<VisitDefinitionResponse>> searchByQuery(String query) {
-        List<VisitDefinition> result = new ArrayList<>();
-
-        List<VisitDefinition> list1 = visitDefinitionRepository.searchVisitDefinitionsByNameContaining(query);
-        List<VisitDefinition> list2 = new ArrayList<>();
-
-        try {
-            list2 = visitDefinitionRepository.searchVisitDefinitionsByFrequency(Integer.parseInt(query));
-        } catch (NumberFormatException ignored) {
-        }
-
-        result.addAll(list1);
-        result.addAll(list2);
-
-        return ResponseEntity.ok(VisitDefinitionMapper.listToResponseList(result));
-    }
-
-    public ResponseEntity<List<VisitDefinitionResponse>> searchByType(Long id) {
-        VisitType foundType = visitTypeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TYPE_NOT_FOUND));
-
-        List<VisitDefinition> visitDefinitionList = visitDefinitionRepository.searchVisitDefinitionsByType(foundType);
+    public ResponseEntity<?> searchVisitDefinitions(String name, Boolean enabled, Boolean recurring, Long typeId, Long cityId, Long locationId) {
+        List<VisitDefinition> visitDefinitionList = visitDefinitionRepository.searchVisitDefinitions(name, enabled, recurring, typeId, cityId, locationId);
 
         return ResponseEntity.ok(VisitDefinitionMapper.listToResponseList(visitDefinitionList));
     }
@@ -190,7 +170,7 @@ public class VisitDefinitionService {
                 .toList();
 
         SurveyTemplate surveyTemplate = null;
-        if (isSurvey(foundVisitDefinition)){
+        if (isSurvey(foundVisitDefinition)) {
             surveyTemplate = SurveyTemplate.builder()
                     .question1(visitAssignmentRequest.getQuestion1())
                     .question2(visitAssignmentRequest.getQuestion2())
@@ -218,4 +198,6 @@ public class VisitDefinitionService {
     private boolean isSurvey(VisitDefinition definition) {
         return definition.getType().getName().equalsIgnoreCase("Survey");
     }
+
+
 }
