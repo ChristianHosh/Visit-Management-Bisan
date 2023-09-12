@@ -10,7 +10,7 @@ import com.example.vm.dto.request.VisitDefinitionRequest;
 import com.example.vm.dto.response.VisitDefinitionResponse;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.templates.SurveyTemplate;
+import com.example.vm.model.enums.VisitTypeBase;
 import com.example.vm.repository.*;
 import com.example.vm.service.util.CalenderDate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,24 +30,20 @@ public class VisitDefinitionService {
     private final CustomerRepository customerRepository;
     private final ContactRepository contactRepository;
     private final UserRepository userRepository;
-    private final SurveyTemplateRepository surveyTemplateRepository;
 
     @Autowired
     public VisitDefinitionService(VisitDefinitionRepository visitDefinitionRepository, VisitTypeRepository visitTypeRepository,
                                   LocationRepository locationRepository, VisitAssignmentRepository visitAssignmentRepository,
                                   CustomerRepository customerRepository,
                                   ContactRepository contactRepository,
-                                  UserRepository userRepository,
-                                  SurveyTemplateRepository surveyTemplateRepository) {
+                                  UserRepository userRepository) {
         this.visitDefinitionRepository = visitDefinitionRepository;
         this.visitTypeRepository = visitTypeRepository;
         this.locationRepository = locationRepository;
-
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
         this.userRepository = userRepository;
-        this.surveyTemplateRepository = surveyTemplateRepository;
     }
 
     public ResponseEntity<List<VisitDefinitionResponse>> findAllVisitDefinition() {
@@ -78,6 +74,12 @@ public class VisitDefinitionService {
 
         Location foundlocation = locationRepository.findByIdAndEnabledTrue(visitDefinitionRequest.getLocationId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.CITY_NOT_FOUND));
+
+
+        if (foundVisitType.getBase().equals(VisitTypeBase.QUESTION)){
+            // GET QUESTIONS AND SAVE THEM TO QUESTIONS TEMPLATE
+            System.out.println("IS QUESTION DEFINITION");
+        }
 
         VisitDefinition visitDefinitionToSave = VisitDefinitionMapper.toEntity(visitDefinitionRequest, foundVisitType, foundlocation);
 
@@ -169,28 +171,12 @@ public class VisitDefinitionService {
                 })
                 .toList();
 
-        SurveyTemplate surveyTemplate = null;
-        if (isSurvey(foundVisitDefinition)) {
-            surveyTemplate = SurveyTemplate.builder()
-                    .question1(visitAssignmentRequest.getQuestion1())
-                    .question2(visitAssignmentRequest.getQuestion2())
-                    .question3(visitAssignmentRequest.getQuestion3())
-                    .visitAssignment(visitAssignmentToSave)
-                    .build();
-        }
-
         visitAssignmentToSave.getCustomers().addAll(availableCustomersInLocation);
         visitAssignmentToSave.getVisitForms().addAll(newVisitForms);
-        // SAVE CUSTOMERS AND FORMS TO ASSIGNMENT
 
         foundVisitDefinition.getVisitAssignments().add(visitAssignmentToSave);
-        // SAVE ASSIGNMENT TO DEFINITION
 
         foundVisitDefinition = visitDefinitionRepository.save(foundVisitDefinition);
-        if (surveyTemplate != null)
-            surveyTemplateRepository.save(surveyTemplate);
-
-        // SAVE DEFINITION TO DATABASE
 
         return ResponseEntity.status(HttpStatus.CREATED).body(VisitDefinitionMapper.toDetailedResponse(foundVisitDefinition));
     }

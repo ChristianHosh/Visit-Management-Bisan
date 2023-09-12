@@ -2,6 +2,7 @@ package com.example.vm.model.templates;
 
 import com.example.vm.model.ModelAuditSuperclass;
 import com.example.vm.model.VisitForm;
+import com.example.vm.model.enums.PaymentType;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -14,24 +15,23 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
-@Table(name = "survey_answers")
-public class SurveyAnswers extends ModelAuditSuperclass {
+@Table(name = "payment_receipt_model")
+public class PaymentReceipt extends ModelAuditSuperclass {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "answer_1")
-    private String answer1;
+    @Column(name = "amount", nullable = false)
+    private Double amount;
 
-    @Column(name = "answer_2")
-    private String answer2;
+    @Enumerated
+    @Column(name = "payment_type", nullable = false)
+    private PaymentType paymentType = PaymentType.CASH;
 
-    @Column(name = "answer_3")
-    private String answer3;
-
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, orphanRemoval = true)
-    @JoinColumn(name = "visit_form_id")
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH}, optional = false, orphanRemoval = true)
+    @JoinColumn(name = "visit_form_id", nullable = false, unique = true)
     private VisitForm visitForm;
 
     @Override
@@ -41,8 +41,8 @@ public class SurveyAnswers extends ModelAuditSuperclass {
         Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
-        SurveyAnswers that = (SurveyAnswers) o;
-        return getId() != null && Objects.equals(getId(), that.getId());
+        PaymentReceipt receipt = (PaymentReceipt) o;
+        return getId() != null && Objects.equals(getId(), receipt.getId());
     }
 
     @Override

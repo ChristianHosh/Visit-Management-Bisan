@@ -1,9 +1,9 @@
 package com.example.vm.controller;
 
 import com.example.vm.dto.request.AssignmentCustomerRequest;
-import com.example.vm.dto.request.form.FormCollectionRequest;
+import com.example.vm.dto.request.form.FormPaymentRequest;
 import com.example.vm.dto.request.form.FormRequest;
-import com.example.vm.dto.request.form.FormSurveyRequest;
+import com.example.vm.dto.request.form.FormAnswerRequest;
 import com.example.vm.service.VisitFormService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class VisitFormController {
 
     @PostMapping("")
     public ResponseEntity<?> createNewForm(@RequestBody @Valid AssignmentCustomerRequest assignmentCustomerRequest) {
-        return visitFormService.createNewForm(assignmentCustomerRequest);
+        return visitFormService.createNewUnplannedCustomerForm(assignmentCustomerRequest);
     }
 
     @GetMapping("{id}/contacts")
@@ -42,20 +42,20 @@ public class VisitFormController {
         return visitFormService.startForm(id, formRequest);
     }
 
-    @PutMapping("/{id}/complete/collection")
-    public ResponseEntity<?> completeForm(@PathVariable Long id, @RequestBody @Valid FormCollectionRequest formRequest) {
+    @PutMapping("/{id}/complete/payment")
+    public ResponseEntity<?> completeForm(@PathVariable Long id, @RequestBody @Valid FormPaymentRequest formRequest) {
         return visitFormService.completeForm(id, formRequest);
     }
 
-    @PutMapping("{id}/complete/survey")
-    public ResponseEntity<?> completeForm(@PathVariable Long id, @RequestBody @Valid FormSurveyRequest formRequest) {
+    @PutMapping("{id}/complete/question")
+    public ResponseEntity<?> completeForm(@PathVariable Long id, @RequestBody @Valid FormAnswerRequest formRequest) {
         return visitFormService.completeForm(id, formRequest);
     }
 
 
     @PutMapping("/{id}/cancel")
-    public ResponseEntity<?> updateFormStatusCancel(@PathVariable Long id, @RequestBody @Valid FormSurveyRequest formSurveyRequest) {
-        return visitFormService.cancelForm(id, formSurveyRequest);
+    public ResponseEntity<?> updateFormStatusCancel(@PathVariable Long id, @RequestBody @Valid FormRequest formRequest) {
+        return visitFormService.cancelForm(id, formRequest);
     }
 
 }

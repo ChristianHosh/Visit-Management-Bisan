@@ -8,4 +8,5 @@ import lombok.Setter;
 public class VisitTypeResponse extends ModelAuditResponse {
     private Long id;
     private String name;
+    private String base;
 }

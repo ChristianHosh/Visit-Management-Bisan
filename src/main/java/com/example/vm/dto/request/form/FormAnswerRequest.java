@@ -1,12 +1,11 @@
 package com.example.vm.dto.request.form;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class FormSurveyRequest extends FormRequest {
+public class FormAnswerRequest extends FormRequest {
 
     private String answer1;
 

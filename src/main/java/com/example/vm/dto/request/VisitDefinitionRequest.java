@@ -32,4 +32,13 @@ public class VisitDefinitionRequest {
     @NotNull(message = "Bad request: location id is null")
     Long locationId;
 
+    @Size(max = 80, message = "Bad request: question must be less than 80 characters long")
+    String question1;
+
+    @Size(max = 80, message = "Bad request: question must be less than 80 characters long")
+    String question2;
+
+    @Size(max = 80, message = "Bad request: question must be less than 80 characters long")
+    String question3;
+
 }

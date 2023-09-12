@@ -7,13 +7,16 @@ import com.example.vm.controller.error.exception.LocationTooFarException;
 import com.example.vm.dto.mapper.ContactMapper;
 import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.AssignmentCustomerRequest;
-import com.example.vm.dto.request.form.FormCollectionRequest;
+import com.example.vm.dto.request.form.FormPaymentRequest;
 import com.example.vm.dto.request.form.FormRequest;
-import com.example.vm.dto.request.form.FormSurveyRequest;
+import com.example.vm.dto.request.form.FormAnswerRequest;
 import com.example.vm.dto.response.VisitFormResponse;
 import com.example.vm.model.*;
+import com.example.vm.model.enums.PaymentType;
 import com.example.vm.model.enums.VisitStatus;
-import com.example.vm.model.templates.SurveyAnswers;
+import com.example.vm.model.enums.VisitTypeBase;
+import com.example.vm.model.templates.PaymentReceipt;
+import com.example.vm.model.templates.PaymentReceiptRepository;
 import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,18 +35,17 @@ public class VisitFormService {
     private final CustomerRepository customerRepository;
     private final ContactRepository contactRepository;
     private final VisitAssignmentService visitAssignmentService;
-    private final SurveyAnswersRepository surveyAnswersRepository;
-    private final CollectionReceiptRepository collectionReceiptRepository;
+    private final PaymentReceiptRepository paymentReceiptRepository;
+
     @Autowired
     public VisitFormService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, VisitAssignmentService visitAssignmentService,
-                            SurveyAnswersRepository surveyAnswersRepository, CollectionReceiptRepository collectionReceiptRepository) {
+                            PaymentReceiptRepository paymentReceiptRepository) {
         this.visitFormRepository = visitFormRepository;
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
         this.visitAssignmentService = visitAssignmentService;
-        this.surveyAnswersRepository = surveyAnswersRepository;
-        this.collectionReceiptRepository = collectionReceiptRepository;
+        this.paymentReceiptRepository = paymentReceiptRepository;
     }
 
     public ResponseEntity<VisitFormResponse> findVisitFormById(Long id) {
@@ -53,7 +55,7 @@ public class VisitFormService {
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
-    public ResponseEntity<VisitFormResponse> createNewForm(AssignmentCustomerRequest assignmentCustomerRequest) {
+    public ResponseEntity<VisitFormResponse> createNewUnplannedCustomerForm(AssignmentCustomerRequest assignmentCustomerRequest) {
         VisitAssignment foundAssignment = visitAssignmentRepository.findById(assignmentCustomerRequest.getAssignmentId())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
 
@@ -83,25 +85,20 @@ public class VisitFormService {
 
     }
 
-    public ResponseEntity<VisitFormResponse> completeCollectionForm(VisitForm form, FormCollectionRequest formCollectionRequest) {
-
-        /*CollectionReceipt collectionReceipt =CollectionReceipt
-                .builder()
-                .amount(formCollectionRequest.getAmount())
-                .paymentType(formCollectionRequest.getType())
+    public ResponseEntity<VisitFormResponse> completePaymentForm(VisitForm form, FormPaymentRequest formPaymentRequest) {
+        PaymentReceipt receipt = PaymentReceipt.builder()
+                .amount(formPaymentRequest.getAmount())
+                .paymentType(PaymentType.valueOf(formPaymentRequest.getType()))
                 .visitForm(form)
-                .build();*/
+                .build();
 
-        completeAssignmentIfAllFormsCompleted(form);
+
+        paymentReceiptRepository.save(receipt);
         form = visitFormRepository.save(form);
-
-      //  collectionReceiptRepository.save(collectionReceipt);
 
         visitAssignmentService.createNextVisitAssignment(form.getVisitAssignment(), form.getCustomer());
 
-    //    return ResponseEntity.ok(VisitFormMapper.toListResponse(form));
-
-        return null;
+        return ResponseEntity.ok(VisitFormMapper.toListResponse(form));
     }
 
     public ResponseEntity<?> completeForm(Long id, FormRequest formRequest) {
@@ -122,33 +119,25 @@ public class VisitFormService {
 
         foundForm.getGeoCoordinates().setLongitude(formRequest.getLongitude());
         foundForm.getGeoCoordinates().setLatitude(formRequest.getLatitude());
+        completeAssignmentIfAllFormsCompleted(foundForm);
 
-        if (formRequest instanceof FormSurveyRequest) {
+        VisitType visitDefinitionType = foundForm.getVisitAssignment().getVisitDefinition().getType();
+        if (formRequest instanceof FormAnswerRequest && visitDefinitionType.getBase().equals(VisitTypeBase.QUESTION)) {
             System.out.println("INSTANCE OF SURVEY");
-            return completeSurveyForm(foundForm, (FormSurveyRequest) formRequest);
-        } else if (formRequest instanceof FormCollectionRequest) {
+            return completeAnswerForm(foundForm, (FormAnswerRequest) formRequest);
+        } else if (formRequest instanceof FormPaymentRequest && visitDefinitionType.getBase().equals(VisitTypeBase.PAYMENT)) {
             System.out.println("INSTANCE OF COLLECTION");
-            return completeCollectionForm(foundForm, (FormCollectionRequest) formRequest);
+            return completePaymentForm(foundForm, (FormPaymentRequest) formRequest);
         }
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SOMETHING WENT WRONG");
     }
 
-    public ResponseEntity<VisitFormResponse> completeSurveyForm(VisitForm foundForm, FormSurveyRequest formSurveyRequest) {
+    public ResponseEntity<VisitFormResponse> completeAnswerForm(VisitForm foundForm, FormAnswerRequest formAnswerRequest) {
 
 
-        SurveyAnswers surveyAnswers = SurveyAnswers
-                .builder()
-                .answer1(formSurveyRequest.getAnswer1())
-                .answer2(formSurveyRequest.getAnswer2())
-                .answer3(formSurveyRequest.getAnswer3())
-                .visitForm(foundForm)
-                .build();
-
-        completeAssignmentIfAllFormsCompleted(foundForm);
         foundForm = visitFormRepository.save(foundForm);
 
-        surveyAnswersRepository.save(surveyAnswers);
 
         visitAssignmentService.createNextVisitAssignment(foundForm.getVisitAssignment(), foundForm.getCustomer());
 

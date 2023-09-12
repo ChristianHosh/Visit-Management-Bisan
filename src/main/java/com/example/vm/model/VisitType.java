@@ -1,5 +1,6 @@
 package com.example.vm.model;
 
+import com.example.vm.model.enums.VisitTypeBase;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
@@ -20,9 +21,12 @@ public class VisitType extends ModelAuditSuperclass {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
     @Column(name = "name", unique = true, nullable = false)
     private String name;
+
+    @Enumerated
+    @Column(name = "base", nullable = false)
+    private VisitTypeBase base = VisitTypeBase.QUESTION;
 
     @Override
     public final boolean equals(Object o) {

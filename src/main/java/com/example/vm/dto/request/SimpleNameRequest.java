@@ -16,8 +16,11 @@ public class SimpleNameRequest {
     @JsonProperty("name")
     private String name;
 
+    private Integer i;
+
     @JsonCreator
-    public SimpleNameRequest(String name) {
+    public SimpleNameRequest(String name, Integer i) {
         this.name = name;
+        this.i = i;
     }
 }

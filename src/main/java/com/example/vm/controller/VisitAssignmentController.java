@@ -33,11 +33,6 @@ public class VisitAssignmentController {
         return visitAssignmentService.findVisitAssignmentById(id);
     }
 
-    @GetMapping("{id}/questions")
-    public ResponseEntity<?> getVisitAssignmentQuestions(@PathVariable Long id) {
-        return visitAssignmentService.getQuestions(id);
-    }
-
     @GetMapping("/{assignmentId}/customer/{customerId}/contacts")
     public ResponseEntity<?> getContactsByAssignmentType(@PathVariable Long assignmentId, @PathVariable Long customerId) {
         return visitAssignmentService.findCustomerContactsByAssignmentType(assignmentId, customerId);

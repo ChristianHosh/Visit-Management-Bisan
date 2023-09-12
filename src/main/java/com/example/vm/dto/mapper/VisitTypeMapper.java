@@ -3,6 +3,7 @@ package com.example.vm.dto.mapper;
 import com.example.vm.dto.request.SimpleNameRequest;
 import com.example.vm.dto.response.VisitTypeResponse;
 import com.example.vm.model.VisitType;
+import com.example.vm.model.enums.VisitTypeBase;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ public class VisitTypeMapper {
 
         response.setId(visitType.getId());
         response.setName(visitType.getName());
+        response.setBase(visitType.getBase().name());
 
         response.setEnabled(visitType.getEnabled());
         response.setCreatedTime(visitType.getCreatedTime());
@@ -32,6 +34,7 @@ public class VisitTypeMapper {
         return VisitType
                 .builder()
                 .name(typeRequest.getName().trim())
+                .base(VisitTypeBase.fromInt(typeRequest.getI()))
                 .build();
     }
 
