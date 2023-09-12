@@ -32,10 +32,10 @@ public interface PasswordResetRepository extends JpaRepository<PasswordReset, Lo
 
     @Query("SELECT (COUNT(p) > 0) FROM PasswordReset p " +
             "WHERE p.user = :user " +
-            "AND " +
+            "AND (" +
             "   (p.status = com.example.vm.model.enums.PasswordStatus.ACCEPTED) OR " +
             "   (p.status = com.example.vm.model.enums.PasswordStatus.REJECTED) AND " +
-            "p.createdTime > :timestamp")
+            "p.createdTime > :timestamp)")
     boolean isRequestStillEarly(User user, Timestamp timestamp);
     Optional<PasswordReset> findByIdAndStatus(Long id, PasswordStatus status);
 
