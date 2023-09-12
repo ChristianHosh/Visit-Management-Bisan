@@ -35,11 +35,15 @@ public enum ErrorMessage {
     CUSTOMER_NOT_IN_CITY("Bad request: customer is not in the visit's city"),
     DATE_IN_PAST("Bad request: date must be in the present or future"),
     DATE_TOO_OLD("Bad request: date has already passed"),
+    PASSWORD_REQUEST_STILL_PENDING("Bad request: your last request is still pending admin approval"),
+    PASSWORD_REQUEST_TOO_EARLY("Bad request: your last request was in the last two weeks, please wait"),
 
 
     // CONFLICT EXCEPTIONS
     USER_ALREADY_EXISTS("Conflict: Username already exists"),
-    CUSTOMER_ALREADY_ASSIGNED("Conflict: Customer is already assigned");
+    CUSTOMER_ALREADY_ASSIGNED("Conflict: Customer is already assigned"),
+
+    ;
 
 
     public final String message;

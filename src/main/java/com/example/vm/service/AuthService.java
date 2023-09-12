@@ -3,6 +3,7 @@ package com.example.vm.service;
 import com.example.vm.controller.error.ApiError;
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
+import com.example.vm.controller.error.exception.InvalidPasswordResetException;
 import com.example.vm.controller.error.exception.PasswordDoesntMatchException;
 import com.example.vm.dto.mapper.PasswordResetMapper;
 import com.example.vm.dto.mapper.UserMapper;
@@ -45,14 +46,12 @@ public class AuthService {
             throw new PasswordDoesntMatchException();
 
         Timestamp resetTime = new Timestamp(CalenderDate.getTodaySql(-14).getTime());
+        if (passwordResetRepository.isRequestStillPending(user))
+            throw new InvalidPasswordResetException(ErrorMessage.PASSWORD_REQUEST_STILL_PENDING);
+        if (passwordResetRepository.isRequestStillEarly(user, resetTime))
+            throw new InvalidPasswordResetException(ErrorMessage.PASSWORD_REQUEST_TOO_EARLY);
 
-        if (passwordResetRepository.existsByUserAndCreatedTimeAfterOrStatusNot(user, resetTime, PasswordStatus.PENDING ))
-            throw new PasswordDoesntMatchException();
-
-
-        PasswordReset passwordReset = PasswordResetMapper.toEntity(passwordResetRequest, user);
-
-        passwordReset = passwordResetRepository.save(passwordReset);
+        PasswordReset passwordReset = passwordResetRepository.save(PasswordResetMapper.toEntity(passwordResetRequest, user));
 
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(PasswordResetMapper.toResponse(passwordReset));
     }
@@ -79,7 +78,7 @@ public class AuthService {
 
     public ResponseEntity<?> acceptResetPasswordRequest(Long requestId) {
         PasswordReset passwordReset = passwordResetRepository.findByIdAndStatus(requestId, PasswordStatus.PENDING)
-                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.PASSWORD_RESET_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.PASSWORD_RESET_NOT_FOUND));
 
         passwordReset.setStatus(PasswordStatus.ACCEPTED);
         User user = passwordReset.getUser();
@@ -94,7 +93,7 @@ public class AuthService {
 
     public ResponseEntity<?> rejectResetPasswordRequest(Long requestId) {
         PasswordReset passwordReset = passwordResetRepository.findByIdAndStatus(requestId, PasswordStatus.PENDING)
-                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.PASSWORD_RESET_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.PASSWORD_RESET_NOT_FOUND));
 
         passwordReset.setStatus(PasswordStatus.REJECTED);
 

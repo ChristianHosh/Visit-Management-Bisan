@@ -15,7 +15,8 @@ public class ControllerAdvice {
             NoContactTypeException.class,
             InvalidStatusUpdateException.class,
             LocationTooFarException.class,
-            EntityNotEnabled.class
+            EntityNotEnabled.class,
+            InvalidPasswordResetException.class
     })
     public ResponseEntity<ApiError> handleBadRequestExceptions(Exception exception){
         ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, exception.getMessage());
