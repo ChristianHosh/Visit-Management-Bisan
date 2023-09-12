@@ -85,9 +85,6 @@ public class ReportService {
         for (Location location : cityList) {
             double countOfCustomer = customerRepository.countByLocationAndEnabledTrue(location);
 
-            System.out.println(location.getAddress());
-            System.out.println(countOfCustomer);
-
             double percentage = countOfCustomer / countOfEnabledCustomers;
 
             if (percentage != 0)
@@ -127,8 +124,6 @@ public class ReportService {
 
                 }
             }
-            System.out.println(user.getUsername() + " : " + sumOfTime + " / " + completedFormsCounter + " = " + (sumOfTime / completedFormsCounter));
-
             userAverage.add(new NameYPayload(user.getUsername(), (sumOfTime / completedFormsCounter) / 1000));
 
         }
@@ -199,7 +194,7 @@ public class ReportService {
 
             double percentage = (((double) count / (double) totalFormsCount) * 100);
 
-            if (percentage == 0 || totalFormsCount == 0) continue;
+            if ( percentage == 0 || totalFormsCount == 0) continue;
 
             percentageList.add(new NameYPayload(String.valueOf(status), percentage));
 
@@ -230,9 +225,6 @@ public class ReportService {
                     assignmentByTypeCount++;
                 }
             }
-
-            System.out.println("DEF TYPE COUNT: " + assignmentByTypeCount);
-
             double percentage = (double) assignmentByTypeCount / (double) customerAssignmentListSize;
 
             if (percentage == 0 || customerAssignmentListSize == 0) continue;

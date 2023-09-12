@@ -16,7 +16,7 @@ import com.example.vm.model.enums.PaymentType;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.enums.VisitTypeBase;
 import com.example.vm.model.templates.PaymentReceipt;
-import com.example.vm.model.templates.PaymentReceiptRepository;
+import com.example.vm.repository.PaymentReceiptRepository;
 import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

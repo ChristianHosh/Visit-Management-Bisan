@@ -1,6 +1,7 @@
-package com.example.vm.model.templates;
+package com.example.vm.repository;
 
 import com.example.vm.model.VisitAssignment;
+import com.example.vm.model.templates.PaymentReceipt;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

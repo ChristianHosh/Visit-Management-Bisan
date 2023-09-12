@@ -15,7 +15,7 @@ import com.example.vm.dto.response.VisitFormResponse;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.templates.PaymentReceipt;
-import com.example.vm.model.templates.PaymentReceiptRepository;
+import com.example.vm.repository.PaymentReceiptRepository;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.repository.*;
 import com.example.vm.service.util.CalenderDate;
