@@ -5,6 +5,7 @@ import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.VisitDefinition;
 import com.example.vm.model.enums.VisitStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -13,6 +14,11 @@ import java.util.Optional;
 
 @Repository
 public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment, Long> {
+    @Query("select v from VisitAssignment v " +
+            "where v.id = ?1 " +
+            "and v.visitDefinition.type.base = com.example.vm.model.enums.VisitTypeBase.PAYMENT " +
+            "and v.enabled = true")
+    Optional<VisitAssignment> findByIdAndTypeBasePaymentAndEnabledTrue(Long id);
     List<VisitAssignment> findByUserAndDateBetweenAndEnabledTrue(User user, java.sql.Date dateStart, java.sql.Date dateEnd);
     long countByUserAndDateBetweenAndStatusAndEnabledTrue(User user, java.sql.Date dateStart, java.sql.Date dateEnd, VisitStatus status);
     long countByUserAndDateBetweenAndEnabledTrue(User user, java.sql.Date dateStart, java.sql.Date dateEnd);

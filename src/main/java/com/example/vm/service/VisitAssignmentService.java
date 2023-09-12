@@ -3,6 +3,7 @@ package com.example.vm.service;
 import com.example.vm.controller.error.ErrorMessage;
 import com.example.vm.controller.error.exception.*;
 import com.example.vm.dto.mapper.ContactMapper;
+import com.example.vm.dto.mapper.ReceiptMapper;
 import com.example.vm.dto.mapper.VisitAssignmentMapper;
 import com.example.vm.dto.mapper.VisitFormMapper;
 import com.example.vm.dto.request.ContactRequest;
@@ -13,6 +14,8 @@ import com.example.vm.dto.response.VisitAssignmentResponse;
 import com.example.vm.dto.response.VisitFormResponse;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
+import com.example.vm.model.templates.PaymentReceipt;
+import com.example.vm.model.templates.PaymentReceiptRepository;
 import com.example.vm.payload.report.AssignmentReportListPayload;
 import com.example.vm.repository.*;
 import com.example.vm.service.util.CalenderDate;
@@ -31,14 +34,18 @@ public class VisitAssignmentService {
     private final UserRepository userRepository;
     private final VisitFormRepository visitFormRepository;
     private final VisitTypeService visitTypeService;
+    private final PaymentReceiptRepository paymentReceiptRepository;
+
     @Autowired
-    public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository, VisitFormRepository visitFormRepository, VisitTypeService visitTypeService) {
+    public VisitAssignmentService(VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, UserRepository userRepository, VisitFormRepository visitFormRepository, VisitTypeService visitTypeService,
+                                  PaymentReceiptRepository paymentReceiptRepository) {
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
         this.userRepository = userRepository;
         this.visitFormRepository = visitFormRepository;
         this.visitTypeService = visitTypeService;
+        this.paymentReceiptRepository = paymentReceiptRepository;
     }
 
     public ResponseEntity<List<VisitAssignmentResponse>> findAllVisitAssignments() {
@@ -203,6 +210,15 @@ public class VisitAssignmentService {
         visitFormRepository.save(newVisitForm);
 
         return ResponseEntity.ok(VisitAssignmentMapper.toDetailedResponse(foundAssignment));
+    }
+
+    public ResponseEntity<?> getVisitAssignmentsReceipts(Long id) {
+        VisitAssignment foundAssignment = visitAssignmentRepository.findByIdAndTypeBasePaymentAndEnabledTrue(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.ASSIGNMENT_NOT_FOUND));
+
+        List<PaymentReceipt> receipts = paymentReceiptRepository.findByVisitForm_VisitAssignment(foundAssignment);
+
+        return ResponseEntity.ok(ReceiptMapper.listToResponse(receipts));
     }
 
     public ResponseEntity<?> createContactAndAssignCustomerToAssignment(Long assignmentId, Long customerId, ContactRequest contactRequest) {
