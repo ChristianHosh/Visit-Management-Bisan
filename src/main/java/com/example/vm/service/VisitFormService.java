@@ -96,8 +96,6 @@ public class VisitFormService {
         paymentReceiptRepository.save(receipt);
         form = visitFormRepository.save(form);
 
-        visitAssignmentService.createNextVisitAssignment(form.getVisitAssignment(), form.getCustomer());
-
         return ResponseEntity.ok(VisitFormMapper.toListResponse(form));
     }
 
@@ -121,6 +119,8 @@ public class VisitFormService {
         foundForm.getGeoCoordinates().setLatitude(formRequest.getLatitude());
         completeAssignmentIfAllFormsCompleted(foundForm);
 
+        visitAssignmentService.createNextVisitAssignment(foundForm.getVisitAssignment(), foundForm.getCustomer());
+
         VisitType visitDefinitionType = foundForm.getVisitAssignment().getVisitDefinition().getType();
         if (formRequest instanceof FormAnswerRequest && visitDefinitionType.getBase().equals(VisitTypeBase.QUESTION)) {
             System.out.println("INSTANCE OF SURVEY");
@@ -139,7 +139,6 @@ public class VisitFormService {
         foundForm = visitFormRepository.save(foundForm);
 
 
-        visitAssignmentService.createNextVisitAssignment(foundForm.getVisitAssignment(), foundForm.getCustomer());
 
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
