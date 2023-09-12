@@ -299,10 +299,6 @@ public class VisitAssignmentService {
 
     }
 
-    private boolean isSurvey(VisitDefinition visitDefinition) {
-        return visitDefinition.getType().getName().equalsIgnoreCase("Survey");
-    }
-
     private void createNextAssignmentForm(Customer currentCustomer, VisitAssignment currentAssignment) {
         if (currentAssignment.getCustomers().contains(currentCustomer))
             throw new CustomerAlreadyAssignedException();

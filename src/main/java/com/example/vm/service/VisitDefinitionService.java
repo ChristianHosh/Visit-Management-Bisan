@@ -181,9 +181,5 @@ public class VisitDefinitionService {
         return ResponseEntity.status(HttpStatus.CREATED).body(VisitDefinitionMapper.toDetailedResponse(foundVisitDefinition));
     }
 
-    private boolean isSurvey(VisitDefinition definition) {
-        return definition.getType().getName().equalsIgnoreCase("Survey");
-    }
-
 
 }

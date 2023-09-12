@@ -16,6 +16,7 @@ public class SimpleNameRequest {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("i")
     private Integer i;
 
     @JsonCreator
