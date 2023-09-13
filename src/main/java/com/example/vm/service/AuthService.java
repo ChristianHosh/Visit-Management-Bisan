@@ -72,7 +72,8 @@ public class AuthService {
                     .body(new ApiError(HttpStatus.UNAUTHORIZED, "Unauthorized: username or password is incorrect"));
         }
 
-        return ResponseEntity.status(HttpStatus.ACCEPTED)
+        return ResponseEntity
+                .status(HttpStatus.ACCEPTED)
                 .body(UserMapper.toListResponse(userOptional.get()));
     }
 

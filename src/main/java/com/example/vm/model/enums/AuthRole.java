@@ -1,7 +1,7 @@
 package com.example.vm.model.enums;
 
-public enum Role {
+public enum AuthRole {
     ROLE_EMPLOYEE,
-    ROLE_MODERATOR,
+    ROLE_MOD,
     ROLE_ADMIN
 }

@@ -43,7 +43,8 @@ public enum ErrorMessage {
     USER_ALREADY_EXISTS("Conflict: Username already exists"),
     CUSTOMER_ALREADY_ASSIGNED("Conflict: Customer is already assigned"),
 
-    ;
+    TEMPLATE_NOT_FOUND("Not found: Question template not found"),
+    FORM_NOT_A_SURVEY("Not found: Visit Form not a survey");
 
 
     public final String message;

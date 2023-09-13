@@ -16,6 +16,8 @@ import com.example.vm.model.enums.PaymentType;
 import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.model.enums.VisitTypeBase;
 import com.example.vm.model.templates.PaymentReceipt;
+import com.example.vm.model.templates.QuestionAnswers;
+import com.example.vm.model.templates.QuestionTemplate;
 import com.example.vm.repository.PaymentReceiptRepository;
 import com.example.vm.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,16 +38,22 @@ public class VisitFormService {
     private final ContactRepository contactRepository;
     private final VisitAssignmentService visitAssignmentService;
     private final PaymentReceiptRepository paymentReceiptRepository;
+    private final QuestionTemplateRepository questionTemplateRepository;
+    private final QuestionAnswersRepository questionAnswersRepository;
 
     @Autowired
     public VisitFormService(VisitFormRepository visitFormRepository, VisitAssignmentRepository visitAssignmentRepository, CustomerRepository customerRepository, ContactRepository contactRepository, VisitAssignmentService visitAssignmentService,
-                            PaymentReceiptRepository paymentReceiptRepository) {
+                            PaymentReceiptRepository paymentReceiptRepository,
+                            QuestionTemplateRepository questionTemplateRepository,
+                            QuestionAnswersRepository questionAnswersRepository) {
         this.visitFormRepository = visitFormRepository;
         this.visitAssignmentRepository = visitAssignmentRepository;
         this.customerRepository = customerRepository;
         this.contactRepository = contactRepository;
         this.visitAssignmentService = visitAssignmentService;
         this.paymentReceiptRepository = paymentReceiptRepository;
+        this.questionTemplateRepository = questionTemplateRepository;
+        this.questionAnswersRepository = questionAnswersRepository;
     }
 
     public ResponseEntity<VisitFormResponse> findVisitFormById(Long id) {
@@ -85,20 +93,6 @@ public class VisitFormService {
 
     }
 
-    public ResponseEntity<VisitFormResponse> completePaymentForm(VisitForm form, FormPaymentRequest formPaymentRequest) {
-        PaymentReceipt receipt = PaymentReceipt.builder()
-                .amount(formPaymentRequest.getAmount())
-                .paymentType(PaymentType.valueOf(formPaymentRequest.getType()))
-                .visitForm(form)
-                .build();
-
-
-        paymentReceiptRepository.save(receipt);
-        form = visitFormRepository.save(form);
-
-        return ResponseEntity.ok(VisitFormMapper.toListResponse(form));
-    }
-
     public ResponseEntity<?> completeForm(Long id, FormRequest formRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
@@ -109,6 +103,18 @@ public class VisitFormService {
         validateDistance(formRequest, foundForm.getCustomer());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
+        VisitFormResponse response;
+        VisitType visitDefinitionType = foundForm.getVisitAssignment().getVisitDefinition().getType();
+        if (formRequest instanceof FormAnswerRequest && visitDefinitionType.getBase().equals(VisitTypeBase.QUESTION)) {
+            System.out.println("INSTANCE OF SURVEY");
+            response = completeAnswerForm(foundForm, (FormAnswerRequest) formRequest);
+        } else if (formRequest instanceof FormPaymentRequest && visitDefinitionType.getBase().equals(VisitTypeBase.PAYMENT)) {
+            System.out.println("INSTANCE OF COLLECTION");
+            response = completePaymentForm(foundForm, (FormPaymentRequest) formRequest);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SOMETHING WENT WRONG");
+        }
+
         foundForm.setStatus(VisitStatus.COMPLETED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
         foundForm.setNote(formRequest.getNote());
@@ -117,30 +123,38 @@ public class VisitFormService {
 
         foundForm.getGeoCoordinates().setLongitude(formRequest.getLongitude());
         foundForm.getGeoCoordinates().setLatitude(formRequest.getLatitude());
-        completeAssignmentIfAllFormsCompleted(foundForm);
 
+        completeAssignmentIfAllFormsCompleted(foundForm);
         visitAssignmentService.createNextVisitAssignment(foundForm.getVisitAssignment(), foundForm.getCustomer());
 
-        VisitType visitDefinitionType = foundForm.getVisitAssignment().getVisitDefinition().getType();
-        if (formRequest instanceof FormAnswerRequest && visitDefinitionType.getBase().equals(VisitTypeBase.QUESTION)) {
-            System.out.println("INSTANCE OF SURVEY");
-            return completeAnswerForm(foundForm, (FormAnswerRequest) formRequest);
-        } else if (formRequest instanceof FormPaymentRequest && visitDefinitionType.getBase().equals(VisitTypeBase.PAYMENT)) {
-            System.out.println("INSTANCE OF COLLECTION");
-            return completePaymentForm(foundForm, (FormPaymentRequest) formRequest);
-        }
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SOMETHING WENT WRONG");
+        return ResponseEntity.ok(response);
     }
 
-    public ResponseEntity<VisitFormResponse> completeAnswerForm(VisitForm foundForm, FormAnswerRequest formAnswerRequest) {
+    public VisitFormResponse completePaymentForm(VisitForm form, FormPaymentRequest formPaymentRequest) {
+        PaymentReceipt receipt = PaymentReceipt.builder()
+                .amount(formPaymentRequest.getAmount())
+                .paymentType(PaymentType.valueOf(formPaymentRequest.getType()))
+                .visitForm(form)
+                .build();
 
+        paymentReceiptRepository.save(receipt);
+        form = visitFormRepository.save(form);
 
+        return VisitFormMapper.toListResponse(form);
+    }
+
+    public VisitFormResponse completeAnswerForm(VisitForm foundForm, FormAnswerRequest formAnswerRequest) {
+        QuestionAnswers answers = QuestionAnswers.builder()
+                .answer1(formAnswerRequest.getAnswer1())
+                .answer2(formAnswerRequest.getAnswer2())
+                .answer3(formAnswerRequest.getAnswer3())
+                .visitForm(foundForm)
+                .build();
+
+        questionAnswersRepository.save(answers);
         foundForm = visitFormRepository.save(foundForm);
 
-
-
-        return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
+        return VisitFormMapper.toListResponse(foundForm);
     }
 
     public ResponseEntity<VisitFormResponse> startForm(Long id, FormRequest formRequest) {
@@ -197,12 +211,30 @@ public class VisitFormService {
         return ResponseEntity.ok(ContactMapper.listToResponseList(formContactList));
     }
 
+    public ResponseEntity<?> getFormQuestions(Long id) {
+        VisitForm foundVisitForm = visitFormRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
+
+        VisitDefinition parentDefinition = foundVisitForm.getVisitAssignment().getVisitDefinition();
+        if (!parentDefinition.getType().getBase().equals(VisitTypeBase.QUESTION))
+            throw new EntityNotFoundException(ErrorMessage.FORM_NOT_A_SURVEY);
+
+        QuestionTemplate questionTemplate = questionTemplateRepository.findByVisitDefinition(parentDefinition)
+                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.TEMPLATE_NOT_FOUND));
+
+        List<String> questions = List.of(questionTemplate.getQuestion1(),
+                questionTemplate.getQuestion2(),
+                questionTemplate.getQuestion3());
+
+        return ResponseEntity.ok(questions);
+    }
+
     private void completeAssignmentIfAllFormsCompleted(VisitForm foundForm) {
         VisitAssignment parentAssignment = foundForm.getVisitAssignment();
         boolean areAllFormsCompleted = parentAssignment
                 .getVisitForms()
                 .stream()
-                .allMatch(visitForm -> visitForm.getStatus().equals(VisitStatus.COMPLETED));
+                .allMatch(visitForm -> visitForm.getStatus().equals(VisitStatus.COMPLETED) || visitForm.getStatus().equals(VisitStatus.CANCELED));
 
         parentAssignment.setStatus(areAllFormsCompleted ? VisitStatus.COMPLETED : VisitStatus.UNDERGOING);
         visitAssignmentRepository.save(parentAssignment);
@@ -228,6 +260,7 @@ public class VisitFormService {
 
         return distanceBetweenTwoPoints(customerLat, customerLng, userLat, userLng);
     }
+
 
 
 }

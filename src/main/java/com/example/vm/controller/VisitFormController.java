@@ -52,6 +52,11 @@ public class VisitFormController {
         return visitFormService.completeForm(id, formRequest);
     }
 
+    @GetMapping("/{id}/questions")
+    public ResponseEntity<?> getFormQuestions(@PathVariable Long id){
+        return visitFormService.getFormQuestions(id);
+    }
+
 
     @PutMapping("/{id}/cancel")
     public ResponseEntity<?> updateFormStatusCancel(@PathVariable Long id, @RequestBody @Valid FormRequest formRequest) {
