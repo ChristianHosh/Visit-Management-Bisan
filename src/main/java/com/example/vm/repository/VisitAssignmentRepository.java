@@ -14,13 +14,22 @@ import java.util.Optional;
 
 @Repository
 public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment, Long> {
+    @Query("select v from VisitAssignment v where v.id = ?1 and v.visitDefinition.type.base = com.example.vm.model.enums.VisitTypeBase.QUESTION")
+    Optional<VisitAssignment> findByIdAndIsQuestionAssignment(Long id);
+
+    @Query("select v from VisitAssignment v where v.visitDefinition.type.base = com.example.vm.model.enums.VisitTypeBase.QUESTION")
+    List<VisitAssignment> findQuestionAssignments();
+
     @Query("select v from VisitAssignment v " +
             "where v.id = ?1 " +
             "and v.visitDefinition.type.base = com.example.vm.model.enums.VisitTypeBase.PAYMENT " +
             "and v.enabled = true")
     Optional<VisitAssignment> findByIdAndTypeBasePaymentAndEnabledTrue(Long id);
+
     List<VisitAssignment> findByUserAndDateBetweenAndEnabledTrue(User user, java.sql.Date dateStart, java.sql.Date dateEnd);
+
     long countByUserAndDateBetweenAndStatusAndEnabledTrue(User user, java.sql.Date dateStart, java.sql.Date dateEnd, VisitStatus status);
+
     long countByUserAndDateBetweenAndEnabledTrue(User user, java.sql.Date dateStart, java.sql.Date dateEnd);
 
     List<VisitAssignment> findByUserAndDateAfter(User user, java.sql.Date date);

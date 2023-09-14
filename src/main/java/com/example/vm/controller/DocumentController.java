@@ -35,4 +35,13 @@ public class DocumentController {
         return documentService.searchReceipts(customerId, userUsername, visitTypeName, startDate, endDate);
     }
 
+    @GetMapping("/question_assignments")
+    public ResponseEntity<?> getAllQuestionAssignments(){
+        return documentService.getQuestionsAssignments();
+    }
+
+    @GetMapping("/question_assignments/{id}")
+    public ResponseEntity<?> getQuestionAssignmentAnswers(@PathVariable Long id){
+        return documentService.getQuestionAssignmentAnswers(id);
+    }
 }
