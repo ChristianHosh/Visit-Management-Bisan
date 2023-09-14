@@ -296,8 +296,7 @@ public class ReportService {
 
         return UserInteractionResponse
                 .builder()
-                .customerName(visitForm.getCustomer().getName())
-                .customerAddress(visitForm.getCustomer().getLocation().getDetailedLocation())
+                .customer(CustomerMapper.toListResponse(visitForm.getCustomer()))
                 .latitude(latitude)
                 .longitude(longitude)
                 .formStatus(visitForm.getStatus().toString())

@@ -1,5 +1,6 @@
 package com.example.vm.dto.report;
 
+import com.example.vm.dto.response.CustomerResponse;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,8 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class UserInteractionResponse {
 
-    private String customerName;
-    private String customerAddress;
+    private CustomerResponse customer;
     private Double longitude;
     private Double latitude;
 
