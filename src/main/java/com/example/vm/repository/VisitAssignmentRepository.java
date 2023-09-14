@@ -4,6 +4,7 @@ import com.example.vm.model.User;
 import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.VisitDefinition;
 import com.example.vm.model.enums.VisitStatus;
+import com.example.vm.model.templates.PaymentReceipt;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -25,6 +26,15 @@ public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment
             "and v.visitDefinition.type.base = com.example.vm.model.enums.VisitTypeBase.PAYMENT " +
             "and v.enabled = true")
     Optional<VisitAssignment> findByIdAndTypeBasePaymentAndEnabledTrue(Long id);
+
+    @Query("SELECT a from VisitAssignment a " +
+            "WHERE (" +
+            "   (:comment IS NULL OR a.comment LIKE concat('%',:comment,'%')) AND " +
+            "   (:userUsername IS NULL OR a.user.username = :userUsername) AND " +
+            "   ((:startDate IS NULL OR :endDate IS NULL) OR a.date BETWEEN :startDate AND :endDate) AND " +
+            "   (a.visitDefinition.type.base = com.example.vm.model.enums.VisitTypeBase.QUESTION)" +
+            ")")
+    List<PaymentReceipt> searchQuestionAssignments(String comment, String userUsername, java.sql.Date startDate, java.sql.Date endDate);
 
     List<VisitAssignment> findByUserAndDateBetweenAndEnabledTrue(User user, java.sql.Date dateStart, java.sql.Date dateEnd);
 

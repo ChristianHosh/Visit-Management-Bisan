@@ -84,4 +84,14 @@ public class DocumentService {
 
         return ResponseEntity.ok(response);
     }
+
+    public ResponseEntity<?> searchQuestionAssignments(String comment, String userUsername, String startStr, String endStr) {
+        Date startDate = startStr == null ? null : Date.valueOf(startStr);
+        Date endDate = endStr == null ? null : Date.valueOf(endStr);
+
+        List<ReceiptResponse> responseList = ReceiptMapper
+                .listToResponse(visitAssignmentRepository.searchQuestionAssignments(comment, userUsername, startDate, endDate));
+
+        return ResponseEntity.ok(responseList);
+    }
 }
