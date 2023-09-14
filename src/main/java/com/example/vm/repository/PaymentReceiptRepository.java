@@ -9,6 +9,10 @@ import java.sql.Date;
 import java.util.List;
 
 public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, Long> {
+    @Query("SELECT SUM (p.amount) FROM PaymentReceipt p " +
+            "WHERE p.createdTime > :date")
+    double countAmountByCreatedAfter(Date date);
+
     List<PaymentReceipt> findByVisitForm_VisitAssignment(VisitAssignment visitAssignment);
 
     @Query("SELECT r FROM PaymentReceipt r " +
@@ -19,4 +23,5 @@ public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, 
             "   ((:startDate IS NULL AND :endDate IS NULL) OR r.createdTime BETWEEN :startDate AND :endDate)" +
             ") ")
     List<PaymentReceipt> searchReceipts(Long customerId, String userUsername, String visitTypeName, Date startDate, Date endDate);
+
 }

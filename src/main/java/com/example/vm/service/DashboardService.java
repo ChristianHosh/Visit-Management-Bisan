@@ -5,6 +5,7 @@ import com.example.vm.model.enums.VisitStatus;
 import com.example.vm.payload.report.LabelYPayload;
 import com.example.vm.repository.CustomerRepository;
 import com.example.vm.repository.LocationRepository;
+import com.example.vm.repository.PaymentReceiptRepository;
 import com.example.vm.repository.VisitFormRepository;
 import com.example.vm.service.util.CalenderDate;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +23,16 @@ public class DashboardService {
     private final VisitFormRepository visitFormRepository;
     private final CustomerRepository customerRepository;
     private final LocationRepository locationRepository;
+    private final PaymentReceiptRepository paymentReceiptRepository;
 
     public DashboardService(VisitFormRepository visitFormRepository,
                             CustomerRepository customerRepository,
-                            LocationRepository locationRepository) {
+                            LocationRepository locationRepository,
+                            PaymentReceiptRepository paymentReceiptRepository) {
         this.visitFormRepository = visitFormRepository;
         this.customerRepository = customerRepository;
         this.locationRepository = locationRepository;
+        this.paymentReceiptRepository = paymentReceiptRepository;
     }
 
     public ResponseEntity<?> topBarCounts() {
@@ -50,8 +54,8 @@ public class DashboardService {
         resultsMap.put("newCustomersThisMonth", newCustomersThisMonth);
 
         // CURRENTLY UNDERGOING
-        long currentlyUndergoingForms = visitFormRepository.countByStatus(VisitStatus.UNDERGOING);
-        resultsMap.put("currentlyUndergoing", currentlyUndergoingForms);
+        double revenue = paymentReceiptRepository.countAmountByCreatedAfter(CalenderDate.getTodaySql(-14));
+        resultsMap.put("revenue", revenue);
 
         return ResponseEntity.ok(resultsMap);
     }
