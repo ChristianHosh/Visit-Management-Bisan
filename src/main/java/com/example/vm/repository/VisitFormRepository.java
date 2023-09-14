@@ -3,6 +3,7 @@ package com.example.vm.repository;
 import com.example.vm.model.*;
 import com.example.vm.model.enums.VisitStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
@@ -49,5 +50,10 @@ public interface VisitFormRepository extends JpaRepository<VisitForm, Long> {
     List<VisitForm> findVisitFormByStatus(VisitStatus status);
 
     List<VisitForm> findVisitFormsByEnabled(Boolean enabled);
+
+    @Query("select v from VisitForm v where v.visitAssignment.visitDefinition.type = ?1")
+    List<VisitForm> findByVisitAssignment_VisitDefinition_Type(VisitType type);
+
+
 
 }

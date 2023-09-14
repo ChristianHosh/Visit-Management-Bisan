@@ -276,6 +276,7 @@ public class ReportService {
         List<CustomerPerformanceResponse> customerPerformanceReport = customerRepository.findCustomerByEnabledTrue()
                 .stream()
                 .map(customer -> generateCustomerPerformanceResponse(customer, startDate, endDate))
+                .filter(Objects::nonNull)
                 .toList();
 
         return ResponseEntity.ok(customerPerformanceReport);
@@ -361,6 +362,8 @@ public class ReportService {
 
     private CustomerPerformanceResponse generateCustomerPerformanceResponse(Customer customer, Date startDate, Date endDate) {
         long totalCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndCustomer_EnabledTrueAndEnabledTrue(customer, startDate, endDate);
+        if (totalCustomerFormsCount == 0) return null;
+
         long notStartedCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(customer, startDate, endDate, VisitStatus.NOT_STARTED);
         long undergoingCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(customer, startDate, endDate, VisitStatus.UNDERGOING);
         long canceledCustomerFormsCount = visitFormRepository.countByCustomerAndVisitAssignment_DateBetweenAndStatusAndEnabledTrueAndVisitAssignment_EnabledTrue(customer, startDate, endDate, VisitStatus.CANCELED);

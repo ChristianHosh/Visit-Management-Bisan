@@ -100,17 +100,14 @@ public class VisitFormService {
         if (!foundForm.getStatus().equals(VisitStatus.UNDERGOING))
             throw new InvalidStatusUpdateException();
 
-        validateDistance(formRequest, foundForm.getCustomer());
+//        validateDistance(formRequest, foundForm.getCustomer());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
-        VisitFormResponse response;
         VisitType visitDefinitionType = foundForm.getVisitAssignment().getVisitDefinition().getType();
         if (formRequest instanceof FormAnswerRequest && visitDefinitionType.getBase().equals(VisitTypeBase.QUESTION)) {
-            System.out.println("INSTANCE OF SURVEY");
-            response = completeAnswerForm(foundForm, (FormAnswerRequest) formRequest);
+            completeAnswerForm(foundForm, (FormAnswerRequest) formRequest);
         } else if (formRequest instanceof FormPaymentRequest && visitDefinitionType.getBase().equals(VisitTypeBase.PAYMENT)) {
-            System.out.println("INSTANCE OF COLLECTION");
-            response = completePaymentForm(foundForm, (FormPaymentRequest) formRequest);
+            completePaymentForm(foundForm, (FormPaymentRequest) formRequest);
         } else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("SOMETHING WENT WRONG");
         }
@@ -125,12 +122,14 @@ public class VisitFormService {
         foundForm.getGeoCoordinates().setLatitude(formRequest.getLatitude());
 
         completeAssignmentIfAllFormsCompleted(foundForm);
+        foundForm = visitFormRepository.save(foundForm);
+
         visitAssignmentService.createNextVisitAssignment(foundForm.getVisitAssignment(), foundForm.getCustomer());
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
-    public VisitFormResponse completePaymentForm(VisitForm form, FormPaymentRequest formPaymentRequest) {
+    public void completePaymentForm(VisitForm form, FormPaymentRequest formPaymentRequest) {
         PaymentReceipt receipt = PaymentReceipt.builder()
                 .amount(formPaymentRequest.getAmount())
                 .paymentType(PaymentType.valueOf(formPaymentRequest.getType()))
@@ -138,12 +137,9 @@ public class VisitFormService {
                 .build();
 
         paymentReceiptRepository.save(receipt);
-        form = visitFormRepository.save(form);
-
-        return VisitFormMapper.toListResponse(form);
     }
 
-    public VisitFormResponse completeAnswerForm(VisitForm foundForm, FormAnswerRequest formAnswerRequest) {
+    public void completeAnswerForm(VisitForm foundForm, FormAnswerRequest formAnswerRequest) {
         QuestionAnswers answers = QuestionAnswers.builder()
                 .answer1(formAnswerRequest.getAnswer1())
                 .answer2(formAnswerRequest.getAnswer2())
@@ -152,16 +148,13 @@ public class VisitFormService {
                 .build();
 
         questionAnswersRepository.save(answers);
-        foundForm = visitFormRepository.save(foundForm);
-
-        return VisitFormMapper.toListResponse(foundForm);
     }
 
     public ResponseEntity<VisitFormResponse> startForm(Long id, FormRequest formRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
-        validateDistance(formRequest, foundForm.getCustomer());
+//        validateDistance(formRequest, foundForm.getCustomer());
         // THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.NOT_STARTED))
@@ -220,7 +213,7 @@ public class VisitFormService {
             throw new EntityNotFoundException(ErrorMessage.FORM_NOT_A_SURVEY);
 
         QuestionTemplate questionTemplate = questionTemplateRepository.findByVisitDefinition(parentDefinition)
-                .orElseThrow( () -> new EntityNotFoundException(ErrorMessage.TEMPLATE_NOT_FOUND));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TEMPLATE_NOT_FOUND));
 
         List<String> questions = List.of(questionTemplate.getQuestion1(),
                 questionTemplate.getQuestion2(),
@@ -260,7 +253,6 @@ public class VisitFormService {
 
         return distanceBetweenTwoPoints(customerLat, customerLng, userLat, userLng);
     }
-
 
 
 }
