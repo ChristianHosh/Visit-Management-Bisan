@@ -8,6 +8,7 @@ import com.example.vm.dto.mapper.VisitAssignmentMapper;
 import com.example.vm.dto.response.QuestionAnswersResponse;
 import com.example.vm.dto.response.ReceiptResponse;
 import com.example.vm.dto.response.SurveyTemplateResponse;
+import com.example.vm.dto.response.VisitAssignmentResponse;
 import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.templates.QuestionTemplate;
 import com.example.vm.repository.PaymentReceiptRepository;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,10 @@ public class DocumentService {
 
 
     public ResponseEntity<?> getAllReceipts() {
-        List<ReceiptResponse> responseList = ReceiptMapper.listToResponse(paymentReceiptRepository.findAll());
+        List<ReceiptResponse> responseList = ReceiptMapper.listToResponse(paymentReceiptRepository.findAll())
+                .stream()
+                .sorted(Comparator.comparingLong(o -> o.getDate().getTime()))
+                .toList();
 
         return ResponseEntity.ok(responseList);
     }
@@ -52,13 +57,19 @@ public class DocumentService {
         Date endDate = endStr == null ? null : Date.valueOf(endStr);
 
         List<ReceiptResponse> responseList = ReceiptMapper
-                .listToResponse(paymentReceiptRepository.searchReceipts(customerId, userUsername, visitTypeName, startDate, endDate));
+                .listToResponse(paymentReceiptRepository.searchReceipts(customerId, userUsername, visitTypeName, startDate, endDate))
+                .stream()
+                .sorted(Comparator.comparingLong(o -> o.getDate().getTime()))
+                .toList();
 
         return ResponseEntity.ok(responseList);
     }
 
     public ResponseEntity<?> getQuestionsAssignments() {
-        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findQuestionAssignments();
+        List<VisitAssignment> visitAssignmentList = visitAssignmentRepository.findQuestionAssignments()
+                .stream()
+                .sorted(Comparator.comparingLong(o -> o.getDate().getTime()))
+                .toList();
 
         return ResponseEntity.ok(VisitAssignmentMapper.listToResponseList(visitAssignmentList));
     }
@@ -76,7 +87,10 @@ public class DocumentService {
                 .question3(questionTemplate.getQuestion3())
                 .build();
 
-        List<QuestionAnswersResponse> answers = QuestionAnswersMapper.listToResponseList(questionAnswersRepository.findByVisitForm_VisitAssignment(visitAssignment));
+        List<QuestionAnswersResponse> answers = QuestionAnswersMapper.listToResponseList(questionAnswersRepository.findByVisitForm_VisitAssignment(visitAssignment))
+                .stream()
+                .sorted(Comparator.comparingLong(o -> o.getDate().getTime()))
+                .toList();
 
         Map<String, Object> response = new HashMap<>();
         response.put("questions", questions);
@@ -89,8 +103,11 @@ public class DocumentService {
         Date startDate = startStr == null ? null : Date.valueOf(startStr);
         Date endDate = endStr == null ? null : Date.valueOf(endStr);
 
-        List<ReceiptResponse> responseList = ReceiptMapper
-                .listToResponse(visitAssignmentRepository.searchQuestionAssignments(comment, userUsername, startDate, endDate));
+        List<VisitAssignmentResponse> responseList = VisitAssignmentMapper
+                .listToResponseList(visitAssignmentRepository.searchQuestionAssignments(comment, userUsername, startDate, endDate))
+                .stream()
+                .sorted(Comparator.comparingLong(o -> o.getDate().getTime()))
+                .toList();
 
         return ResponseEntity.ok(responseList);
     }

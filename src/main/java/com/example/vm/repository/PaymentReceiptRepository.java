@@ -6,12 +6,19 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 public interface PaymentReceiptRepository extends JpaRepository<PaymentReceipt, Long> {
+    @Query("select count(p) from PaymentReceipt p where p.createdTime = ?1")
+    long countAmountByDate(Timestamp createdTime);
     @Query("SELECT SUM (p.amount) FROM PaymentReceipt p " +
             "WHERE p.createdTime > :date")
     double countAmountByCreatedAfter(Date date);
+    @Query("SELECT SUM (p.amount) FROM PaymentReceipt p " +
+            "WHERE p.createdTime BETWEEN :start AND :end")
+    Optional<Long> countAmountByCreatedBetween(Timestamp start, Timestamp end);
 
     List<PaymentReceipt> findByVisitForm_VisitAssignment(VisitAssignment visitAssignment);
 

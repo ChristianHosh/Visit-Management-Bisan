@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -63,13 +64,13 @@ public class DashboardService {
     public ResponseEntity<?> midBarGraphs() {
         Map<String, Object> resultsMap = new HashMap<>();
 
-        List<LabelYPayload> totalDailyFormList = new ArrayList<>();
-        List<LabelYPayload> completedDailyFormList = new ArrayList<>();
         List<LabelYPayload> popularLocationList = new ArrayList<>();
+        List<LabelYPayload> totalDailyFormList = new ArrayList<>();
+        List<LabelYPayload> dailyRevenueList = new ArrayList<>();
 
         // TOP 5 MOST POPULAR LOCATIONS
         List<Location> locationList = locationRepository.findAll();
-        for (Location location: locationList){
+        for (Location location : locationList) {
             long formsInLocation = visitFormRepository.countByVisitAssignment_VisitDefinition_LocationAndVisitAssignment_DateBetweenAndVisitAssignment_EnabledTrueAndEnabledTrue(location, CalenderDate.getTodaySql(-14), CalenderDate.getTodaySql(1));
 
             popularLocationList.add(new LabelYPayload(
@@ -80,34 +81,35 @@ public class DashboardService {
         popularLocationList.sort(Comparator.comparing(LabelYPayload::getY));
         Collections.reverse(popularLocationList);
 
-        popularLocationList = popularLocationList.subList(0,5);
+        popularLocationList = popularLocationList.subList(0, 5);
 
 
+        // DAILY REVENUE FORMS
+        for (int i = 0; i < 14; i++) {
+            Timestamp startTime = CalenderDate.asTimestamp(CalenderDate.getTodaySql(-i));
+            Timestamp endTime = CalenderDate.asTimestamp(CalenderDate.getTodaySql(-i+1));
+            long dayAmount = paymentReceiptRepository.countAmountByCreatedBetween(startTime, endTime)
+                    .orElse(0L);
 
-        // NO OF PREVIOUS DAILY COMPLETED FORMS
-        for (int i = 0; i < 7; i++) {
-            LocalDate currentDay = CalenderDate.getTodaySql(-i+1).toLocalDate();
-            long completedDailyFormsCount = visitFormRepository.countByVisitAssignment_DateAndStatus(Date.valueOf(currentDay), VisitStatus.COMPLETED);
-
-            completedDailyFormList.add(new LabelYPayload(
-                    currentDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()),
-                    completedDailyFormsCount));
+            dailyRevenueList.add(new LabelYPayload(
+                    startTime.toLocalDateTime().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+                    dayAmount));
         }
 
         // NO OF NEXT MONTH TOTAL
         for (int i = 0; i < 30; i++) {
-            LocalDate currentDay = CalenderDate.getTodaySql(i-3).toLocalDate();
+            LocalDate currentDay = CalenderDate.getTodaySql(i - 3).toLocalDate();
             long totalDailyFormsCount = visitFormRepository.countByVisitAssignment_Date(Date.valueOf(currentDay));
 
             totalDailyFormList.add(new LabelYPayload(
                     currentDay.format(DateTimeFormatter.ISO_DATE),
                     totalDailyFormsCount));
         }
-        Collections.reverse(completedDailyFormList);
+        Collections.reverse(dailyRevenueList);
 
         // PUTTING ARRAYS OF DATA POINT
         resultsMap.put("total", totalDailyFormList);
-        resultsMap.put("completed", completedDailyFormList);
+        resultsMap.put("completed", dailyRevenueList);
         resultsMap.put("locations", popularLocationList);
 
         return ResponseEntity.ok(resultsMap);
