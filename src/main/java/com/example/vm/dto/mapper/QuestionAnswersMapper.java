@@ -14,7 +14,6 @@ public class QuestionAnswersMapper {
                 .answer3(q.getAnswer3())
                 .date(q.getCreatedTime())
                 .customer(CustomerMapper.toListResponse(q.getVisitForm().getCustomer()))
-                .user(UserMapper.toListResponse(q.getVisitForm().getVisitAssignment().getUser()))
                 .build();
     }
 

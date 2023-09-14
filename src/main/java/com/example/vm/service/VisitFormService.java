@@ -185,6 +185,7 @@ public class VisitFormService {
             throw new InvalidStatusUpdateException();
 
         foundForm.setStatus(VisitStatus.CANCELED);
+        foundForm.setEndTime(Timestamp.from(Instant.now()));
         if (foundForm.getGeoCoordinates() == null)
             foundForm.setGeoCoordinates(new GeoCoordinates());
         foundForm.getGeoCoordinates().setLatitude(formRequest.getLatitude());
@@ -215,7 +216,8 @@ public class VisitFormService {
         QuestionTemplate questionTemplate = questionTemplateRepository.findByVisitDefinition(parentDefinition)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.TEMPLATE_NOT_FOUND));
 
-        List<String> questions = List.of(questionTemplate.getQuestion1(),
+        List<String> questions = List.of(
+                questionTemplate.getQuestion1(),
                 questionTemplate.getQuestion2(),
                 questionTemplate.getQuestion3());
 

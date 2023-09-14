@@ -11,7 +11,6 @@ import java.util.Date;
 public class QuestionAnswersResponse {
 
     private CustomerResponse customer;
-    private UserResponse user;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy | hh:mm:s")
     private Date date;
