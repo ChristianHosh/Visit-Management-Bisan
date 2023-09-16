@@ -15,19 +15,19 @@ public class CustomerPerformanceResponse {
     private CustomerResponse customer;
 
     // FORMS COUNT
-    private Long totalForms;
-    private Long notStartedForms;
-    private Long undergoingForms;
-    private Long canceledForms;
-    private Long completedForms;
+    private long totalForms;
+    private long notStartedForms;
+    private long undergoingForms;
+    private long canceledForms;
+    private long completedForms;
 
     // FORMS PERCENTAGES
-    private Double notStartedFormsPer;
-    private Double undergoingFormsPer;
-    private Double canceledFormsPer;
-    private Double completedFormsPer;
+    private double notStartedFormsPer;
+    private double undergoingFormsPer;
+    private double canceledFormsPer;
+    private double completedFormsPer;
 
     // OTHERS
-    private Double averageCompletionTime;
-    private Long lateFormsCount;
+    private double averageCompletionTime;
+    private long lateFormsCount;
 }

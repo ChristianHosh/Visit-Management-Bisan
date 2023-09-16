@@ -48,7 +48,7 @@ public class UserService {
     }
 
     public ResponseEntity<UserResponse> findUserByUsername(String username) {
-        User foundUser = repository.findById(username)
+        User foundUser = repository.findById(username.trim())
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.USER_NOT_FOUND));
 
         return ResponseEntity.ok(UserMapper.toListResponse(foundUser));

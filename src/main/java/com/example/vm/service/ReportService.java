@@ -5,6 +5,7 @@ import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.dto.mapper.CustomerMapper;
 import com.example.vm.dto.mapper.UserMapper;
 import com.example.vm.dto.report.CustomerPerformanceResponse;
+import com.example.vm.dto.report.LocationReportResponse;
 import com.example.vm.dto.report.UserInteractionResponse;
 import com.example.vm.dto.report.UserPerformanceResponse;
 import com.example.vm.model.*;
@@ -194,7 +195,7 @@ public class ReportService {
 
             double percentage = (((double) count / (double) totalFormsCount) * 100);
 
-            if ( percentage == 0 || totalFormsCount == 0) continue;
+            if (percentage == 0 || totalFormsCount == 0) continue;
 
             percentageList.add(new NameYPayload(String.valueOf(status), percentage));
 
@@ -263,6 +264,7 @@ public class ReportService {
         List<UserInteractionResponse> userInteractionReport = visitFormRepository.findByVisitAssignment_UserAndVisitAssignment_DateBetweenAndVisitAssignment_EnabledTrueAndEnabledTrue(user, startDate, endDate)
                 .stream()
                 .map(this::generateUserInteractionResponse)
+                .sorted(Comparator.comparingLong(u -> u.getFormDueDate().getTime()))
                 .toList();
 
         Map<String, Object> userDetailedReport = new HashMap<>();
@@ -280,6 +282,43 @@ public class ReportService {
                 .toList();
 
         return ResponseEntity.ok(customerPerformanceReport);
+    }
+
+    public ResponseEntity<?> generateLocationCustomersReport(Date startDate, Date endDate) {
+        List<LocationReportResponse> locationCustomersReport = locationRepository.findLocationsForReport()
+                .stream()
+                .map(location -> generateLocationCustomerResponse(location, startDate, endDate))
+                .filter(Objects::nonNull)
+                .toList();
+
+        return ResponseEntity.ok(locationCustomersReport);
+    }
+
+    private LocationReportResponse generateLocationCustomerResponse(Location location, Date startDate, Date endDate) {
+
+        String cityName = location.getCity().getName();
+        String locationName = location.getAddress();
+
+        var startTime = Timestamp.valueOf(startDate.toLocalDate().atStartOfDay());
+        var endTime = Timestamp.valueOf(endDate.toLocalDate().atStartOfDay());
+
+        long newCustomers = customerRepository.countNewCustomerInLocation(location, startTime, endTime);
+        long totalCustomers = customerRepository.countCustomerInLocation(location);
+        long totalAssignments = visitAssignmentRepository.countByVisitDefinition_LocationAndDateBetweenAndEnabledTrue(location, startDate, endDate);
+        long notStartedAssignments = visitAssignmentRepository.countByVisitDefinition_LocationAndDateBetweenAndStatusAndEnabledTrue(location, startDate, endDate, VisitStatus.NOT_STARTED);
+        long undergoingAssignments = visitAssignmentRepository.countByVisitDefinition_LocationAndDateBetweenAndStatusAndEnabledTrue(location, startDate, endDate, VisitStatus.UNDERGOING);
+        long completedAssignments = visitAssignmentRepository.countByVisitDefinition_LocationAndDateBetweenAndStatusAndEnabledTrue(location, startDate, endDate, VisitStatus.COMPLETED);
+
+        return LocationReportResponse.builder()
+                .cityName(cityName)
+                .locationName(locationName)
+                .newCustomers(newCustomers)
+                .totalCustomers(totalCustomers)
+                .totalAssignments(totalAssignments)
+                .notStartedAssignments(notStartedAssignments)
+                .undergoingAssignments(undergoingAssignments)
+                .completedAssignments(completedAssignments)
+                .build();
     }
 
     private UserInteractionResponse generateUserInteractionResponse(VisitForm visitForm) {

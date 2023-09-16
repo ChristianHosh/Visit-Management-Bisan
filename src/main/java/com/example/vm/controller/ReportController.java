@@ -106,4 +106,12 @@ public class ReportController {
         return reportService.generateCustomerPerformanceReport(Date.valueOf(startDate), Date.valueOf(endDate));
     }
 
+    @GetMapping("/locations")
+    public ResponseEntity<?> generateLocationCustomerReport(
+            @RequestParam(name = "from") String startDate,
+            @RequestParam(name = "to") String endDate
+    ) {
+        return reportService.generateLocationCustomersReport(Date.valueOf(startDate), Date.valueOf(endDate));
+    }
+
 }

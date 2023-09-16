@@ -141,9 +141,9 @@ public class VisitFormService {
 
     public void completeAnswerForm(VisitForm foundForm, FormAnswerRequest formAnswerRequest) {
         QuestionAnswers answers = QuestionAnswers.builder()
-                .answer1(formAnswerRequest.getAnswer1())
-                .answer2(formAnswerRequest.getAnswer2())
-                .answer3(formAnswerRequest.getAnswer3())
+                .answer1(formAnswerRequest.getAnswers().get(0))
+                .answer2(formAnswerRequest.getAnswers().get(1))
+                .answer3(formAnswerRequest.getAnswers().get(2))
                 .visitForm(foundForm)
                 .build();
 

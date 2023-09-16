@@ -12,6 +12,10 @@ import java.util.Optional;
 
 @Repository
 public interface CustomerRepository extends JpaRepository<Customer, Long> {
+    @Query("select count(c) from Customer c where c.location = ?1 and c.enabled = true")
+    long countCustomerInLocation(Location location);
+    @Query("select count(c) from Customer c where c.location = ?1 and c.createdTime between ?2 and ?3")
+    long countNewCustomerInLocation(Location location, Timestamp createdTimeStart, Timestamp createdTimeEnd);
     long countByCreatedTimeBetween(Timestamp createdTimeStart, Timestamp createdTimeEnd);
 
     List<Customer> findByLocation(Location location);

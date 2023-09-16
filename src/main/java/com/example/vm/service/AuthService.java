@@ -63,7 +63,7 @@ public class AuthService {
     }
 
     public ResponseEntity<?> loginUser(@Valid LoginRequest loginRequest) {
-        System.out.println("LOGGING IN: USERNAME: (" + loginRequest.getUsername() + ") PASSWORD: (" + loginRequest.getPassword() + ")");
+        System.out.println("LOGGING IN: USERNAME: (" + loginRequest.getUsername().trim() + ") PASSWORD: (" + loginRequest.getPassword().trim() + ")");
         Optional<User> userOptional = userRepository.findByUsernameAndPassword(loginRequest.getUsername().trim(), loginRequest.getPassword().trim());
 
         if (userOptional.isEmpty()) {

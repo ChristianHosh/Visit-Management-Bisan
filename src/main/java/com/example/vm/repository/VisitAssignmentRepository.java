@@ -1,5 +1,6 @@
 package com.example.vm.repository;
 
+import com.example.vm.model.Location;
 import com.example.vm.model.User;
 import com.example.vm.model.VisitAssignment;
 import com.example.vm.model.VisitDefinition;
@@ -14,6 +15,14 @@ import java.util.Optional;
 
 @Repository
 public interface VisitAssignmentRepository extends JpaRepository<VisitAssignment, Long> {
+    @Query("""
+            select count(v) from VisitAssignment v
+            where v.visitDefinition.location = ?1 and v.date between ?2 and ?3 and v.status = ?4 and v.enabled = true""")
+    long countByVisitDefinition_LocationAndDateBetweenAndStatusAndEnabledTrue(Location location, java.sql.Date dateStart, java.sql.Date dateEnd, VisitStatus status);
+    @Query("""
+            select count(v) from VisitAssignment v
+            where v.visitDefinition.location = ?1 and v.date between ?2 and ?3 and v.enabled = true""")
+    long countByVisitDefinition_LocationAndDateBetweenAndEnabledTrue(Location location, java.sql.Date dateStart, java.sql.Date dateEnd);
     @Query("select v from VisitAssignment v where v.id = ?1 and v.visitDefinition.type.base = com.example.vm.model.enums.VisitTypeBase.QUESTION")
     Optional<VisitAssignment> findByIdAndIsQuestionAssignment(Long id);
 
