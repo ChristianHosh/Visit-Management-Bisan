@@ -54,25 +54,19 @@ public class ReportService {
     }
 
     public ResponseEntity<List<NameYPayload>> getTypesPercentages() {
-        ArrayList<NameYPayload> customerCountList = new ArrayList<>();
+        long totalDefinitionCount = visitDefinitionRepository.countVisitDefinitionsByEnabledTrue();
 
-        List<VisitType> visitTypeList = visitTypeRepository.findVisitTypesByEnabledTrue();
+        List<NameYPayload> customerCountList = visitTypeRepository.findVisitTypesByEnabledTrue()
+                .stream()
+                .map(visitType -> {
+                    double definitionCount = visitDefinitionRepository.countVisitDefinitionsByTypeAndEnabledTrue(visitType);
+                    double percentage = (definitionCount / totalDefinitionCount) * 100;
+                    if (percentage == 0) return null;
+                    return new NameYPayload(visitType.getName(), percentage);
+                })
+                .filter(Objects::nonNull)
+                .toList();
 
-        long definitionsCount = visitDefinitionRepository.countVisitDefinitionsByEnabledTrue();
-
-        for (VisitType visitType : visitTypeList) {
-            double definitionByTypeCount = visitDefinitionRepository.countVisitDefinitionsByTypeAndEnabledTrue(visitType);
-
-            System.out.println(visitType.getName());
-
-            System.out.println(definitionByTypeCount);
-
-            double percentage = definitionByTypeCount / definitionsCount;
-
-            if (percentage == 0) continue;
-
-            customerCountList.add(new NameYPayload(visitType.getName(), percentage * 100));
-        }
         return ResponseEntity.ok(customerCountList);
     }
 
