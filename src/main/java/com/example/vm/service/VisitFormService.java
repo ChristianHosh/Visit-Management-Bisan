@@ -1,6 +1,7 @@
 package com.example.vm.service;
 
 import com.example.vm.controller.error.ErrorMessage;
+import com.example.vm.controller.error.exception.ConflictException;
 import com.example.vm.controller.error.exception.EntityNotFoundException;
 import com.example.vm.controller.error.exception.InvalidStatusUpdateException;
 import com.example.vm.controller.error.exception.LocationTooFarException;
@@ -154,8 +155,10 @@ public class VisitFormService {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
+        //VALIDATE USER HAS NO UNDERGOING FORMS
+        validateNoOtherUndergoing(foundForm);
 //        validateDistance(formRequest, foundForm.getCustomer());
-        // THROWS AN LOCATION_TOO_FAR EXCEPTION
+        //THROWS AN LOCATION_TOO_FAR EXCEPTION
 
         if (!foundForm.getStatus().equals(VisitStatus.NOT_STARTED))
             throw new InvalidStatusUpdateException();
@@ -177,12 +180,21 @@ public class VisitFormService {
         return ResponseEntity.ok(VisitFormMapper.toListResponse(foundForm));
     }
 
+
     public ResponseEntity<?> cancelForm(Long id, FormRequest formRequest) {
         VisitForm foundForm = visitFormRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(ErrorMessage.FORM_NOT_FOUND));
 
         if (foundForm.getStatus().equals(VisitStatus.COMPLETED))
             throw new InvalidStatusUpdateException();
+
+        if (foundForm.getVisitAssignment().getVisitForms()
+                .stream()
+                .allMatch(v -> v.getStatus().equals(VisitStatus.CANCELED))
+        ) {
+            foundForm.getVisitAssignment().setStatus(VisitStatus.CANCELED);
+            visitAssignmentRepository.save(foundForm.getVisitAssignment());
+        }
 
         foundForm.setStatus(VisitStatus.CANCELED);
         foundForm.setEndTime(Timestamp.from(Instant.now()));
@@ -241,6 +253,21 @@ public class VisitFormService {
         if (distance > 250)
             throw new LocationTooFarException();
     }
+
+    private void validateNoOtherUndergoing(VisitForm foundForm) {
+        User user = foundForm.getVisitAssignment().getUser();
+
+        boolean hasOtherUndergoing = user.getVisitAssignments()
+                .stream()
+                .anyMatch( assignment -> assignment
+                       .getVisitForms()
+                       .stream()
+                       .anyMatch(form -> form.getStatus().equals(VisitStatus.UNDERGOING)));
+
+        if (hasOtherUndergoing)
+            throw new ConflictException("You have to finish previous forms before starting another");
+    }
+
 
     private static double distanceBetweenTwoPoints(double lat1, double lng1, double lat2, double lng2) {
         return Math.sqrt(Math.pow(lat2 - lat1, 2) + Math.pow(lng2 - lng1, 2)) * 111 * 1000;

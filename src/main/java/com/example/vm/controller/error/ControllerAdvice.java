@@ -25,7 +25,8 @@ public class ControllerAdvice {
 
     @ExceptionHandler({
             UserAlreadyExistsException.class,
-            CustomerAlreadyAssignedException.class
+            CustomerAlreadyAssignedException.class,
+            ConflictException.class
     })
     public ResponseEntity<ApiError> handleConflictExceptions(Exception exception){
         ApiError apiError = new ApiError(HttpStatus.CONFLICT, exception.getMessage());
