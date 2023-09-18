@@ -48,6 +48,7 @@ public class VisitAssignmentMapper {
         response.setStatus(assignment.getStatus().toString());
         response.setUser(UserMapper.toListResponse(assignment.getUser()));
         response.setVisitType(VisitTypeMapper.toListResponse(assignment.getVisitDefinition().getType()));
+        response.setLocation(LocationMapper.toResponse(assignment.getVisitDefinition().getLocation()));
 
         response.setEnabled(assignment.getEnabled());
         response.setCreatedTime(assignment.getCreatedTime());

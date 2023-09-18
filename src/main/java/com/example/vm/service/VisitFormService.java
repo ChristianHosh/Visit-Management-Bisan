@@ -255,6 +255,4 @@ public class VisitFormService {
 
         return distanceBetweenTwoPoints(customerLat, customerLng, userLat, userLng);
     }
-
-
 }

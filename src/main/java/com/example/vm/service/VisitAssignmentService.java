@@ -205,6 +205,8 @@ public class VisitAssignmentService {
                 .build();
 
         foundAssignment.getCustomers().add(foundCustomer);
+        if (foundAssignment.getStatus().equals(VisitStatus.COMPLETED))
+            foundAssignment.setStatus(VisitStatus.UNDERGOING);
 
         foundAssignment = visitAssignmentRepository.save(foundAssignment);
         visitFormRepository.save(newVisitForm);

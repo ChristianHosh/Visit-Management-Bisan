@@ -20,6 +20,7 @@ public class VisitAssignmentResponse extends ModelAuditResponse {
     private VisitTypeResponse visitType;
     private List<CustomerResponse> customers;
     private UserResponse user;
+    private LocationResponse location;
     private String status;
 
 }
